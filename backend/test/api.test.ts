@@ -77,6 +77,16 @@ test("login sets 30-day httpOnly strict cookie; session survives requests and lo
   await agent.post("/api/auth/logout").send({}).expect(200);
   await agent.get("/api/contents").expect(401);
 });
+
+test('mRNA research data and workbook require a session and remain downloadable to visitors', async()=>{
+  await request(app).get('/media/projects/mrna/research-data.json').expect(401);
+  await request(app).get('/media/projects/mrna/02_mRNA肿瘤药物主台账.xlsx').expect(401);
+  const agent=await login();
+  const response=await agent.get('/media/projects/mrna/research-data.json').expect(200);
+  assert.equal(response.body.asOf,'2026-11-10');
+  assert.ok(response.body.evidence.length>=16);
+  await agent.get('/media/projects/mrna/02_mRNA肿瘤药物主台账.xlsx').expect(200);
+});
 test("five invalid logins lock the IP for 15 minutes, across both roles", async () => {
   for (let i = 0; i < 5; i++)
     await request(app)

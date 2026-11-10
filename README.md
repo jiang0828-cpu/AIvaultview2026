@@ -110,3 +110,9 @@ AI 系列课程示例按“一稿多形态”组织：`课程文档｜…完整�
 ## 目录
 
 `frontend/src`：界面、阅读器与 API 客户端。`backend/src`：认证、校验、接口和启动配置。`backend/prisma`：数据模型、迁移与种子。`backend/test`：隔离数据库接口测试。`scripts`：本地初始化与样例资源生成。
+# mRNA 研究工作台更新（2026-11-10）
+
+打开局域网 `/home?project=23`，可切换研究概览、临床证据、管线台账、技术与BD、来源交付。
+研究输入及检索快照在 `research/mrna-v2/`；`npm run research:mrna` 从核验数据生成页面JSON、报告和Excel，`npm run db:seed:mrna` 只更新mRNA的模板内容并保留自定义文档。Excel构建使用本机Codex随附的 artifact-tool 运行时，普通npm安装不包含它；已生成的交付文件可直接使用。
+实际数据库ID可能与本机23不同，应从空间概览进入mRNA项目。所有下载通过已有登录鉴权的 `/media/projects/mrna/` 提供。
+

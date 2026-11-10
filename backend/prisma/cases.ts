@@ -1,3 +1,5 @@
+import { mrnaDocuments } from './mrna-generated.js';
+
 export type CaseNode = {
   title: string;
   type: "folder" | "text" | "ppt" | "longimage" | "video" | "mindmap";
@@ -2012,3 +2014,9 @@ ${bt}${bt}${bt}
     ["长期性", "AI", "learning"],
   ),
 ];
+
+// Keep the historical seed for a conservative, template-only local update.
+export const legacyMrnaProject = structuredClone(caseProjects.find(p => /mRNA/.test(p.title))!);
+const currentMrna = caseProjects.find(p => /mRNA/.test(p.title))!;
+currentMrna.description = '截至2026-11-10的mRNA肿瘤药物研究：最新临床、技术、注册台账与精准检测BD。';
+currentMrna.children = mrnaDocuments.map(d => ({...d,type:'text',scene:'work',topics:['health','research']}));

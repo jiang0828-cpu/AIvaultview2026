@@ -22,7 +22,9 @@
     "assets": "node scripts/assets.mjs",
     "db:seed:literature": "tsx backend/prisma/init-literature.ts",
     "db:seed:castle": "tsx backend/prisma/init-castle.ts",
-    "db:seed:writers": "tsx backend/prisma/init-writers.ts"
+    "db:seed:writers": "tsx backend/prisma/init-writers.ts",
+    "db:seed:mrna": "tsx backend/prisma/init-mrna.ts",
+    "research:mrna": "node scripts/build_mrna_v2.mjs && node scripts/build_mrna_v2_workbook.mjs"
   },
   "devDependencies": {
     "concurrently": "^9.1.2",

@@ -1,0 +1,1688 @@
+{
+  "asOf": "2026-11-10",
+  "searches": [
+    {
+      "term": "NCT05968326 OR NCT03164772 OR NCT05141721 OR NCT04573140",
+      "fetched": "2026-11-10T12:45:00.195Z",
+      "count": 4,
+      "nextPage": false,
+      "status": "ok"
+    },
+    {
+      "term": "CV9202 OR BI1361849",
+      "fetched": "2026-11-10T12:45:00.514Z",
+      "count": 2,
+      "nextPage": false,
+      "status": "ok"
+    },
+    {
+      "term": "BNT211 OR CARVac",
+      "fetched": "2026-11-10T12:45:00.795Z",
+      "count": 1,
+      "nextPage": false,
+      "status": "ok"
+    },
+    {
+      "term": "NCT04503278",
+      "fetched": "2026-11-10T12:45:01.087Z",
+      "count": 1,
+      "nextPage": false,
+      "status": "ok"
+    },
+    {
+      "term": "BNT115",
+      "fetched": "2026-11-10T12:45:01.357Z",
+      "count": 0,
+      "nextPage": false,
+      "status": "ok"
+    },
+    {
+      "term": "W_ova1 OR NCT04163094",
+      "fetched": "2026-11-10T12:45:01.632Z",
+      "count": 1,
+      "nextPage": false,
+      "status": "ok"
+    },
+    {
+      "term": "LY01620",
+      "fetched": "2026-11-10T12:45:01.904Z",
+      "count": 0,
+      "nextPage": false,
+      "status": "ok"
+    },
+    {
+      "term": "ABO2102",
+      "fetched": "2026-11-10T12:45:02.180Z",
+      "count": 2,
+      "nextPage": false,
+      "status": "ok"
+    },
+    {
+      "term": "ZY008 OR YKYY031",
+      "fetched": "2026-11-10T12:45:02.462Z",
+      "count": 1,
+      "nextPage": false,
+      "status": "ok"
+    },
+    {
+      "term": "GRT-C901 OR GRT-R902",
+      "fetched": "2026-11-10T12:45:02.953Z",
+      "count": 3,
+      "nextPage": false,
+      "status": "ok"
+    },
+    {
+      "term": "NCT05533697",
+      "fetched": "2026-11-10T12:53:55.692Z",
+      "count": 1,
+      "nextPage": false,
+      "status": "ok"
+    },
+    {
+      "term": "NCT07652242",
+      "fetched": "2026-11-10T12:53:55.998Z",
+      "count": 1,
+      "nextPage": false,
+      "status": "ok"
+    }
+  ],
+  "studies": [
+    {
+      "id": "NCT04573140",
+      "title": "A Study of RNA-lipid Particle (RNA-LP) Vaccines for Newly Diagnosed Pediatric High-Grade Gliomas (pHGG) and Adult Glioblastoma (GBM)",
+      "sponsor": "University of Florida",
+      "status": "RECRUITING",
+      "whyStopped": "",
+      "updated": "2026-10-30",
+      "start": {
+        "date": "2021-12-13",
+        "type": "ACTUAL"
+      },
+      "primaryCompletion": {
+        "date": "2027-07-01",
+        "type": "ESTIMATED"
+      },
+      "completion": {
+        "date": "2029-07-01",
+        "type": "ESTIMATED"
+      },
+      "phase": [
+        "PHASE1"
+      ],
+      "enrollment": {
+        "count": 28,
+        "type": "ESTIMATED"
+      },
+      "design": {
+        "allocation": "NON_RANDOMIZED",
+        "interventionModel": "PARALLEL",
+        "primaryPurpose": "TREATMENT",
+        "maskingInfo": {
+          "masking": "NONE"
+        }
+      },
+      "conditions": [
+        "Adult Glioblastoma",
+        "High Grade Glioma",
+        "WHO Grade III or IV Malignant Glioma"
+      ],
+      "interventions": [
+        {
+          "type": "BIOLOGICAL",
+          "name": "Autologous total tumor mRNA and pp65 full length (fl) lysosomal associated membrane protein (LAMP) mRNA loaded DOTAP liposome vaccine administered intravenously (RNA loaded lipid particles, RNA-LPs)",
+          "description": "RNA-LP vaccines will be administered intravenous. Three RNA-LP vaccines will be administered every 2 weeks followed by 12 cycles of adjuvant monthly RNA-LP vaccines for a total of 15 vaccines.",
+          "armGroupLabels": [
+            "Adult GBM (Stratum 1)",
+            "Pediatric HGG (Stratum 2)"
+          ]
+        }
+      ],
+      "arms": [
+        {
+          "label": "Adult GBM (Stratum 1)",
+          "type": "EXPERIMENTAL",
+          "interventionNames": [
+            "Biological: Autologous total tumor mRNA and pp65 full length (fl) lysosomal associated membrane protein (LAMP) mRNA loaded DOTAP liposome vaccine administered intravenously (RNA loaded lipid particles, RNA-LPs)"
+          ]
+        },
+        {
+          "label": "Pediatric HGG (Stratum 2)",
+          "type": "EXPERIMENTAL",
+          "interventionNames": [
+            "Biological: Autologous total tumor mRNA and pp65 full length (fl) lysosomal associated membrane protein (LAMP) mRNA loaded DOTAP liposome vaccine administered intravenously (RNA loaded lipid particles, RNA-LPs)"
+          ]
+        }
+      ],
+      "primaryOutcomes": [
+        {
+          "measure": "Manufacturing feasibility",
+          "description": "Potentially eligible participants will be enrolled on a screening consent for the sterile collection of tumor material in a manner suitable for RNA extraction, amplification, and loading of lipid particles (LPs). Tumor material will be sent to the University of Florida (UF) where tumor specific RNA-LP vaccines will be manufactured. Manufacturing feasibility will be determined based on the percentage of vaccines that are successfully manufactured in the DLT window during the first three vaccines. If two-thirds of vaccines are successfully manufactured with QA/QC clearance, we will conclude that RNA-LPs can be successfully manufactured.",
+          "timeFrame": "from the date of surgery until adminstration of third vaccine, up to 20 weeks"
+        },
+        {
+          "measure": "Safety of RNA-LP vaccine",
+          "description": "A DLT will be defined as any immunotherapy-related (possible, probable or definite):\n\n* Grade ≥ 3 non-hematologic toxicity that does not improve to ≤ Grade 2 within 72 hours; hepatic or renal dysfunction that does not improve to ≤ grade 2 within 7 days\n* Grade ≥3 cytokine release syndrome that does not improve to ≤ Grade 2 within 72 hours\n* Grade ≥ 3 encephalopathy as defined by the American Society for Transplantation and Cellular Therapy (ASTCT) Consensus Immune Effector Cell-Associated Encephalopathy criteriaGrade 3 or greater non-neurologic, non-hematologic toxicity\n* Grade 3 neurologic toxicity that does not improve to Grade II or better within 7 days\n* Grade 3-4 hematologic toxicity that does not improve to Grade 2 or better within 14 days\n* Grade 3 autoimmune encephalomyelitis\n* Grade 4 neurologic toxicity.",
+          "timeFrame": "First vaccine through 14 days after administration of the 3rd vaccine."
+        },
+        {
+          "measure": "Determination of Maximum Tolerated Dose",
+          "description": "The Phase I Stratum 1 dose-escalation study will be performed in up to 28 adult participants using a Bayesian optimal interval (BOIN) design with an initial embedded accelerated titration design (ATD) to efficiently identify the maximally tolerated dose (MTD). For the initial ATD, patients will be enrolled and treated in cohorts of size 1 starting at dose level -4 to dose level -1. After the first DLT is observed or if dose level 0 is reached without prior DLT in dose level -4 to -1, the study will expand to a BOIN design with a cohort size of 3 to identify the MTD. For the initial ATD, patients will be enrolled and treated in cohorts of size 1 starting at dose level -4 to dose level -1, and will expand to a cohort size of 3 after the first DLT is observed or at dose level 0. There are 8 dose levels to potentially be assessed including the possibility of 4 dose levels for the ATD and 4 for the BOIN.",
+          "timeFrame": "up to 30 months"
+        }
+      ],
+      "hasResults": false,
+      "countries": [
+        "United States"
+      ],
+      "url": "https://clinicaltrials.gov/study/NCT04573140"
+    },
+    {
+      "id": "NCT05968326",
+      "title": "A Study of the Efficacy and Safety of Adjuvant Autogene Cevumeran Plus Atezolizumab and mFOLFIRINOX Versus mFOLFIRINOX Alone in Participants With Resected PDAC",
+      "sponsor": "Genentech, Inc.",
+      "status": "ACTIVE_NOT_RECRUITING",
+      "whyStopped": "",
+      "updated": "2026-09-09",
+      "start": {
+        "date": "2023-10-18",
+        "type": "ACTUAL"
+      },
+      "primaryCompletion": {
+        "date": "2031-01-01",
+        "type": "ESTIMATED"
+      },
+      "completion": {
+        "date": "2031-01-01",
+        "type": "ESTIMATED"
+      },
+      "phase": [
+        "PHASE2"
+      ],
+      "enrollment": {
+        "count": 260,
+        "type": "ESTIMATED"
+      },
+      "design": {
+        "allocation": "RANDOMIZED",
+        "interventionModel": "PARALLEL",
+        "primaryPurpose": "TREATMENT",
+        "maskingInfo": {
+          "masking": "NONE"
+        }
+      },
+      "conditions": [
+        "Adenocarcinoma, Pancreatic Ductal"
+      ],
+      "interventions": [
+        {
+          "type": "DRUG",
+          "name": "Autogene cevumeran",
+          "description": "Autogene cevumeran will be administered intravenously (IV) at a recommended dose at specified timepoints.",
+          "armGroupLabels": [
+            "Arm 1: Autogene Cevumeran + Atezolizumab + mFOLFIRINOX"
+          ]
+        },
+        {
+          "type": "DRUG",
+          "name": "Atezolizumab",
+          "description": "Atezolizumab will be administered IV at a dose of 1680 milligrams (mg) at specified timepoints.",
+          "armGroupLabels": [
+            "Arm 1: Autogene Cevumeran + Atezolizumab + mFOLFIRINOX"
+          ],
+          "otherNames": [
+            "Tecentriq"
+          ]
+        },
+        {
+          "type": "DRUG",
+          "name": "mFOLFIRINOX",
+          "description": "mFOLFIRINOX (oxaliplatin, leucovorin, irinotecan, 5-FU) will be administered IV at specified timepoints.",
+          "armGroupLabels": [
+            "Arm 1: Autogene Cevumeran + Atezolizumab + mFOLFIRINOX",
+            "Arm 2: mFOLFIRINOX"
+          ]
+        }
+      ],
+      "arms": [
+        {
+          "label": "Arm 1: Autogene Cevumeran + Atezolizumab + mFOLFIRINOX",
+          "type": "EXPERIMENTAL",
+          "description": "Participants will receive autogene cevumeran, atezolizumab and mFOLFIRINOX.",
+          "interventionNames": [
+            "Drug: Autogene cevumeran",
+            "Drug: Atezolizumab",
+            "Drug: mFOLFIRINOX"
+          ]
+        },
+        {
+          "label": "Arm 2: mFOLFIRINOX",
+          "type": "ACTIVE_COMPARATOR",
+          "description": "Participants will receive mFOLFIRINOX.",
+          "interventionNames": [
+            "Drug: mFOLFIRINOX"
+          ]
+        }
+      ],
+      "primaryOutcomes": [
+        {
+          "measure": "Disease Free Survival (DFS)",
+          "timeFrame": "From randomization to first recurrence of PDAC or first occurrence of new cancer, as determined by the investigator, or death from any cause (whichever occurs first), up to approximately 6 years"
+        }
+      ],
+      "hasResults": false,
+      "countries": [
+        "United States",
+        "Belgium",
+        "Canada",
+        "France",
+        "Germany",
+        "Netherlands",
+        "South Korea",
+        "Spain",
+        "Sweden",
+        "United Kingdom"
+      ],
+      "url": "https://clinicaltrials.gov/study/NCT05968326"
+    },
+    {
+      "id": "NCT03164772",
+      "title": "Phase 1/2 Study of Combination Immunotherapy and Messenger Ribonucleic Acid (mRNA) Vaccine in Subjects With NSCLC",
+      "sponsor": "Ludwig Institute for Cancer Research",
+      "status": "COMPLETED",
+      "whyStopped": "",
+      "updated": "2022-10-10",
+      "start": {
+        "date": "2017-12-20",
+        "type": "ACTUAL"
+      },
+      "primaryCompletion": {
+        "date": "2021-10-29",
+        "type": "ACTUAL"
+      },
+      "completion": {
+        "date": "2021-10-29",
+        "type": "ACTUAL"
+      },
+      "phase": [
+        "PHASE1",
+        "PHASE2"
+      ],
+      "enrollment": {
+        "count": 61,
+        "type": "ACTUAL"
+      },
+      "design": {
+        "allocation": "NON_RANDOMIZED",
+        "interventionModel": "PARALLEL",
+        "primaryPurpose": "TREATMENT",
+        "maskingInfo": {
+          "masking": "NONE"
+        }
+      },
+      "conditions": [
+        "Metastatic Non-small Cell Lung Cancer",
+        "NSCLC"
+      ],
+      "interventions": [
+        {
+          "type": "DRUG",
+          "name": "Durvalumab",
+          "description": "anti-PD-L1",
+          "armGroupLabels": [
+            "Arm A: BI 1361849 mRNA Vaccine + durvalumab",
+            "Arm B: BI 1361849 mRNA Vaccine + durvalumab + tremelimumab"
+          ],
+          "otherNames": [
+            "MEDI4736"
+          ]
+        },
+        {
+          "type": "DRUG",
+          "name": "Tremelimumab",
+          "description": "anti-CTLA-4",
+          "armGroupLabels": [
+            "Arm B: BI 1361849 mRNA Vaccine + durvalumab + tremelimumab"
+          ]
+        },
+        {
+          "type": "BIOLOGICAL",
+          "name": "BI 1361849",
+          "description": "mRNA Vaccine",
+          "armGroupLabels": [
+            "Arm A: BI 1361849 mRNA Vaccine + durvalumab",
+            "Arm B: BI 1361849 mRNA Vaccine + durvalumab + tremelimumab"
+          ],
+          "otherNames": [
+            "CV9202"
+          ]
+        },
+        {
+          "type": "DEVICE",
+          "name": "PharmaJet Tropis® device",
+          "description": "The PharmaJet Tropis® device was used for the intradermal administration of the BI 1361849 vaccine components.",
+          "armGroupLabels": [
+            "Arm A: BI 1361849 mRNA Vaccine + durvalumab",
+            "Arm B: BI 1361849 mRNA Vaccine + durvalumab + tremelimumab"
+          ]
+        }
+      ],
+      "arms": [
+        {
+          "label": "Arm A: BI 1361849 mRNA Vaccine + durvalumab",
+          "type": "EXPERIMENTAL",
+          "description": "The BI 1361849 mRNA vaccine comprises 6 drug product components (F2408 coding for MUC1, F2409 coding for survivin, F2410 coding for NY-ESO-1, F2624 coding for 5T4, F2625 coding for MAGE-C2, and F2626 coding for MAGE-C1), which were provided and administered separately; each component was administered twice, thus there were 12 intradermal administrations of 100 µL (80 µg) each for each dose. The PharmaJet Tropis® device was used for the administration of the BI 1361849 components.\n\nDurvalumab 1500 mg was to be administered as an intravenous (IV) infusion every 4 weeks for 12 cycles; BI 1361849 was to be administered as 14 doses over the 12 cycles.",
+          "interventionNames": [
+            "Drug: Durvalumab",
+            "Biological: BI 1361849",
+            "Device: PharmaJet Tropis® device"
+          ]
+        },
+        {
+          "label": "Arm B: BI 1361849 mRNA Vaccine + durvalumab + tremelimumab",
+          "type": "EXPERIMENTAL",
+          "description": "The BI 1361849 mRNA vaccine comprises 6 drug product components (F2408 coding for MUC1, F2409 coding for survivin, F2410 coding for NY-ESO-1, F2624 coding for 5T4, F2625 coding for MAGE-C2, and F2626 coding for MAGE-C1), which were provided and administered separately; each component was administered twice, thus there were 12 intradermal administrations of 100 µL (80 µg) each for each dose. The PharmaJet Tropis® device was used for the administration of the BI 1361849 components.\n\nDurvalumab 1500 mg was to be administered as an intravenous (IV) infusion every 4 weeks for 12 cycles; tremelimumab 75 mg was to be administered as an intravenous (IV) infusion every 4 weeks for the first 4 cycles (Arm B only); BI 1361849 was to be administered as 14 doses over the 12 cycles.",
+          "interventionNames": [
+            "Drug: Durvalumab",
+            "Drug: Tremelimumab",
+            "Biological: BI 1361849",
+            "Device: PharmaJet Tropis® device"
+          ]
+        }
+      ],
+      "primaryOutcomes": [
+        {
+          "measure": "Number of Subjects With Treatment-Emergent Adverse Events (TEAEs)",
+          "description": "Adverse events (AEs) were coded using the Medical Dictionary for Regulatory Activities (MedDRA) Version 20.0 and classified by MedDRA system organ class (SOC) and preferred term. The severity was assessed according to National Cancer Institute Common Terminology Criteria for Adverse Events (NCI CTCAE) Version 4.03. AEs were reported based on clinical laboratory tests, vital signs, physical examinations, and any other medically indicated assessments, including subject interviews, from the time informed consent was signed through 90 days after the last dose of study treatment. TEAEs are AEs that occurred or worsened in severity after administration of the first dose of study treatment.\n\nFor each arm, the first 6 subjects were evaluated for dose limiting toxicities (DLTs).\n\nDeaths within the AE Reporting Period included all deaths that occurred during the study treatment period, or up to 90 days after the administration of the last dose of study drug or initiation of a new treatment.",
+          "timeFrame": "up to 15 months"
+        }
+      ],
+      "hasResults": true,
+      "countries": [
+        "United States"
+      ],
+      "url": "https://clinicaltrials.gov/study/NCT03164772"
+    },
+    {
+      "id": "NCT05141721",
+      "title": "A Study of a Patient-Specific Neoantigen Vaccine in Combination With Immune Checkpoint Blockade for Patients With Metastatic Colorectal Cancer",
+      "sponsor": "Seattle Project Corporation",
+      "status": "ACTIVE_NOT_RECRUITING",
+      "whyStopped": "",
+      "updated": "2025-05-16",
+      "start": {
+        "date": "2022-02-12",
+        "type": "ACTUAL"
+      },
+      "primaryCompletion": {
+        "date": "2027-03",
+        "type": "ESTIMATED"
+      },
+      "completion": {
+        "date": "2027-03",
+        "type": "ESTIMATED"
+      },
+      "phase": [
+        "PHASE2",
+        "PHASE3"
+      ],
+      "enrollment": {
+        "count": 700,
+        "type": "ESTIMATED"
+      },
+      "design": {
+        "allocation": "RANDOMIZED",
+        "interventionModel": "PARALLEL",
+        "primaryPurpose": "TREATMENT",
+        "maskingInfo": {
+          "masking": "NONE"
+        }
+      },
+      "conditions": [
+        "Colorectal Neoplasms"
+      ],
+      "interventions": [
+        {
+          "type": "DRUG",
+          "name": "GRT-C901",
+          "description": "A patient-specific neoantigen cancer vaccine administered via intramuscular (IM) injection as prime and single boost at a dose of 1x10\\^12 viral particles 2 times over the course of the first year.",
+          "armGroupLabels": [
+            "Vaccine Arm"
+          ]
+        },
+        {
+          "type": "DRUG",
+          "name": "GRT-R902",
+          "description": "A patient-specific neoantigen cancer vaccine boost, administered via IM injection at a dose of 30ug 4 times over the course of the first year.",
+          "armGroupLabels": [
+            "Vaccine Arm"
+          ]
+        },
+        {
+          "type": "DRUG",
+          "name": "Atezolizumab",
+          "description": "Atezolizumab will be administered via intravenous (IV) infusion at a dose of 1680 mg once every 4 weeks.",
+          "armGroupLabels": [
+            "Vaccine Arm"
+          ],
+          "otherNames": [
+            "Tecentriq"
+          ]
+        },
+        {
+          "type": "DRUG",
+          "name": "Ipilimumab",
+          "description": "Ipilimumab will be administered via subcutaneous (SC) injection at a dose of 30 mg with the first dose of GRT-C901 and GRT-R902.",
+          "armGroupLabels": [
+            "Vaccine Arm"
+          ],
+          "otherNames": [
+            "Yervoy"
+          ]
+        },
+        {
+          "type": "DRUG",
+          "name": "Fluoropyrimidine plus leucovorin",
+          "description": "Fluoropyrimidine (infusional 5-FU or capecitabine) and leucovorin administered as maintenance therapy per standard of care.",
+          "armGroupLabels": [
+            "Control Arm",
+            "Vaccine Arm"
+          ],
+          "otherNames": [
+            "Xeloda"
+          ]
+        },
+        {
+          "type": "DRUG",
+          "name": "Bevacizumab",
+          "description": "Bevacizumab administered as maintenance therapy per standard of care.",
+          "armGroupLabels": [
+            "Control Arm",
+            "Vaccine Arm"
+          ],
+          "otherNames": [
+            "Avastin"
+          ]
+        }
+      ],
+      "arms": [
+        {
+          "label": "Vaccine Arm",
+          "type": "EXPERIMENTAL",
+          "description": "After receiving up to 24 weeks induction therapy with a fluoropyrimidine/oxaliplatin/bevacizumab (with or without irinotecan), per standard of care and after completing vaccine production screening, patients will receive a total of 6 administrations of GRT-C901/GRT-R902 plus ipilimumab co-administered only with the first dose of GRT-C901 and GRT-R902. All patients will receive atezolizumab in addition to maintenance therapy of a fluoropyrimidine and bevacizumab according to standard of care.",
+          "interventionNames": [
+            "Drug: GRT-C901",
+            "Drug: GRT-R902",
+            "Drug: Atezolizumab",
+            "Drug: Ipilimumab",
+            "Drug: Fluoropyrimidine plus leucovorin",
+            "Drug: Bevacizumab"
+          ]
+        },
+        {
+          "label": "Control Arm",
+          "type": "ACTIVE_COMPARATOR",
+          "description": "After receiving up to 24 weeks induction therapy with a fluoropyrimidine/oxaliplatin/bevacizumab (with or without irinotecan), per standard of care and undergoing vaccine production screening, patients will receive maintenance therapy of a fluoropyrimidine and bevacizumab according to standard of care.",
+          "interventionNames": [
+            "Drug: Fluoropyrimidine plus leucovorin",
+            "Drug: Bevacizumab"
+          ]
+        }
+      ],
+      "primaryOutcomes": [
+        {
+          "measure": "Phase 2: Molecular response defined as ≥ 30% decrease from baseline in circulating tumor DNA (ctDNA)",
+          "timeFrame": "Baseline and up to 27 months"
+        },
+        {
+          "measure": "Phase 3: Progression-free survival per Immune-based Response Evaluation Criteria in Solid Tumors (iRECIST) as assessed by blinded independent review committee (IRC)",
+          "description": "defined by time from randomization until disease progression as per iRECIST or death from any cause",
+          "timeFrame": "Up to 60 months"
+        }
+      ],
+      "hasResults": false,
+      "countries": [
+        "United States"
+      ],
+      "url": "https://clinicaltrials.gov/study/NCT05141721"
+    },
+    {
+      "id": "NCT01915524",
+      "title": "Trial of RNActive®-Derived Cancer Vaccine and Local Radiation in in Stage IV Non Small Cell Lung Cancer (NSCLC)",
+      "sponsor": "CureVac",
+      "status": "TERMINATED",
+      "whyStopped": "Slow recruitment in stratum 3: enrolled only 2 instead of 8 pts. within predicted time",
+      "updated": "2016-08-05",
+      "start": {
+        "date": "2013-04"
+      },
+      "primaryCompletion": {
+        "date": "2016-07",
+        "type": "ACTUAL"
+      },
+      "completion": {
+        "date": "2016-07",
+        "type": "ACTUAL"
+      },
+      "phase": [
+        "PHASE1"
+      ],
+      "enrollment": {
+        "count": 26,
+        "type": "ACTUAL"
+      },
+      "design": {
+        "allocation": "NA",
+        "interventionModel": "SINGLE_GROUP",
+        "primaryPurpose": "TREATMENT",
+        "maskingInfo": {
+          "masking": "NONE"
+        }
+      },
+      "conditions": [
+        "Non-Small Cell Lung Carcinoma"
+      ],
+      "interventions": [
+        {
+          "type": "BIOLOGICAL",
+          "name": "CV9202",
+          "description": "Intradermal injection of CV9202",
+          "armGroupLabels": [
+            "CV9202 and local radiation"
+          ]
+        },
+        {
+          "type": "RADIATION",
+          "name": "local radiation",
+          "description": "Radiotherapy will be administered in 4 daily fractions of 5 GY each to be administered within one week",
+          "armGroupLabels": [
+            "CV9202 and local radiation"
+          ]
+        }
+      ],
+      "arms": [
+        {
+          "label": "CV9202 and local radiation",
+          "type": "EXPERIMENTAL",
+          "description": "CV9202 consisting of 6 RNActive-derived molecules coding for 6 different NSCLC associated antigens.\n\nlocal radiation (4x5 Gy)",
+          "interventionNames": [
+            "Biological: CV9202",
+            "Radiation: local radiation"
+          ]
+        }
+      ],
+      "primaryOutcomes": [
+        {
+          "measure": "Number of participants with treatment related >= grade 3 adverse events (AEs).",
+          "description": "Events are graded by the investigator using the NCI CTCAE Scale (version 4.0) which provides a grading scale for each AE term. Grade 3 = Severe Grade 4 = Life-threatening or disabling\n\nInterim safety evaluations will be performed:\n\n* After treatment and observation of the first 6 patients until Day 43 in a given stratum.\n\n  \\- If \\>= 2 out of 6 patients experience treatment-related \\>= grade 3 AEs, enrollment in that stratum will be suspended.\n* After the first 6 patients (enrolled in stratum 1 or 2) have received radiation of thoracic lesions and have been monitored for toxicity until Day 57:\n\n  * If \\>= 2 out of 6 patients experience \\>= grade 3 radiation pneumonitis, radiation of thoracic lesions will be suspended for further patients.\n  * For strata 1 and 2, CV9202 administration and radiation of thoracic lesions will be considered safe for further evaluation if ≤ 20% of patients experience a \\>= grade 3 radiation pneumonitis and no patients experience grade 4 radiation pneumonitis.",
+          "timeFrame": "up to 40 months"
+        }
+      ],
+      "hasResults": false,
+      "countries": [
+        "Austria",
+        "Germany",
+        "Switzerland"
+      ],
+      "url": "https://clinicaltrials.gov/study/NCT01915524"
+    },
+    {
+      "id": "NCT04503278",
+      "title": "A Clinical Study of the Safety and Effectiveness of an Investigational Cell Therapy Given With and Without an Investigational RNA-based Vaccine in Patients With Organ Tumors",
+      "sponsor": "BioNTech Cell & Gene Therapies GmbH",
+      "status": "ACTIVE_NOT_RECRUITING",
+      "whyStopped": "",
+      "updated": "2026-06-18",
+      "start": {
+        "date": "2020-09-16",
+        "type": "ACTUAL"
+      },
+      "primaryCompletion": {
+        "date": "2028-08",
+        "type": "ESTIMATED"
+      },
+      "completion": {
+        "date": "2041-08",
+        "type": "ESTIMATED"
+      },
+      "phase": [
+        "PHASE1"
+      ],
+      "enrollment": {
+        "count": 214,
+        "type": "ESTIMATED"
+      },
+      "design": {
+        "allocation": "NON_RANDOMIZED",
+        "interventionModel": "FACTORIAL",
+        "primaryPurpose": "TREATMENT",
+        "maskingInfo": {
+          "masking": "NONE"
+        }
+      },
+      "conditions": [
+        "Solid Tumor"
+      ],
+      "interventions": [
+        {
+          "type": "BIOLOGICAL",
+          "name": "CLDN6 CAR-T",
+          "description": "administered as an intravenous (i.v.) infusion.",
+          "armGroupLabels": [
+            "Part 1 - CLDN6 CAR-T",
+            "Part 2 Vaccine-modulated - CLDN6 uRNA-LPX/CLDN6 modRNA-LPX"
+          ]
+        },
+        {
+          "type": "BIOLOGICAL",
+          "name": "CLDN6 uRNA-LPX/CLDN6 modRNA-LPX",
+          "description": "administered as an i.v. injection at protocol-specified intervals.",
+          "armGroupLabels": [
+            "Part 2 Vaccine-modulated - CLDN6 uRNA-LPX/CLDN6 modRNA-LPX"
+          ]
+        }
+      ],
+      "arms": [
+        {
+          "label": "Part 1 - CLDN6 CAR-T",
+          "type": "EXPERIMENTAL",
+          "description": "Dose escalation in lymphodepleted patients until the MTD and/or RP2D.",
+          "interventionNames": [
+            "Biological: CLDN6 CAR-T"
+          ]
+        },
+        {
+          "label": "Part 2 Vaccine-modulated - CLDN6 uRNA-LPX/CLDN6 modRNA-LPX",
+          "type": "EXPERIMENTAL",
+          "description": "Dose escalation until the MTD and/or RP2D.",
+          "interventionNames": [
+            "Biological: CLDN6 CAR-T",
+            "Biological: CLDN6 uRNA-LPX/CLDN6 modRNA-LPX"
+          ]
+        }
+      ],
+      "primaryOutcomes": [
+        {
+          "measure": "Occurrence of treatment-emergent adverse events (TEAEs) including ≥ Grade 3, serious, fatal TEAEs by relationship",
+          "timeFrame": "up to 25 months"
+        },
+        {
+          "measure": "Occurrence of dose reduction and discontinuation of investigational medicinal product (IMP) due to TEAEs",
+          "timeFrame": "up to 25 months"
+        },
+        {
+          "measure": "Occurrence of dose-limiting toxicity (DLT) during the DLT evaluation period",
+          "timeFrame": "Day 1 to day 28"
+        }
+      ],
+      "hasResults": false,
+      "countries": [
+        "Australia",
+        "Germany",
+        "Netherlands",
+        "Sweden"
+      ],
+      "url": "https://clinicaltrials.gov/study/NCT04503278"
+    },
+    {
+      "id": "NCT04163094",
+      "title": "Ovarian Cancer Treatment With a Liposome Formulated mRNA Vaccine in Combination With (Neo-)Adjuvant Chemotherapy",
+      "sponsor": "University Medical Center Groningen",
+      "status": "TERMINATED",
+      "whyStopped": "Despite the extension of the original recruitment period, the target number of evaluable patients defined in the study protocol could not be reached and recruitment for the trial was stopped at that point of time.",
+      "updated": "2023-06-29",
+      "start": {
+        "date": "2019-11-25",
+        "type": "ACTUAL"
+      },
+      "primaryCompletion": {
+        "date": "2023-06-26",
+        "type": "ACTUAL"
+      },
+      "completion": {
+        "date": "2023-06-26",
+        "type": "ACTUAL"
+      },
+      "phase": [
+        "PHASE1"
+      ],
+      "enrollment": {
+        "count": 8,
+        "type": "ACTUAL"
+      },
+      "design": {
+        "allocation": "NA",
+        "interventionModel": "SINGLE_GROUP",
+        "interventionModelDescription": "This is a first-in-human, open label phase I study.",
+        "primaryPurpose": "TREATMENT",
+        "maskingInfo": {
+          "masking": "NONE"
+        }
+      },
+      "conditions": [
+        "Ovarian Cancer"
+      ],
+      "interventions": [
+        {
+          "type": "DRUG",
+          "name": "W_ova1 Vaccine",
+          "description": "Patients will be treated with a W\\_ova1 vaccine that includes 3 OC TAA RNA-LPX products.",
+          "armGroupLabels": [
+            "Treatment arm"
+          ]
+        }
+      ],
+      "arms": [
+        {
+          "label": "Treatment arm",
+          "type": "EXPERIMENTAL",
+          "description": "Patients will receive 8 W\\_ova1 vaccinations before and during neoadjuvant chemotherapy and adjuvant chemotherapy.",
+          "interventionNames": [
+            "Drug: W_ova1 Vaccine"
+          ]
+        }
+      ],
+      "primaryOutcomes": [
+        {
+          "measure": "Change from baseline W_ova1 vaccine antigen-specific T cells in the peripheral blood (systemic induction / expansion of W_ova1 vaccine antigen-specific T cells).",
+          "description": "Number of patients with de novo or increased systemic immune responses (based on the ELISpot Data Analysis Tool 1.0) in the post-vaccination PBMC sample compared to baseline PBMC sample to at least one of the three vaccine antigens",
+          "timeFrame": "A PBMC collection is planned at baseline, before start treatment. A further PBMC collection is scheduled after 5 vaccinations before surgery. The post-vaccination PBMC collections are scheduled at approx. 14 days and 2.5 months after final vaccination."
+        }
+      ],
+      "hasResults": false,
+      "countries": [
+        "Netherlands"
+      ],
+      "url": "https://clinicaltrials.gov/study/NCT04163094"
+    },
+    {
+      "id": "NCT07455617",
+      "title": "Study of ABO2102 in KRAS-Mutated Solid Tumors",
+      "sponsor": "Suzhou Abogen Biosciences Co., Ltd.",
+      "status": "RECRUITING",
+      "whyStopped": "",
+      "updated": "2026-04-06",
+      "start": {
+        "date": "2026-03-24",
+        "type": "ACTUAL"
+      },
+      "primaryCompletion": {
+        "date": "2029-06",
+        "type": "ESTIMATED"
+      },
+      "completion": {
+        "date": "2030-02",
+        "type": "ESTIMATED"
+      },
+      "phase": [
+        "PHASE1"
+      ],
+      "enrollment": {
+        "count": 101,
+        "type": "ESTIMATED"
+      },
+      "design": {
+        "allocation": "NON_RANDOMIZED",
+        "interventionModel": "SEQUENTIAL",
+        "primaryPurpose": "TREATMENT",
+        "maskingInfo": {
+          "masking": "NONE"
+        }
+      },
+      "conditions": [
+        "Advanced / Metastatic Solid Tumor"
+      ],
+      "interventions": [
+        {
+          "type": "DRUG",
+          "name": "ABO2102 Injection",
+          "description": "mRNA encoding mutant KRAS neoantigens, administrated intramuscularly",
+          "armGroupLabels": [
+            "ABO2102 Injection",
+            "ABO2102 Injection and Sintilimab Injection"
+          ]
+        },
+        {
+          "type": "DRUG",
+          "name": "Sintilimab injection",
+          "description": "Anti-PD-1 antibody, administered intravenously",
+          "armGroupLabels": [
+            "ABO2102 Injection and Sintilimab Injection"
+          ]
+        }
+      ],
+      "arms": [
+        {
+          "label": "ABO2102 Injection",
+          "type": "EXPERIMENTAL",
+          "description": "Monotherapy",
+          "interventionNames": [
+            "Drug: ABO2102 Injection"
+          ]
+        },
+        {
+          "label": "ABO2102 Injection and Sintilimab Injection",
+          "type": "EXPERIMENTAL",
+          "description": "ABO2102 Injection in combination with Sintilimab Injection",
+          "interventionNames": [
+            "Drug: ABO2102 Injection",
+            "Drug: Sintilimab injection"
+          ]
+        }
+      ],
+      "primaryOutcomes": [
+        {
+          "measure": "Part I: dose-limiting toxicities (DLT) with ABO2102 as monotherapy and in combination with Sintilimab",
+          "timeFrame": "28 days after the first dose of study treatment"
+        },
+        {
+          "measure": "Part I: Incidence and severity of adverse events",
+          "timeFrame": "from the first dose of study treatment to 30 days after the last dose of monotherapy or to 90 days after the last dose of the combination therapy"
+        },
+        {
+          "measure": "Part II: ORR evaluated by investigators according to RECIST v1.1 criteria",
+          "timeFrame": "from the first dose of study treatment to up to 3 years"
+        },
+        {
+          "measure": "Part II: PFS evaluated by investigators according to RECIST v1.1 criteria",
+          "timeFrame": "from the first dose of study treatment to up to 3 years"
+        }
+      ],
+      "hasResults": false,
+      "countries": [
+        "China"
+      ],
+      "url": "https://clinicaltrials.gov/study/NCT07455617"
+    },
+    {
+      "id": "NCT06577532",
+      "title": "Study of KRAS Neoantigen mRNA Vaccine (ABO2102) in Patients With KRAS -Mutated Solid Tumors",
+      "sponsor": "Ruijin Hospital",
+      "status": "RECRUITING",
+      "whyStopped": "",
+      "updated": "2025-05-21",
+      "start": {
+        "date": "2024-09-24",
+        "type": "ACTUAL"
+      },
+      "primaryCompletion": {
+        "date": "2026-12",
+        "type": "ESTIMATED"
+      },
+      "completion": {
+        "date": "2027-08",
+        "type": "ESTIMATED"
+      },
+      "phase": [
+        "EARLY_PHASE1"
+      ],
+      "enrollment": {
+        "count": 56,
+        "type": "ESTIMATED"
+      },
+      "design": {
+        "allocation": "NON_RANDOMIZED",
+        "interventionModel": "SEQUENTIAL",
+        "primaryPurpose": "TREATMENT",
+        "maskingInfo": {
+          "masking": "NONE"
+        }
+      },
+      "conditions": [
+        "Pancreatic Neoplasms",
+        "Other Solid Tumors"
+      ],
+      "interventions": [
+        {
+          "type": "DRUG",
+          "name": "ABO2102",
+          "description": "mRNA encoding mutant KRAS neoantigens, administrated intramuscularly",
+          "armGroupLabels": [
+            "ABO2102",
+            "ABO2102 and Toripalimab"
+          ]
+        },
+        {
+          "type": "DRUG",
+          "name": "Toripalimab",
+          "description": "Anti-PD-1 antibody, administered intravenously",
+          "armGroupLabels": [
+            "ABO2102 and Toripalimab"
+          ]
+        }
+      ],
+      "arms": [
+        {
+          "label": "ABO2102",
+          "type": "EXPERIMENTAL",
+          "description": "Prat I: Monotherapy",
+          "interventionNames": [
+            "Drug: ABO2102"
+          ]
+        },
+        {
+          "label": "ABO2102 and Toripalimab",
+          "type": "EXPERIMENTAL",
+          "description": "Part I\\&II: ABO2102 in combination with Toripalimab",
+          "interventionNames": [
+            "Drug: ABO2102",
+            "Drug: Toripalimab"
+          ]
+        }
+      ],
+      "primaryOutcomes": [
+        {
+          "measure": "Part I: The incidence and nature of dose-limiting toxicity (DLT) for ABO2102 as monotherapy or in combination with toripalilmab.",
+          "timeFrame": "21 days after the first dose of study treatment"
+        },
+        {
+          "measure": "Part I: The incidence and severity of treatment-emergent adverse events (TEAE)s.",
+          "timeFrame": "from the first dose of study treatment to 30 days after the last dose of monotherapy or to 90 days after the last dose of the combination therapy."
+        },
+        {
+          "measure": "Part I: The incidence and severity of serious TEAEs (TESAE)s.",
+          "timeFrame": "from the first dose of study treatment to 30 days after the last dose of monotherapy or to 90 days after the last dose of the combination therapy."
+        },
+        {
+          "measure": "Part I: The incidence and severity of TEAEs leading to interruption or early termination of study treatment.",
+          "timeFrame": "from the first dose of study treatment to 30 days after the last dose of monotherapy or to 90 days after the last dose of the combination therapy."
+        },
+        {
+          "measure": "Part II: Overall Response Rate (ORR) per RECIST version 1.1.",
+          "timeFrame": "from the first dose of study treatment to up to 2 years."
+        }
+      ],
+      "hasResults": false,
+      "countries": [
+        "China"
+      ],
+      "url": "https://clinicaltrials.gov/study/NCT06577532"
+    },
+    {
+      "id": "NCT07631793",
+      "title": "Phase I Clinical Trial of YKYY031 for Injection in Patients With Advanced Solid Tumors",
+      "sponsor": "Beijing Youcare Kechuang Pharmaceutical Technology Co., Ltd.",
+      "status": "RECRUITING",
+      "whyStopped": "",
+      "updated": "2026-10-13",
+      "start": {
+        "date": "2026-03-10",
+        "type": "ACTUAL"
+      },
+      "primaryCompletion": {
+        "date": "2027-12-08",
+        "type": "ESTIMATED"
+      },
+      "completion": {
+        "date": "2030-12-07",
+        "type": "ESTIMATED"
+      },
+      "phase": [
+        "PHASE1"
+      ],
+      "enrollment": {
+        "count": 76,
+        "type": "ESTIMATED"
+      },
+      "design": {
+        "allocation": "NA",
+        "interventionModel": "SINGLE_GROUP",
+        "primaryPurpose": "TREATMENT",
+        "maskingInfo": {
+          "masking": "NONE"
+        }
+      },
+      "conditions": [
+        "Malignant Neoplasms"
+      ],
+      "interventions": [
+        {
+          "type": "DRUG",
+          "name": "YKYY031 group (the first stage)",
+          "description": "Eligible participants selected through screening will be sequentially assigned to dose groups A1 to A6 (in ascending order of dose) according to their enrollment sequence. Each participant will receive a single intramuscular injection of the corresponding dose of YKYY031 for injection.",
+          "armGroupLabels": [
+            "YKYY031 for injection"
+          ]
+        },
+        {
+          "type": "DRUG",
+          "name": "YKYY031 group (the second stage)",
+          "description": "Based on the results of the dose-escalation trial, 1-2 dose groups will be selected for the dose-expansion trial of YKYY031 for injection as monotherapy or in combination with other drugs. Eligible participants will be sequentially assigned to dose groups B1 to B2 (in ascending order of dose) according to their enrollment sequence. Each participant will receive a single intramuscular injection of the corresponding dose of YKYY031 for injection.",
+          "armGroupLabels": [
+            "YKYY031 for injection"
+          ]
+        }
+      ],
+      "arms": [
+        {
+          "label": "YKYY031 for injection",
+          "type": "EXPERIMENTAL",
+          "description": "intramuscular, a single intramuscular injection of the corresponding dose of YKYY031 for injection",
+          "interventionNames": [
+            "Drug: YKYY031 group (the first stage)",
+            "Drug: YKYY031 group (the second stage)"
+          ]
+        }
+      ],
+      "primaryOutcomes": [
+        {
+          "measure": "Incidence of Dose-Limiting Toxicity (DLT)",
+          "timeFrame": "DLT assessment: 28 days post-first dose"
+        },
+        {
+          "measure": "Treatment-Emergent Adverse Events (TEAEs)",
+          "timeFrame": "Safety assessments: from first dose until the 28 days after the last dose"
+        },
+        {
+          "measure": "Serious Adverse Events (SAEs)",
+          "timeFrame": "Safety assessments: from first dose until the 28 days after the last dose"
+        }
+      ],
+      "hasResults": false,
+      "countries": [
+        "China"
+      ],
+      "url": "https://clinicaltrials.gov/study/NCT07631793"
+    },
+    {
+      "id": "NCT03639714",
+      "title": "A Study of a Personalized Neoantigen Cancer Vaccine",
+      "sponsor": "Gritstone bio, Inc.",
+      "status": "COMPLETED",
+      "whyStopped": "",
+      "updated": "2023-09-13",
+      "start": {
+        "date": "2019-02-13",
+        "type": "ACTUAL"
+      },
+      "primaryCompletion": {
+        "date": "2022-11-10",
+        "type": "ACTUAL"
+      },
+      "completion": {
+        "date": "2022-11-10",
+        "type": "ACTUAL"
+      },
+      "phase": [
+        "PHASE1",
+        "PHASE2"
+      ],
+      "enrollment": {
+        "count": 29,
+        "type": "ACTUAL"
+      },
+      "design": {
+        "allocation": "NON_RANDOMIZED",
+        "interventionModel": "SEQUENTIAL",
+        "primaryPurpose": "TREATMENT",
+        "maskingInfo": {
+          "masking": "NONE"
+        }
+      },
+      "conditions": [
+        "Non Small Cell Lung Cancer",
+        "Colorectal Cancer",
+        "Gastroesophageal Adenocarcinoma",
+        "Urothelial Carcinoma"
+      ],
+      "interventions": [
+        {
+          "type": "BIOLOGICAL",
+          "name": "GRT-C901",
+          "description": "a patient-specific neoantigen cancer vaccine prime",
+          "armGroupLabels": [
+            "Phase 1",
+            "Phase 2 Cohorts"
+          ]
+        },
+        {
+          "type": "BIOLOGICAL",
+          "name": "GRT-R902",
+          "description": "a patient-specific neoantigen cancer vaccine boost",
+          "armGroupLabels": [
+            "Phase 1",
+            "Phase 2 Cohorts"
+          ]
+        },
+        {
+          "type": "BIOLOGICAL",
+          "name": "nivolumab",
+          "description": "anti-PD-1 monoclonal antibody",
+          "armGroupLabels": [
+            "Phase 1",
+            "Phase 2 Cohorts"
+          ],
+          "otherNames": [
+            "Opdivo"
+          ]
+        },
+        {
+          "type": "BIOLOGICAL",
+          "name": "ipilimumab",
+          "description": "anti-CTLA-4 monoclonal antibody",
+          "armGroupLabels": [
+            "Phase 1",
+            "Phase 2 Cohorts"
+          ],
+          "otherNames": [
+            "Yervoy"
+          ]
+        }
+      ],
+      "arms": [
+        {
+          "label": "Phase 1",
+          "type": "EXPERIMENTAL",
+          "description": "* GRT-C901\n* GRT-R902\n* nivolumab\n* ipilimumab",
+          "interventionNames": [
+            "Biological: GRT-C901",
+            "Biological: GRT-R902",
+            "Biological: nivolumab",
+            "Biological: ipilimumab"
+          ]
+        },
+        {
+          "label": "Phase 2 Cohorts",
+          "type": "EXPERIMENTAL",
+          "description": "* GRT-C901\n* GRT-R902\n* nivolumab\n* ipilimumab",
+          "interventionNames": [
+            "Biological: GRT-C901",
+            "Biological: GRT-R902",
+            "Biological: nivolumab",
+            "Biological: ipilimumab"
+          ]
+        }
+      ],
+      "primaryOutcomes": [
+        {
+          "measure": "Incidence of adverse events (AEs), serious adverse events (SAEs), and dose-limiting toxicities (DLTs)",
+          "timeFrame": "Initiation of study treatment through 100 days post-last dose (up to approximately 27 months)"
+        },
+        {
+          "measure": "Objective Response Rate (ORR) in Phase 2 using RECIST v1.1",
+          "timeFrame": "Initiation of study treatment until disease progression (up to approximately 27 months)"
+        },
+        {
+          "measure": "Identify the recommended Phase 2 dose (RP2D) of GRT-C901 and GRT-R902",
+          "timeFrame": "Up to approximately 6 months"
+        }
+      ],
+      "hasResults": false,
+      "countries": [
+        "United States",
+        "Australia"
+      ],
+      "url": "https://clinicaltrials.gov/study/NCT03639714"
+    },
+    {
+      "id": "NCT05456165",
+      "title": "Study of an Individualized Vaccine Targeting Neoantigens in Combination With Immune Checkpoint Blockade for Patients With Colon Cancer",
+      "sponsor": "Gritstone bio, Inc.",
+      "status": "WITHDRAWN",
+      "whyStopped": "terminated due to reprioritization",
+      "updated": "2024-12-31",
+      "start": {
+        "date": "2022-05-19",
+        "type": "ACTUAL"
+      },
+      "primaryCompletion": {
+        "date": "2022-09-01",
+        "type": "ACTUAL"
+      },
+      "completion": {
+        "date": "2022-09-01",
+        "type": "ACTUAL"
+      },
+      "phase": [
+        "PHASE2"
+      ],
+      "enrollment": {
+        "count": 0,
+        "type": "ACTUAL"
+      },
+      "design": {
+        "allocation": "RANDOMIZED",
+        "interventionModel": "PARALLEL",
+        "primaryPurpose": "TREATMENT",
+        "maskingInfo": {
+          "masking": "NONE"
+        }
+      },
+      "conditions": [
+        "Colonic Neoplasms",
+        "Colorectal Neoplasms"
+      ],
+      "interventions": [
+        {
+          "type": "DRUG",
+          "name": "GRT-C901",
+          "description": "An individualized neoantigen cancer vaccine using an adenovirus vector administered via intramuscular (IM) injections at Visit 1 and boost at Visit 6.",
+          "armGroupLabels": [
+            "GRT-C901/GRT-R902 Vaccine arm"
+          ]
+        },
+        {
+          "type": "DRUG",
+          "name": "GRT-R902",
+          "description": "An individualized neoantigen cancer vaccine using a self-amplifying mRNA (samRNA) vector administered via IM injection at Visits 2, 4, 9, and 12.",
+          "armGroupLabels": [
+            "GRT-C901/GRT-R902 Vaccine arm"
+          ]
+        },
+        {
+          "type": "DRUG",
+          "name": "Atezolizumab",
+          "description": "Dose of 1680 mg administered once every 4 weeks (Q4W) via intravenous (IV) infusion at Visits 1-13.",
+          "armGroupLabels": [
+            "GRT-C901/GRT-R902 Vaccine arm"
+          ]
+        },
+        {
+          "type": "DRUG",
+          "name": "Ipilimumab",
+          "description": "Dose of 30 mg administered via subcutaneous (SC) injection only with the first dose of GRT-C901 at Visit 1 and GRTR902 at Visit 2.",
+          "armGroupLabels": [
+            "GRT-C901/GRT-R902 Vaccine arm"
+          ]
+        },
+        {
+          "type": "DRUG",
+          "name": "Adjuvant chemotherapy",
+          "description": "Administered according to standard of care.",
+          "armGroupLabels": [
+            "GRT-C901/GRT-R902 Vaccine arm",
+            "Observation arm"
+          ]
+        }
+      ],
+      "arms": [
+        {
+          "label": "GRT-C901/GRT-R902 Vaccine arm",
+          "type": "EXPERIMENTAL",
+          "description": "After surgical resection, patients who are circulating tumor DNA (ctDNA) positive will receive adjuvant chemotherapy for 12-24 weeks during which they will undergo neoantigen prediction, randomization, and vaccine manufacturing. After study treatment screening, patients who are still ctDNA positive with no evidence of residual or metastatic disease will receive a total of 6 doses of GRT-C901/ GRT-R902, 2 doses of ipilimumab, and 13 doses of atezolizumab. Study visits occur every 28 days.",
+          "interventionNames": [
+            "Drug: GRT-C901",
+            "Drug: GRT-R902",
+            "Drug: Atezolizumab",
+            "Drug: Ipilimumab",
+            "Drug: Adjuvant chemotherapy"
+          ]
+        },
+        {
+          "label": "Observation arm",
+          "type": "ACTIVE_COMPARATOR",
+          "description": "After surgical resection, patients who are ctDNA positive will receive adjuvant chemotherapy for 12-24 weeks during which they will undergo neoantigen prediction and randomization. After study treatment screening, patients who are still ctDNA positive with no evidence of residual or metastatic disease will be observed via study visits occur every 12 weeks.",
+          "interventionNames": [
+            "Drug: Adjuvant chemotherapy"
+          ]
+        }
+      ],
+      "primaryOutcomes": [
+        {
+          "measure": "Percentage of Patients with a ≥50% Decrease from Baseline in Circulating Tumor deoxyribonucleic acid (ctDNA)",
+          "timeFrame": "Baseline and up to ~24 months"
+        },
+        {
+          "measure": "Incidence and Severity of Adverse Events",
+          "description": "The incidence and severity will be assessed for treatment-emergent adverse events (TEAEs), immune-related AEs (irAEs), treatment-related AEs, serious AEs (SAEs), AEs leading to death while patients are on treatment or up to 100 days after the last study treatment, AEs leading to dose delays or dose discontinuation, and AEs leading to discontinuation of study treatment using National Cancer Institute (NCI) Criteria for Adverse Events (CTCAE) v5.0",
+          "timeFrame": "Up to ~100 days after last study treatment (Up to 62 weeks)"
+        }
+      ],
+      "hasResults": false,
+      "countries": [
+        "United States"
+      ],
+      "url": "https://clinicaltrials.gov/study/NCT05456165"
+    },
+    {
+      "id": "NCT05533697",
+      "title": "Study of mRNA-4359 Administered Alone and in Combination With Immune Checkpoint Blockade in Participants With Advanced Solid Tumors",
+      "sponsor": "ModernaTX, Inc.",
+      "status": "RECRUITING",
+      "whyStopped": "",
+      "updated": "2026-07-14",
+      "start": {
+        "date": "2022-09-01",
+        "type": "ACTUAL"
+      },
+      "primaryCompletion": {
+        "date": "2032-02-18",
+        "type": "ESTIMATED"
+      },
+      "completion": {
+        "date": "2032-02-18",
+        "type": "ESTIMATED"
+      },
+      "phase": [
+        "PHASE1",
+        "PHASE2"
+      ],
+      "enrollment": {
+        "count": 361,
+        "type": "ESTIMATED"
+      },
+      "design": {
+        "allocation": "NON_RANDOMIZED",
+        "interventionModel": "PARALLEL",
+        "primaryPurpose": "TREATMENT",
+        "maskingInfo": {
+          "masking": "NONE"
+        }
+      },
+      "conditions": [
+        "Advanced Solid Tumors"
+      ],
+      "interventions": [
+        {
+          "type": "BIOLOGICAL",
+          "name": "mRNA-4359",
+          "description": "Intramuscular Injection",
+          "armGroupLabels": [
+            "Arm 1a (Dose Escalation): mRNA-4359 Alone",
+            "Arm 1b (Dose Confirmation): mRNA-4359 in Combination with Pembrolizumab",
+            "Arm 1b (Melanoma Expansion Cohort): mRNA-4359 in Combination With Pembrolizumab",
+            "Arm 2a (Dose Expansion): mRNA-4359 in Combination with Pembrolizumab",
+            "Arm 2b (Dose Expansion): mRNA-4359 in Combination with Pembrolizumab",
+            "Arm 2c (Dose Expansion): mRNA-4359 in Combination with Ipilimumab and Nivolumab",
+            "Arm 2d (Dose Expansion): mRNA-4359 in Combination with Pembrolizumab",
+            "PD Arm (Group 2): mRNA-4359 in Combination with Pembrolizumab",
+            "Pharmacodynamic (PD) Arm (Group 1): mRNA-4359 in Combination with Pembrolizumab"
+          ]
+        },
+        {
+          "type": "BIOLOGICAL",
+          "name": "Pembrolizumab",
+          "description": "Intravenous infusion",
+          "armGroupLabels": [
+            "Arm 1b (Dose Confirmation): mRNA-4359 in Combination with Pembrolizumab",
+            "Arm 1b (Melanoma Expansion Cohort): mRNA-4359 in Combination With Pembrolizumab",
+            "Arm 2a (Dose Expansion): mRNA-4359 in Combination with Pembrolizumab",
+            "Arm 2c (Dose Expansion): mRNA-4359 in Combination with Ipilimumab and Nivolumab",
+            "Arm 2d (Dose Expansion): mRNA-4359 in Combination with Pembrolizumab",
+            "PD Arm (Group 2): mRNA-4359 in Combination with Pembrolizumab",
+            "Pharmacodynamic (PD) Arm (Group 1): mRNA-4359 in Combination with Pembrolizumab"
+          ]
+        },
+        {
+          "type": "BIOLOGICAL",
+          "name": "Ipilimumab",
+          "description": "Intravenous infusion",
+          "armGroupLabels": [
+            "Arm 2b (Dose Expansion): mRNA-4359 in Combination with Pembrolizumab"
+          ]
+        },
+        {
+          "type": "BIOLOGICAL",
+          "name": "Nivolumab",
+          "description": "Intravenous infusion",
+          "armGroupLabels": [
+            "Arm 2b (Dose Expansion): mRNA-4359 in Combination with Pembrolizumab"
+          ]
+        }
+      ],
+      "arms": [
+        {
+          "label": "Arm 1a (Dose Escalation): mRNA-4359 Alone",
+          "type": "EXPERIMENTAL",
+          "description": "Adult participants with locally advanced or metastatic cancer will be administered mRNA-4359 at an applicable dose as monotherapy.",
+          "interventionNames": [
+            "Biological: mRNA-4359"
+          ]
+        },
+        {
+          "label": "Arm 1b (Dose Confirmation): mRNA-4359 in Combination with Pembrolizumab",
+          "type": "EXPERIMENTAL",
+          "description": "Participants with locally advanced or metastatic, and checkpoint inhibitor (CPI) refractory melanoma or locally advanced or metastatic, and CPI refractory non-small-cell lung carcinoma (NSCLC) will be administered mRNA-4359 at an applicable dose in combination with pembrolizumab.",
+          "interventionNames": [
+            "Biological: mRNA-4359",
+            "Biological: Pembrolizumab"
+          ]
+        },
+        {
+          "label": "Arm 1b (Melanoma Expansion Cohort): mRNA-4359 in Combination With Pembrolizumab",
+          "type": "EXPERIMENTAL",
+          "description": "Participants 18 years or older with CPI refractory, advanced/metastatic melanoma with a programmed cell death ligand-1 (PD-L1) tumor proportion score (TPS) of ≥1% who have had progression on at least 1 prior CPI-based systemic therapy in the advanced/metastatic disease setting will be administered mRNA-4359 at an applicable dose in combination with pembrolizumab.",
+          "interventionNames": [
+            "Biological: mRNA-4359",
+            "Biological: Pembrolizumab"
+          ]
+        },
+        {
+          "label": "Arm 2a (Dose Expansion): mRNA-4359 in Combination with Pembrolizumab",
+          "type": "EXPERIMENTAL",
+          "description": "Adult participants with locally advanced or metastatic melanoma who have not yet received any prior systemic therapy for their melanoma in this setting will be administered mRNA-4359 at an applicable dose in combination with pembrolizumab.",
+          "interventionNames": [
+            "Biological: mRNA-4359",
+            "Biological: Pembrolizumab"
+          ]
+        },
+        {
+          "label": "Arm 2b (Dose Expansion): mRNA-4359 in Combination with Pembrolizumab",
+          "type": "EXPERIMENTAL",
+          "description": "Adult participants with locally advanced or metastatic NSCLC with a PD-L1 TPS of ≥50%, with no known epidermal growth factor receptor (EGFR)- or anaplastic lymphoma kinase (ALK)-positive tumor mutations who have not yet received any prior systemic therapy for their NSCLC will be administered mRNA-4359 at an applicable dose in combination with pembrolizumab.",
+          "interventionNames": [
+            "Biological: mRNA-4359",
+            "Biological: Ipilimumab",
+            "Biological: Nivolumab"
+          ]
+        },
+        {
+          "label": "Arm 2c (Dose Expansion): mRNA-4359 in Combination with Ipilimumab and Nivolumab",
+          "type": "EXPERIMENTAL",
+          "description": "Adult participants with locally advanced or metastatic melanoma who have not yet received any prior systemic therapy in this setting will be administered mRNA-4359 at an applicable dose in combination with ipilimumab and nivolumab.",
+          "interventionNames": [
+            "Biological: mRNA-4359",
+            "Biological: Pembrolizumab"
+          ]
+        },
+        {
+          "label": "Arm 2d (Dose Expansion): mRNA-4359 in Combination with Pembrolizumab",
+          "type": "EXPERIMENTAL",
+          "description": "Participants 12 years or older with CPI refractory, advanced/metastatic melanoma with a PD-L1 TPS of ≥1% who have had progression on at least 1 prior CPI-based systemic therapy in the advanced/metastatic disease setting will be administered mRNA-4359 at an applicable dose in combination with pembrolizumab.",
+          "interventionNames": [
+            "Biological: mRNA-4359",
+            "Biological: Pembrolizumab"
+          ]
+        },
+        {
+          "label": "Pharmacodynamic (PD) Arm (Group 1): mRNA-4359 in Combination with Pembrolizumab",
+          "type": "EXPERIMENTAL",
+          "description": "Participants with locally advanced or metastatic, and CPI refractory melanoma will be administered mRNA-4359 at an applicable dose in combination with pembrolizumab.",
+          "interventionNames": [
+            "Biological: mRNA-4359",
+            "Biological: Pembrolizumab"
+          ]
+        },
+        {
+          "label": "PD Arm (Group 2): mRNA-4359 in Combination with Pembrolizumab",
+          "type": "EXPERIMENTAL",
+          "description": "Participants with locally advanced or metastatic, and CPI refractory NSCLC with a PD-L1 TPS ≥1% will be administered mRNA-4359 at an applicable dose in combination with pembrolizumab.",
+          "interventionNames": [
+            "Biological: mRNA-4359",
+            "Biological: Pembrolizumab"
+          ]
+        }
+      ],
+      "primaryOutcomes": [
+        {
+          "measure": "Arms 1a and 1b: Maximum Tolerated Dose (MTD) or Recommended Dose for Expansion (RDE) of mRNA-4359",
+          "timeFrame": "Days 1-21 (Cycle 1)"
+        },
+        {
+          "measure": "Arms 1, 2a, 2b, and 2c: Number of Participants with Dose Limiting Toxicities (DLTs)",
+          "timeFrame": "Days 1-21 (Cycle 1)"
+        },
+        {
+          "measure": "Arms 1, 2a, 2b, and 2c: Number of Participants with Adverse Events (AEs), AE of Special Interest (AESIs), and Serious AEs (SAEs)",
+          "timeFrame": "Up to 27 months"
+        },
+        {
+          "measure": "Arm 2d: Objective Response Rate (ORR) Based on Blinded Independent Central Review (BICR) Per Response Evaluation Criteria in Solid Tumors Version 1.1 (RECIST v1.1)",
+          "timeFrame": "Day 1 up to 60 months"
+        }
+      ],
+      "hasResults": false,
+      "countries": [
+        "United States",
+        "Australia",
+        "Germany",
+        "Italy",
+        "Poland",
+        "Spain",
+        "United Kingdom"
+      ],
+      "url": "https://clinicaltrials.gov/study/NCT05533697"
+    },
+    {
+      "id": "NCT07652242",
+      "title": "Phase 1 Study of a Self-amplifying RNA Vaccine (ITI-5000) in Stage 2-3 Triple Negative Breast Cancer",
+      "sponsor": "Immunomic Therapeutics, Inc.",
+      "status": "RECRUITING",
+      "whyStopped": "",
+      "updated": "2026-11-09",
+      "start": {
+        "date": "2026-07-14",
+        "type": "ACTUAL"
+      },
+      "primaryCompletion": {
+        "date": "2028-02",
+        "type": "ESTIMATED"
+      },
+      "completion": {
+        "date": "2028-08",
+        "type": "ESTIMATED"
+      },
+      "phase": [
+        "PHASE1"
+      ],
+      "enrollment": {
+        "count": 60,
+        "type": "ESTIMATED"
+      },
+      "design": {
+        "allocation": "NON_RANDOMIZED",
+        "interventionModel": "PARALLEL",
+        "interventionModelDescription": "This is a Phase 1, multicenter, open-label, parallel assignment clinical trial evaluating the safety, tolerability, and immunogenicity of ITI-5000, a self-amplifying RNA vaccine, administered alone or in combination with pembrolizumab plus either OIaparib or Capecitabine in adults with stage II-III triple-negative breast cancer (TNBC) who have completed standard curative-intent therapy; participants are assigned to either low- or high-dose ITI-5000 monotherapy cohorts (Part A) or to a combination therapy cohort with pembrolizumab at the maximum tolerated dose determined from Part A (Part B), with the primary objectives focused on dose-limiting toxicities and safety, and exploratory endpoints assessing immune response.",
+        "primaryPurpose": "TREATMENT",
+        "maskingInfo": {
+          "masking": "SINGLE",
+          "whoMasked": [
+            "OUTCOMES_ASSESSOR"
+          ]
+        }
+      },
+      "conditions": [
+        "Triple Negative Breast Cancer (TNBC)"
+      ],
+      "interventions": [
+        {
+          "type": "BIOLOGICAL",
+          "name": "ITI-5000 mRNA Vaccine",
+          "description": "Participants receive ITI-5000. Cohort 1 will receive 1 ug of vaccine",
+          "armGroupLabels": [
+            "Part A, Cohort 1 ITI-5000 1 µg Monotherapy"
+          ]
+        },
+        {
+          "type": "DRUG",
+          "name": "Pembrolizumab",
+          "description": "Participants will receive ITI-5000 as an intramuscular injection every 21 days for 3 doses. Participants will also receive pembrolizumab as per the FDA-approved package insert.",
+          "armGroupLabels": [
+            "Part B ITI-5000 and Pembrolizumab + Olaparib",
+            "Part B ITI-5000 and Pembrolizumab+Capecitabine"
+          ]
+        },
+        {
+          "type": "BIOLOGICAL",
+          "name": "ITI-5000 mRNA Vaccine",
+          "description": "Participants receive ITI-5000. Cohort 2 will receive 10 ug of vaccine",
+          "armGroupLabels": [
+            "Part A, Cohort 2 ITI-5000 10 µg Monotherapy"
+          ]
+        },
+        {
+          "type": "DRUG",
+          "name": "Olaparib",
+          "description": "Participants will receive Olaparib in combination with Pembrolizumab and ITI-5000",
+          "armGroupLabels": [
+            "Part B ITI-5000 and Pembrolizumab + Olaparib"
+          ]
+        },
+        {
+          "type": "DRUG",
+          "name": "Capecitabine",
+          "description": "Participants will receive Capecitabine in combination with Pembrolizumab and ITI-5000",
+          "armGroupLabels": [
+            "Part B ITI-5000 and Pembrolizumab+Capecitabine"
+          ]
+        },
+        {
+          "type": "BIOLOGICAL",
+          "name": "ITI-5000 MTD (Maximum Tolerated Dose)",
+          "description": "Participants receive ITI-5000 Maximum Tolerated Dose (MTD)",
+          "armGroupLabels": [
+            "Part A, Cohort 3 ITI-5000 Monotherapy Expansion",
+            "Part B ITI-5000 and Pembrolizumab + Olaparib",
+            "Part B ITI-5000 and Pembrolizumab+Capecitabine"
+          ]
+        }
+      ],
+      "arms": [
+        {
+          "label": "Part A, Cohort 1 ITI-5000 1 µg Monotherapy",
+          "type": "EXPERIMENTAL",
+          "description": "Participants receive ITI-5000 1 µg as an intramuscular injection every 28 days for 3 doses.",
+          "interventionNames": [
+            "Biological: ITI-5000 mRNA Vaccine"
+          ]
+        },
+        {
+          "label": "Part A, Cohort 2 ITI-5000 10 µg Monotherapy",
+          "type": "EXPERIMENTAL",
+          "description": "Participants receive ITI-5000 10 µg as an intramuscular injection every 28 days for 3 doses.",
+          "interventionNames": [
+            "Biological: ITI-5000 mRNA Vaccine"
+          ]
+        },
+        {
+          "label": "Part B ITI-5000 and Pembrolizumab + Olaparib",
+          "type": "EXPERIMENTAL",
+          "description": "Participants receive ITI-5000 at the dose determined in Part A as an injection every 21 days for 3 doses. Participants will also receive pembrolizumab 200 mg or 400 mg per FDA-approved package insert plus Olaparib.",
+          "interventionNames": [
+            "Drug: Pembrolizumab",
+            "Drug: Olaparib",
+            "Biological: ITI-5000 MTD (Maximum Tolerated Dose)"
+          ]
+        },
+        {
+          "label": "Part A, Cohort 3 ITI-5000 Monotherapy Expansion",
+          "type": "EXPERIMENTAL",
+          "description": "Participants receive ITI-5000 Maximum Tolerated Dose (MTD) as an intramuscular injection every 28 days for three doses",
+          "interventionNames": [
+            "Biological: ITI-5000 MTD (Maximum Tolerated Dose)"
+          ]
+        },
+        {
+          "label": "Part B ITI-5000 and Pembrolizumab+Capecitabine",
+          "type": "EXPERIMENTAL",
+          "description": "Participants receive ITI-5000 at the dose determined in Part A as an injection every 21 days for three doses. Participants also receive Pembrolizumab 200 mg or 400 mg per FDA-approved package insert plus Capecitabine",
+          "interventionNames": [
+            "Drug: Pembrolizumab",
+            "Drug: Capecitabine",
+            "Biological: ITI-5000 MTD (Maximum Tolerated Dose)"
+          ]
+        }
+      ],
+      "primaryOutcomes": [
+        {
+          "measure": "Incidence of Dose-Limiting Toxicities as Assessed by CTCAE v5.0",
+          "timeFrame": "21-28 days after the first vaccination"
+        }
+      ],
+      "hasResults": false,
+      "countries": [
+        "United States"
+      ],
+      "url": "https://clinicaltrials.gov/study/NCT07652242"
+    }
+  ]
+}

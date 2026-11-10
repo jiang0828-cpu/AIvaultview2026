@@ -1,0 +1,51 @@
+// Research interpretations are kept separate from retrieved registry facts.
+export const programs = [
+  ['V940', 'intismeran|mRNA-4157|V940', 'Moderna / Merck', '个体化新抗原', '肌内 / LNP', '肿瘤/正常配对测序、HLA与新抗原设计；生产身份链和交付时限是关键'],
+  ['BNT122', 'autogene|RO7198457', 'BioNTech / Roche-Genentech', '个体化新抗原', '静脉 / RNA-LPX', 'CRC、PDAC、黑色素瘤与膀胱癌必须分别评价，不能沿用同一疗效结论'],
+  ['BNT111', 'BNT111|Lipo-MERIT', 'BioNTech / Regeneron', '共享肿瘤抗原', '静脉 / RNA-LPX', '抗原表达与免疫逃逸；历史基准ORR检验不等于随机对照优效'],
+  ['BNT112', 'BNT112', 'BioNTech', '共享肿瘤抗原', '静脉 / RNA-LPX', '注册终止原因是申办方决定，不能自动认定安全性失败'],
+  ['BNT113', 'BNT113', 'BioNTech', '病毒抗原 HPV16', '静脉 / RNA-LPX', 'HPV16与PD-L1门槛；PFS未达终点但OS尚未成熟'],
+  ['BNT115', 'BNT115|W_ova1', 'BioNTech', '共享肿瘤抗原', '静脉 / RNA-LPX', '卵巢癌项目；历史研究终止，无后续研究计划，不列为活跃新项目'],
+  ['BNT116', 'BNT116', 'BioNTech / Regeneron', '共享肿瘤抗原', '静脉 / RNA-LPX', 'NSCLC不同治疗线和联合方案不是同一队列'],
+  ['CVGBM', 'CVGBM|CV09050101', 'CureVac（历史申办方名）', '共享肿瘤抗原', 'mRNA制剂；给药细节见方案', '术后GBM一期免疫原性不能等同OS改善；企业归属见核验缺口'],
+  ['CV9104', 'CV9104', 'CureVac（历史）', '共享肿瘤抗原', 'RNActive / 皮内', '历史前列腺癌对照研究；保留失败与终止背景'],
+  ['CV9202', 'CV9202|BI.?1361849', 'CureVac / Boehringer（历史合作）', '共享肿瘤抗原', 'RNActive / 皮内', '非新抗原个体化产品，需和现代平台区分'],
+  ['mRNA-2752', 'mRNA.?2752', 'Moderna', '免疫调节蛋白', '肿瘤内 / LNP', '编码OX40L、IL-23、IL-36γ，不应计作新抗原疫苗'],
+  ['mRNA-4359', 'mRNA.?4359', 'Moderna', '共享肿瘤抗原 / 免疫调节抗原', '肌内 mRNA', '一线黑色素瘤12例与经治耐药队列分开；高ORR不能跨试验比较'],
+  ['ITI-5000', 'ITI.?5000', 'Immunomic Therapeutics, Inc.', '共享肿瘤抗原 / saRNA', '肌内 / saRNA制剂', '2026首人体注册，无结果，不把预计入组当已给药；非个体化产品'],
+  ['mRNA-2416', 'mRNA.?2416', 'Moderna', '免疫调节蛋白', '肿瘤内 / LNP', 'OX40L表达型，研究终止与机制验证分别记录'],
+  ['V941', 'V941|mRNA.?5671', 'Merck / Moderna（历史合作）', '共享突变抗原 KRAS', 'mRNA；递送细节待核验', '商业原因终止不能直接外推KRAS抗原路线无效'],
+  ['SAR441000', 'SAR441000', 'Sanofi / BioNTech（历史合作）', '免疫调节蛋白', '肿瘤内 mRNA', '局部细胞因子表达与系统性抗肿瘤疫苗分类分开'],
+  ['BNT141', 'BNT141', 'BioNTech', '抗体表达', '静脉 mRNA', '编码CLDN18.2抗体，属于mRNA蛋白表达，不是肿瘤疫苗'],
+  ['BNT142', 'BNT142', 'BioNTech', '抗体表达', '静脉 mRNA', '编码双特异性抗体；研究终止不等于整个mRNA领域失败'],
+  ['BNT151', 'BNT151', 'BioNTech', '免疫调节蛋白', '静脉 mRNA', 'IL-2通路免疫调节，与疫苗机制及毒性评价不同'],
+  ['EVM16', 'EVM16', '云顶新耀 / Everest', '个体化新抗原', '肌内 mRNA制剂', '一期早期9例是免疫原性/安全性样本，不是78例疗效结果'],
+  ['EVM14', 'EVM14', '云顶新耀 / Everest', '共享肿瘤抗原', 'mRNA制剂', '不同联合试验分列，IND与入组不能当临床获益'],
+  ['LK101', 'LK101', '北京立康生命', 'ex vivo DC / 个体化抗原', '体外处理DC后回输', '注册明确neoantigen-pulsed DC，不能直接视作体内LNP递送'],
+  ['WGc-043', 'WGc.?043|EBV mRNA vaccine', 'WestGene；逐研究申办方见注册', '病毒抗原 EBV', 'mRNA制剂', 'EBV相关肿瘤与HPV项目区分，IIT与IND注册不重复合并'],
+  ['JCXH-211', 'JCXH.?211', 'Immorna / 嘉晨西海', '免疫调节蛋白 / saRNA', '肿瘤内或静脉；逐方案确认', 'IL-12表达与剂型给药差异；一项试验低入组终止不等于产品终止'],
+  ['SYS6026', 'SYS6026', '石药集团', '病毒抗原 HPV', 'mRNA制剂', 'HSIL属于癌前病变相邻范围，不并入浸润癌临床疗效'],
+  ['LY01620', 'LY01620', '绿叶制药', '病毒抗原 HPV16', 'mRNA制剂', '癌前病变、病毒清除和浸润癌终点分别判断'],
+  ['ABO2102', 'ABO2102', '艾博生物 / Abogen', '共享突变抗原 KRAS', '肌内 mRNA', '两个不同联合研究分别入账；IND不等上市或已证实有效'],
+  ['YKYY031', 'YKYY031', '远大医药（企业来源）；申办方见注册', '共享肿瘤抗原', '肌内 / LNP', 'HLA-A*11:01及抗原限制；不能视为无限制泛癌产品'],
+  ['GRANITE', 'GRANITE|GRT-C901|GRT-R902', 'Gritstone（历史申办方）', '异源prime-boost / saRNA', '腺病毒prime + saRNA boost', '混合平台相邻范围；不能把全部结果归因于mRNA单药；公司破产与每项试验状态分开'],
+  ['BNT211 / CARVac', 'BNT211|CLDN6', 'BioNTech', 'CAR-T辅助RNA疫苗', 'CAR-T + CLDN6 RNA-LPX', '相邻范围，CARVac不是体内mRNA直接生成CAR-T'],
+  ['RNA-LP GBM', 'RNA.?LP|RNA.?lipid|total tumor|RLP', 'University of Florida / 学术团队', '全肿瘤RNA', 'RNA脂质颗粒', 'RNA混合载荷和抗原定义与序列设计新抗原产品不同'],
+].map(([name,pattern,company,route,delivery,note])=>({name,pattern,company,route,delivery,note}));
+
+export const technology = [
+  {title:'分类采用两条轴：编码什么，以及如何递送',detail:'个体化新抗原、共享肿瘤抗原、病毒抗原、免疫调节蛋白和抗体表达是载荷轴；LNP、RNA-LPX、局部给药、ex vivo DC是递送轴。saRNA/circRNA属于RNA结构轴，不能与载荷类别相互替代。',implication:'BD资料首先写清载荷、剂型、给药途径、作用细胞和临床阶段，防止把RNA项目数量误当疫苗数量。',sourceIds:['REG-NCT05886439','REG-NCT03739931','REG-NCT04683939']},
+  {title:'抗原选择：突变存在不代表能产生有效T细胞反应',detail:'研究设计需同时审查肿瘤纯度、正常对照、克隆性、RNA表达、HLA分型、抗原加工呈递及异质性。TCR扩增是机制证据；免疫反应、肿瘤缩小与生存终点必须分开。',implication:'可合作验证样本前处理、WES/RNA-seq/HLA检测与算法可追溯性；预测算法的分数本身不能作为临床有效性结论。',sourceIds:['REG-NCT04161755','REG-NCT03313778']},
+  {title:'制造质控：患者级批次仍需要可比性与效力放行',detail:'建议的CMC工作包包括序列身份、RNA完整性、加帽/poly(A)、双链RNA及残留杂质、粒径/PDI、包封率、效力、无菌/内毒素、稳定性。每项方法必须按具体产品开发确认，不能套用统一合格线。',implication:'检测企业可切入方法开发、转移和桥接验证；药物放行与临床样本检测为不同资质边界。EMA现有2025草案正式范围是传染病疫苗，原则借鉴不等于肿瘤药物适用法规。',sourceIds:['S-EMA']},
+  {title:'TAT与身份链：制造成功率之外还缺哪些数据',detail:'从筛查、合格组织、序列可用、成功设计、批次放行到首次给药逐层记录损耗。制造成功率的分母可能仅为随机分配患者，不能代表所有筛查患者均能及时治疗。',implication:'要求合作方给出患者级交付时间分布、排除原因、等待期间复发、重制率和成本；在没有公开数据前不作商业毛利预测。',sourceIds:['REG-NCT05933577','REG-NCT05968326']},
+  {title:'MRD：预后富集与疗效预测是两个问题',detail:'ctDNA阳性可富集高复发风险，但是否预测某种疫苗的治疗获益需要随机交互作用或预设验证。CRC的阴性和终止结果不支持以“MRD阳性”直接作为疫苗有效的论据。',implication:'优先做研究性纵向采样、检测性能与终点桥接；不要包装为已批准的伴随诊断，也不要以ctDNA清除替代生存获益。',sourceIds:['REG-NCT04486378','REG-NCT04813627']},
+  {title:'递送前沿：靶向与局部表达必须共同评价暴露和毒性',detail:'延长RNA表达、调节先天免疫或提高淋巴器官摄取均可能改善药效，也可能增加炎症、非靶组织表达与重复给药风险。临床前肿瘤抑制不能直接外推患者疗效。',implication:'优先谈生物分布、暴露反应、免疫因子与重复给药检测；in vivo CAR、circRNA、saRNA分别建立证据层级。',sourceIds:['REG-NCT06781125','REG-NCT05262530']},
+];
+
+export const reviewFixes = [
+  {issue:'把阶段进展当成广泛有效或上市',revision:'V940更新为2026-10详细披露，ITT、mITT、分段HR分开；不写已批准，不外推其他癌种。',basis:'V940 III期正式披露与逐试验注册；OS及监管结论仍需后续验证'},
+  {issue:'只讲正面PDAC，遗漏CRC停止与BNT113阴性',revision:'显式列出BNT122 CRC停止、OS数值不平衡但无可用效应量，以及BNT113 PFS未达、OS继续。',basis:'2026-08-28 / 11-03 BioNTech更新与2026-10-13 BNT113正式披露'},
+  {issue:'把免疫原性或历史对照ORR当随机优效',revision:'EVM16 8/9只标免疫反应；PDAC反应者分析标非随机；BNT111主假设与随机校准臂区分。',basis:'AACR2026企业原文、Nature2025延长随访、ESMO原始摘要（访问限制照实记录）'},
+  {issue:'重复计数及混合样本量',revision:'药物—试验—队列—时间点分开；注册入组不等疗效集；PDAC2023/2025同队列；注册与公司口径冲突并列。',basis:'ClinicalTrials.gov API结构化记录与论文/正式披露的分析集'},
+  {issue:'把相邻技术与检测BD假设当已验证市场',revision:'DC、蛋白表达、CARVac、混合saRNA、癌前病变分层；MRD不是默认CDx；每项BD补待验证信息与行动。',basis:'注册干预细节、试验入排与终点；EMA2025草案范围说明'},
+];

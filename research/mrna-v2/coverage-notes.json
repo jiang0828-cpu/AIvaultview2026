@@ -1,0 +1,223 @@
+{
+  "asOf": "2026-11-10",
+  "retrievedOn": "2026-11-10",
+  "scope": "Targeted coverage supplement to registry.json; not an exhaustive global inventory.",
+  "registryMethod": {
+    "endpoint": "https://clinicaltrials.gov/api/v2/studies",
+    "pageSize": 100,
+    "additionalStudies": 12,
+    "deduplication": "NCT ID; all IDs already in registry.json excluded from registry-extra.json.",
+    "schema": "Same as registry.json: asOf, searches, studies. Study fields are mapped without interpretation from ClinicalTrials.gov API v2.",
+    "searchCounts": "searches.count is the raw API response count before relevance filtering and deduplication. All searches completed with nextPage=false.",
+    "dates": "Study updated means registry lastUpdatePostDateStruct.date, not the date of a clinical event or efficacy cutoff. Enrollment is a registry planning/actual enrollment field, never an efficacy-evaluable denominator.",
+    "statusRule": "Preserve registry status; display later corporate program decisions separately. A registry phase label PHASE2/PHASE3 does not prove the Phase 3 portion started."
+  },
+  "programs": [
+    {
+      "program": "Autogene cevumeran",
+      "aliases": ["BNT122", "RO7198457"],
+      "addedTrials": ["NCT05968326"],
+      "boundary": "core: individualized neoantigen mRNA cancer vaccine",
+      "setting": "Resected pancreatic ductal adenocarcinoma; randomized adjuvant vaccine + atezolizumab + mFOLFIRINOX versus mFOLFIRINOX.",
+      "delivery": "Intravenous RNA-lipoplex; distinguish from intramuscular LNP products.",
+      "statusNote": "API: ACTIVE_NOT_RECRUITING, updated 2026-09-09; Phase 2; estimated enrollment 260, not an efficacy analysis population.",
+      "sources": ["https://clinicaltrials.gov/study/NCT05968326"]
+    },
+    {
+      "program": "BI 1361849",
+      "aliases": ["CV9202", "BI1361849"],
+      "addedTrials": ["NCT03164772", "NCT01915524"],
+      "boundary": "core: shared tumor-associated antigen mRNA vaccine; historical program",
+      "payload": "Six NSCLC-associated antigens: MUC1, survivin, NY-ESO-1, 5T4, MAGE-C2, MAGE-C1.",
+      "delivery": "RNActive platform; intradermal administration. NCT03164772 includes PharmaJet Tropis device. Do not normalize as LNP.",
+      "statusNote": "NCT03164772 COMPLETED; NCT01915524 TERMINATED for slow recruitment in stratum 3. Trial completion does not establish a currently active commercial development program.",
+      "sources": ["https://clinicaltrials.gov/study/NCT03164772", "https://clinicaltrials.gov/study/NCT01915524", "https://cdn.clinicaltrials.gov/large-docs/72/NCT03164772/Prot_000.pdf", "https://www.cancer.gov/publications/dictionaries/cancer-drug/def/mrna-derived-lung-cancer-vaccine-bi-1361849"]
+    },
+    {
+      "program": "BNT211 / CARVac",
+      "aliases": ["CLDN6 CAR-T", "CLDN6 uRNA-LPX/CLDN6 modRNA-LPX"],
+      "addedTrials": ["NCT04503278"],
+      "boundary": "adjacent: ex vivo CAR-T plus an RNA vaccine that amplifies CAR-T; not in vivo CAR generation and not vaccine monotherapy",
+      "delivery": "CLDN6 CAR-T intravenous infusion; CLDN6-encoding RNA-LPX intravenous injections.",
+      "statusNote": "API ACTIVE_NOT_RECRUITING (2026-06-18). BioNTech Q3 2026 states enrollment complete, CARVac treatment/follow-up ongoing and no further clinical development currently planned. Both facts must remain visible.",
+      "sources": ["https://clinicaltrials.gov/study/NCT04503278", "bnt211-q3-2026"]
+    },
+    {
+      "program": "GRANITE",
+      "aliases": ["GRANITE-001", "GRT-C901/GRT-R902", "sapecmeran autogene (RNA boost component)"],
+      "addedTrials": ["NCT05141721", "NCT03639714", "NCT05456165"],
+      "boundary": "core RNA-containing heterologous regimen: personalized neoantigen adenoviral prime plus saRNA boost; separate from conventional mRNA-only vaccines",
+      "delivery": "GRT-C901: replication-defective chimpanzee adenovirus 68; GRT-R902: self-amplifying RNA encapsulated in LNP. Intramuscular prime/boost; not two names for the same product.",
+      "statusNote": "API: NCT05141721 ACTIVE_NOT_RECRUITING, last updated 2025-05-16; NCT03639714 COMPLETED; NCT05456165 WITHDRAWN, actual enrollment 0, due to reprioritization. Gritstone entered Chapter 11 in 2024 and a court sale was approved; no unverified inference that every trial is terminated or that the successor is currently conducting development.",
+      "phaseCaution": "NCT05141721 records PHASE2 and PHASE3 and estimated enrollment 700. This planned registration description is not evidence that Phase 3 began or 700 participants were treated.",
+      "sources": ["https://clinicaltrials.gov/study/NCT05141721", "https://clinicaltrials.gov/study/NCT03639714", "https://clinicaltrials.gov/study/NCT05456165", "granite-protocol", "gritstone-sec", "gritstone-court"]
+    },
+    {
+      "program": "Autologous total-tumor RNA-LP vaccine",
+      "aliases": ["RNA-LPs", "DOTAP liposome vaccine"],
+      "addedTrials": ["NCT04573140"],
+      "boundary": "core: whole-tumor RNA approach; not selected-mutation neoantigen mRNA vaccine",
+      "payload": "Autologous total tumor mRNA plus pp65 full-length LAMP mRNA.",
+      "delivery": "DOTAP liposomes; intravenous RNA-loaded lipid particles. Adult newly diagnosed GBM and pediatric high-grade glioma strata must be kept distinct.",
+      "statusNote": "API RECRUITING, updated 2026-10-30; Phase 1; estimated enrollment 28. Primary purpose includes manufacturing feasibility, safety and MTD, not a confirmed survival benefit.",
+      "sources": ["https://clinicaltrials.gov/study/NCT04573140"]
+    },
+    {
+      "program": "BNT115",
+      "aliases": ["W_ova1 Vaccine", "OLIVIA-UMCG-01"],
+      "addedTrials": ["NCT04163094"],
+      "boundary": "core: shared ovarian tumor-associated antigen mRNA vaccine; historical terminated study",
+      "delivery": "Three ovarian-cancer TAA RNA-LPX products; intravenous administration with neoadjuvant/adjuvant chemotherapy.",
+      "statusNote": "API TERMINATED for failure to reach the target evaluable population despite extended recruitment; actual enrollment 8. BioNTech 2023 20-F says 10 recruited, 8 dosed, follow-up completed June 2023 and no follow-up studies planned. Keep recruited/dosed/registry-enrolled counts separate.",
+      "sources": ["https://clinicaltrials.gov/study/NCT04163094", "bnt115-20f"]
+    },
+    {
+      "program": "ABO2102",
+      "aliases": ["KRAS neoantigen mRNA vaccine"],
+      "addedTrials": ["NCT06577532", "NCT07455617"],
+      "boundary": "core: shared mutant-KRAS neoantigen mRNA vaccine; do not merge its two distinct protocols",
+      "delivery": "Intramuscular mRNA vaccination. Lipid formulation details not inferred from platform branding.",
+      "statusNote": "API: both RECRUITING. NCT06577532 EARLY_PHASE1 (56 estimated, toripalimab); NCT07455617 PHASE1 (101 estimated, sintilimab). Sponsor's 2025 dual IND announcement is authorization to test, not marketing approval or clinical efficacy.",
+      "sources": ["https://clinicaltrials.gov/study/NCT06577532", "https://clinicaltrials.gov/study/NCT07455617", "abogen-ind"]
+    },
+    {
+      "program": "YKYY031",
+      "aliases": ["YKYY031 for injection"],
+      "addedTrials": ["NCT07631793"],
+      "boundary": "core: shared/multi-antigen mRNA vaccine; separate from personalized ZY008",
+      "delivery": "LNP using proprietary cationic lipid YK-009; intramuscular injection per registry.",
+      "statusNote": "API RECRUITING, updated 2026-10-13; Phase 1; 76 estimated. HLA-A*11:01 plus target-antigen selection restricts eligibility; not an unrestricted pan-cancer vaccine. Primary endpoints are DLT/TEAE/SAE.",
+      "sources": ["https://clinicaltrials.gov/study/NCT07631793", "ykyy031-ind"]
+    },
+    {
+      "program": "LY01620",
+      "aliases": [],
+      "addedTrials": [],
+      "boundary": "adjacent clinical indication: HPV16-positive cervical HSIL (precancer); HPV-associated solid-tumor development remains exploratory in cited announcement",
+      "delivery": "mRNA encoding HPV16 E6/E7; proprietary LNP per 2024 company disclosure.",
+      "statusNote": "Exact-name ClinicalTrials.gov API search returned 0, not proof of no trials. Luye 2026-08-20 announced a Chinese Phase 2 HSIL study would start; do not convert 'would start' into recruiting or completed Phase 2. Company reports Phase 1 HPV clearance near 90%, but supplies no public denominator/CI in that announcement; do not chart as confirmed tumor response or compare with ORR.",
+      "sources": ["ly01620-phase2", "ly01620-ind"]
+    },
+    {
+      "program": "ZY008",
+      "aliases": [],
+      "addedTrials": [],
+      "boundary": "core: personalized mRNA vaccine in advanced solid tumors; separately registered outside ClinicalTrials.gov",
+      "externalRegistry": "ChiCTR2600117499",
+      "statusNote": "ChiCTR original-page search index identifies a prospective registration dated 2026-01-26 and single-arm design. Direct fetch returned HTTP 405. No NCT ID, sponsor, delivery formulation, recruiting status, enrollment or results are invented.",
+      "sources": ["zy008-chictr"]
+    }
+  ],
+  "exclusions": [
+    {
+      "id": "NCT04156243",
+      "trigger": "BNT211 OR CARVac",
+      "reason": "API returned CD19 CARvac T cells in B-cell malignancies. This is not BioNTech BNT211/CLDN6 RNA CARVac; no demonstrated administered mRNA vaccine in retrieved record. Excluded instead of matching on CARvac spelling alone."
+    },
+    {
+      "trigger": "GRANITE OR GRT-C901 OR GRT-R902 exploratory search",
+      "reason": "Broad GRANITE search also finds non-oncology devices, observational studies, GI drugs and screening-only protocols. Final saved searches use exact GRT identifiers; only interventional RNA-containing cancer-vaccine trials retained."
+    }
+  ],
+  "primarySources": [
+    {
+      "id": "bnt211-q3-2026",
+      "title": "BioNTech Q3 2026 interim report, Oncology Cell Therapy Product Candidates, p49",
+      "url": "https://www.sec.gov/Archives/edgar/data/1776985/000177698526000081/bntxq32026ex991quarterlyre.htm",
+      "periodEnd": "2026-09-30",
+      "locator": "BNT211, Phase 1 Clinical Trial in CLDN6-Positive Relapsed or Refractory Solid Tumors; HTML lines 1687-1693",
+      "quote": "There are currently no plans for further clinical development of BNT211.",
+      "interpretation": "Corporate development decision; does not mean all treatment or follow-up stopped."
+    },
+    {
+      "id": "bnt115-20f",
+      "title": "BioNTech 2023 Form 20-F filed 2024-03-20, BNT115 section, printed p92 / PDF p95",
+      "url": "https://investors.biontech.de/static-files/f4259c4a-2b97-409b-8d1a-0d7997c3c25e",
+      "publicationDate": "2024-03-20",
+      "locator": "v. BNT115 for the Treatment of Ovarian Cancer",
+      "quote": "No follow-up studies are planned with BNT115.",
+      "interpretation": "Historical program closure with completed follow-up; not a newly recruiting ovarian pipeline asset."
+    },
+    {
+      "id": "gritstone-sec",
+      "title": "Gritstone S-8 POS, explanatory note",
+      "url": "https://www.sec.gov/Archives/edgar/data/1656634/000119312525067153/d940507ds8pos.htm",
+      "publicationDate": "2025-03-28",
+      "eventDate": "2024-10-10",
+      "locator": "EXPLANATORY NOTE; HTML line 168",
+      "quote": "the Company filed a voluntary petition for relief under Chapter 11",
+      "interpretation": "Primary corporate confirmation of bankruptcy filing; do not use an old clinical registry status as corporate solvency evidence."
+    },
+    {
+      "id": "gritstone-court",
+      "title": "Gritstone Chapter 11, Docket 324: notice of final asset purchase agreement",
+      "url": "https://www.veritaglobal.net/gritstone/document/2412305241231000000000001",
+      "publicationDate": "2024-12-31",
+      "eventDate": "2024-12-23",
+      "locator": "Docket 324, p1, notice of court order Docket 293 and Seattle Project Corp purchase agreement",
+      "quote": "the Court entered the Order (A) Approving the Sale",
+      "interpretation": "Court-approved asset sale; current trial operations by the buyer were not verified."
+    },
+    {
+      "id": "granite-protocol",
+      "title": "Clinical Study Protocol GO-004 v3.1",
+      "url": "https://cdn.clinicaltrials.gov/large-docs/14/NCT03639714/Prot_000.pdf",
+      "locator": "p30/128, description of ChAdV68 and GRT-R902",
+      "quote": "The SAM is then formulated using lipid nanoparticles (LNPs)",
+      "interpretation": "Original protocol distinguishes adenovirus prime from alphavirus-derived self-amplifying RNA/LNP boost."
+    },
+    {
+      "id": "abogen-ind",
+      "title": "Abogen Received Dual IND Approvals for KRAS mRNA Vaccine in China and the United States",
+      "url": "https://abogenbio.com/news/company/news2025/236.html",
+      "publicationDate": "2025-08-04",
+      "locator": "Opening paragraphs and About ABO2102",
+      "quote": "targeting five common mutations",
+      "interpretation": "Company describes China IND and US May 2025 IND clearance; clinical outcomes are not supplied."
+    },
+    {
+      "id": "ykyy031-ind",
+      "title": "Youcare announcement 2025-057: YKYY031 clinical trial authorization",
+      "url": "https://static.cninfo.com.cn/finalpage/2025-12-13/1224872452.PDF",
+      "publicationDate": "2025-12-13",
+      "locator": "p1-2, Other information: mRNA vaccine and YK-009 LNP",
+      "quote": "注射用 YKYY031 是一种通用型 mRNA 肿瘤疫苗",
+      "interpretation": "Exchange-filed company disclosure supports mRNA/LNP classification; not a marketing authorization."
+    },
+    {
+      "id": "ly01620-phase2",
+      "title": "Luye: LY01620 to enter Chinese Phase 2 study",
+      "url": "https://www.luye.cn/lvye/view.php?id=1956",
+      "publicationDate": "2026-08-20",
+      "locator": "Opening two paragraphs: planned Phase 2 and HPV16-positive HSIL population",
+      "quote": "即将在中国开展Ⅱ期临床试验",
+      "interpretation": "Planned Phase 2 in precancer; no phase-2 results or denominator-supported tumor response data."
+    },
+    {
+      "id": "ly01620-ind",
+      "title": "Luye: mRNA therapeutic HPV vaccine LY01620 approved for clinical trials in China",
+      "url": "https://www.luye.cn/lvye_en/view.php?id=2275",
+      "publicationDate": "2024-08-13",
+      "locator": "Opening section describing Jimai Biological Technology, HPV16 HSIL and delivery",
+      "quote": "delivery system for lipid nanoparticles (LNPs)",
+      "interpretation": "Company primary source for delivery classification and clinical authorization."
+    },
+    {
+      "id": "zy008-chictr",
+      "title": "ChiCTR2600117499, version 1.0",
+      "url": "https://www.chictr.org.cn/hvshowproject.html?id=293672&v=1.0",
+      "publicationDate": "2026-01-26",
+      "locator": "Primary registry page indexed text: title, prospective registration date, single-arm design and objectives",
+      "quote": "Personalized mRNA Cancer Vaccine ZY008",
+      "access": "Search engine exposed original registry text; direct web open returned HTTP 405. Only exposed fields used.",
+      "interpretation": "Non-NCT registration lead, retained with access limitation; no conflation with YKYY031."
+    }
+  ],
+  "remainingGaps": [
+    "ClinicalTrials.gov exact LY01620 search found no records; China CDE/ChiCTR protocol identifiers, complete Phase 1 denominators and Phase 2 recruitment need direct verification.",
+    "ZY008 ChiCTR direct page blocked with HTTP 405; current status, sponsor, route, enrollment and results remain unverified.",
+    "Post-sale ownership and operational continuity of individual GRANITE trials are not established by the cited bankruptcy and sale documents.",
+    "This supplement does not establish a complete ex vivo DC-mRNA, circRNA or in vivo CAR inventory; no absence claim is made.",
+    "No newly extracted efficacy or safety estimates are imputed from registry enrollment, trial design, IND clearance or corporate program status."
+  ]
+}

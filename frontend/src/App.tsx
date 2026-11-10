@@ -55,6 +55,7 @@ import {
   readProjectFilters,
 } from "./projectFilters";
 import { LiteratureSpace, isLiteratureProject } from "./LiteratureSpace";
+import { MrnaResearchSpace, isMrnaProject } from "./MrnaResearchSpace";
 import {
   isCastleProject,
   isProject,
@@ -1229,6 +1230,12 @@ function Shell({ role, items, loading, error, reload, logout }: ShellProps) {
             ) : (
               <Navigate to="/home" replace />
             )
+          ) : project && isMrnaProject(project) ? (
+            <MrnaResearchSpace
+              key={project.id}
+              project={project}
+              onBack={() => navigate("/home")}
+            />
           ) : project && isLiteratureProject(project) ? (
             <LiteratureSpace
               key={project.id}
