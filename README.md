@@ -1,0 +1,112 @@
+# 藏览 / VaultView
+
+面向个人、小团队和对外展示场景的内容空间。支持受控访问、30 天会话、六个固定场景模块、1–2 个 topics 标签、分层目录、视频、幻灯片、思维导图、长图、PDF、Markdown，以及独立管理员内容管理。原品牌“钥藏 / VaultFolio”已优化为“藏览 / VaultView”，保留“收藏”能力，同时突出浏览、展示和分享。
+
+资料库的六个场景是：系统管理、工具方法、生活场景、事业工作、兴趣爱好、其他模块。场景是资料的一级归属；每个程序或资料有 1–2 个 topics，例如 `AI`、`business`、`food&drink`、`health`。已有资料迁移时会保留在“其他模块”，管理员可以在内容管理中调整场景和标签。
+
+## 本地启动
+
+需要 Node.js 22.12+（本项目在 Node.js 24 上验证）与 npm。无需安装数据库或 Docker。
+
+```powershell
+npm install
+npm run setup
+npm run dev
+```
+
+打开初始化输出的地址，默认 http://localhost:5173。API 默认监听 `127.0.0.1:3001`；首次初始化若端口被占用，会自动选择空闲端口并写入 `.env`。首次安装需要网络下载 npm 包以及用于生成演示视频的开发依赖；初始化后，演示内容与媒体均在本地。
+
+`setup` 创建根目录 `.env`，随机生成访问密码、管理员密码与 JWT 密钥，然后生成 Prisma Client、应用迁移、生成本地示例媒体并写入示例内容。已有 `.env` 不会被覆盖；非空资料库不会重新植入示例内容。
+
+在本机查看 `.env` 中的 `SITE_PASSWORD` 或 `ADMIN_PASSWORD`，分别用于登录页的“访问资料库”和“管理员”。不要将 `.env` 提交或分享。密码只在后端读取，前端构建不包含密码或密钥。生产配置推荐使用 bcrypt 的 `SITE_PASSWORD_HASH`、`ADMIN_PASSWORD_HASH`，存在哈希时优先使用哈希。
+
+## 日常命令
+
+| 命令                                           | 用途                                   |
+| ---------------------------------------------- | -------------------------------------- |
+| `npm run dev`                                  | 同时启动前后端，任一退出时停止另一进程 |
+| `npm run dev:frontend` / `npm run dev:backend` | 分别启动                               |
+| `npm run build`                                | TypeScript 检查并构建前后端            |
+| `npm run typecheck`                            | 全项目类型检查                         |
+| `npm run lint`                                 | ESLint 检查                            |
+| `npm test`                                     | 在独立临时 SQLite 数据库上运行接口测试 |
+| `npm run db:migrate`                           | 应用已有迁移                           |
+| `npm run db:generate`                          | 重新生成 Prisma Client                 |
+| `npm run db:seed`                              | 为全空数据库添加演示内容               |
+| `npm run assets`                               | 重新生成本地 PNG、PDF、8 秒 MP4 样例   |
+| `npm run db:seed:literature`                    | 仅建立文人墨客空间，保留已有资料和编辑 |
+| `npm run db:seed:writers`                       | 补建文人墨客首批 100 位人物，不覆盖已有人物编辑 |
+| `npm run db:seed:castle`                         | 仅建立“爱的城堡”及五个生活板块，保留已有资料和编辑 |
+| `npm run start -w backend`                     | 运行已构建后端                         |
+
+修改数据模型后，在开发环境使用 `npm exec -w backend -- dotenv -e ../.env -- prisma migrate dev --name your_change` 创建新迁移，再提交迁移文件。SQLite 数据文件位于 `backend/prisma/dev.db`，相对数据库路径以 Prisma schema 所在目录为基准。
+
+## 文人墨客项目空间
+
+“兴趣爱好”下新增 `项目05｜文人墨客｜世界文学人物志`。空间地址为 `/home?project=<项目 ID>`，ID 由定向初始化命令输出，不依赖固定数据库序号。
+
+- 项目概览：专属书库封面、建设阶段、来源与资料统计。
+- 文学索引：100 位人物、8 个文学地域入口；按姓名、原文名、作品检索，组合时代、文学类型、内容标签筛选，支持姓名/出生年代排序和每页 24 位分页。条件写入 URL，可刷新恢复。
+- 人物档案：中文简介、生平与历史身份、代表作品及版本时间、时间线、文学特色、阅读建议、争议说明与逐条参考来源。详情地址为 `/home?project=<项目 ID>&view=index&writer=<人物 slug>`。
+- 项目文档：7 份资料，包含两份用户提供 Word 的完整正文与原件下载。
+- 建设路线：内容审校规范、技术风险、里程碑和后续验收要求。
+
+首批人物为重新整理的中文档案，不是对原文学百家 97 条人物/251 条作品记录的自动迁移。分布为中国 30、古希腊 10、英国与爱尔兰 15、法国与法语文学 12、德语文学 8、俄语文学 10、日本 8、意大利 7。文学地域不等于现代国籍，历史身份在各档案中单列。
+
+档案源数据位于 `backend/prisma/writers/`，由 Zod 校验字段完整性、1–2 个标签、作品说明、时间线、来源链接和支持范围。生卒无定论者保存为 `null`，写作/初刊/首演/身后出版分别标注；文字为原创整理与编辑导读，不含现代作品全文或未经许可肖像。状态统一为“资料核对版·待人工复核”，核对日期为 2026-11-10；自动数据测试不能替代文学史人工复核，也不承诺外部来源永久可用。
+
+更新现有库执行 `npm run db:generate`、`npm run db:migrate`、`npm run db:seed:writers`。人物存于独立 `LiteraryWriter` 表，经登录保护的 `GET /api/literature/:projectId/writers` 读取，仅允许对应文学项目。定向导入在事务中只补缺项，重复运行不覆盖数据库中的人工编辑；跨项目 ID 冲突会回滚。含人物的项目禁止直接删除，防止误删档案。后续修改源数据不会自动覆盖已有档案，需明确审校迁移。
+
+原始 Word 中的数量、技术“已实现/已验证”描述保留为来源项目历史记录，不代表当前系统完成了原站集成、人工审核或多媒体授权。
+
+项目数据定义位于 `backend/prisma/literature.ts`。两份 Word 的导入正文位于 `backend/prisma/literature-sources.ts`，原件及本地封面位于 `backend/media/projects/literature/`，沿用 `/media` 登录保护。`scripts/import-literature-documents.ps1 -SourceDirectory <原件目录>` 可重新提取段落和表格；它更新归档文件，不覆盖数据库中的人工编辑。
+
+`npm run db:seed:literature` 只补建缺失节点，重复运行不覆盖现有节点。常规全库 seed 也会补建本空间，但全库 seed 对其他示例项目保留其原有更新行为。
+
+## 内容与媒体
+
+管理员可新增目录、文章、视频、幻灯片、长图和 PDF，编辑标题、场景、topics、正文、父级、排序、媒体地址，或删除内容。数字越小排列越靠前；非空目录必须先移动或删除其内容。禁止循环目录关系。正文采用 Markdown，不执行原始 HTML。资料放入目录后会自动继承目录场景。
+
+本版本通过地址管理文件，不提供文件上传。把自己的媒体放入 `backend/media/`，表单填写对应的 `/media/文件名` 地址；目前本地地址限制为英文、数字、下划线、点、短横线和 `/`。图片序列每行一个地址。视频支持 MP4 和 HLS，HLS 必须同时提供可访问的播放列表及分片。受保护的本地媒体支持浏览器 Range 请求。
+
+也可填写 HTTP(S) URL。远程资源是否支持嵌入、HLS 跨域请求与下载由其服务端决定；藏览无法为外部公开 URL 增加访问保护。内置示例全部使用受保护的本地地址。PDF 使用浏览器原生查看器，并提供独立打开入口；移动端浏览器不支持内嵌 PDF 时可使用该入口。
+
+## 接口
+
+所有写入请求使用 `Content-Type: application/json`。错误统一为 `{ error: { code, message, fields?, retryAfter? } }`。
+
+| 方法与路径                 | 权限   | 行为                                                                       |
+| -------------------------- | ------ | -------------------------------------------------------------------------- |
+| `POST /api/auth/login`     | 公开   | `{ password, role?: "visitor" \| "admin" }`，返回 `{ role }` 并设置 Cookie |
+| `GET /api/auth/me`         | 登录   | 当前身份                                                                   |
+| `POST /api/auth/logout`    | 登录   | 清除 Cookie；请求体 `{}`                                                   |
+| `GET /api/contents`        | 登录   | 按顺序嵌套的内容树                                                         |
+| `GET /api/contents/:id`    | 登录   | 单项详情                                                                   |
+| `POST /api/contents`       | 管理员 | 创建，返回 201                                                             |
+| `PUT /api/contents/:id`    | 管理员 | 全量更新                                                                   |
+| `DELETE /api/contents/:id` | 管理员 | 删除，返回 204；请求体 `{}`                                                |
+| `POST /api/log`            | 登录   | `{ contentId, action }`，返回 201                                          |
+| `GET /media/*`             | 登录   | 私有媒体读取                                                               |
+| `GET /api/health`          | 公开   | 进程健康状态                                                               |
+
+内容字段：`title`、`type`（`folder/video/ppt/mindmap/longimage/pdf/text`）、`scene`（`system/tools/life/work/hobbies/other`）、`topics`（1–2 个字符串标签）、`description`、`parentId`、`sortOrder`、`coverUrl`、`fileUrl`、`hlsUrl`、`pdfUrl`、`imagesJson`（字符串数组）。视频至少填写 `fileUrl` 或 `hlsUrl`，幻灯片和长图至少提供一张图片，PDF 至少填写 `pdfUrl` 或 `fileUrl`。
+
+## “爱的城堡”生活项目
+
+“生活场景”下的 `爱的城堡` 是一个可持续编辑的家庭内容空间，包含五个可折叠板块：`“玩”起来-日程安排（日常）`、`“求知如”-生而为人（通识）`、`“解构世界”-科技特长（专业）`、`“奔赴热爱”-体育特长（运动）`、`“愉快假期”家庭游（游乐）`。每个板块自带一份 Markdown 表格模板；使用 `/home?project=<项目 ID>&folder=<板块 ID>` 可打开板块，管理员可继续新增资料。`npm run db:seed:castle` 只补建缺失节点，不覆盖已有编辑。
+
+AI 系列课程示例按“一稿多形态”组织：`课程文档｜…完整讲义`提供完整框架、八讲目标、示范、提示词、练习和验收，并在同一文档内用章节标签切换内容；`课件展示｜…`提供可翻页的 12 页 PPT 视觉导览；`长图展示｜…`提供 1080×3180 的纵向路线图；`动画视频｜…`提供约 32 秒、四章字幕动画。四种成品共享同一课程主题，左侧目录只保留四个形态入口。
+
+## 配置与运行边界
+
+- `.env.example` 描述可用配置。`FRONTEND_ORIGIN` 必须与浏览器实际地址一致（包括端口），用于拒绝非预期来源的写入；如开发端口被占用，请同时调整该配置和 Vite 启动端口。
+- 登录 Cookie 使用 HttpOnly、SameSite=Strict、30 天有效期；`NODE_ENV=production` 时增加 Secure，需 HTTPS。修改密码或哈希并重启后端会使对应身份的已有会话失效；退出只清除当前浏览器 Cookie。
+- 生产环境需同源托管 `frontend/dist`，将 `/api` 和 `/media` 转发到后端。开发时由 Vite 完成转发。项目不包含生产反向代理部署。
+- 密码连续错误 5 次后，同一 IP 在 15 分钟窗口内禁止登录。当前限流存储在单进程内存中，重启会清空。后端默认不信任代理转发 IP；使用反向代理时须按实际网络边界配置代理信任，不能直接信任任意 `X-Forwarded-For`。
+- 访问日志包含 IP、User-Agent、内容编号、动作与时间，保存在本地 SQLite；本版本没有统计页面或自动清理策略。`Config` 表为后续站点配置预留。
+- 备份时同时备份 SQLite 数据库与 `backend/media`；修改数据库提供方需要新的迁移及数据迁移，不能只修改连接字符串。
+- 不包含多用户注册、文件上传、媒体转换服务、云存储、Redis 或 Docker。`assets` 仅为开发演示生成静态样例，不是上传处理流水线。
+
+## 目录
+
+`frontend/src`：界面、阅读器与 API 客户端。`backend/src`：认证、校验、接口和启动配置。`backend/prisma`：数据模型、迁移与种子。`backend/test`：隔离数据库接口测试。`scripts`：本地初始化与样例资源生成。

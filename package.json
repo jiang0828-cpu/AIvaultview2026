@@ -1,0 +1,38 @@
+{
+  "name": "yaocang",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "setup": "node scripts/setup.mjs && npm run db:generate && npm run db:migrate && npm run assets && npm run db:seed",
+    "dev": "concurrently -k -n api,web \"npm run dev -w backend\" \"npm run dev -w frontend\"",
+    "dev:frontend": "npm run dev -w frontend",
+    "dev:backend": "npm run dev -w backend",
+    "build": "npm run build --workspaces",
+    "typecheck": "npm run typecheck --workspaces",
+    "test": "npm run test -w backend && npm run test:frontend",
+    "test:frontend": "tsx --test frontend/test/*.test.ts",
+    "lint": "eslint .",
+    "db:generate": "npm run db:generate -w backend",
+    "db:migrate": "npm run db:migrate -w backend",
+    "db:seed": "npm run db:seed -w backend",
+    "assets": "node scripts/assets.mjs",
+    "db:seed:literature": "tsx backend/prisma/init-literature.ts",
+    "db:seed:castle": "tsx backend/prisma/init-castle.ts",
+    "db:seed:writers": "tsx backend/prisma/init-writers.ts"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "typescript": "~5.8.3",
+    "eslint": "^9.25.1",
+    "typescript-eslint": "^8.31.0",
+    "@eslint/js": "^9.25.1",
+    "globals": "^16.0.0",
+    "sharp": "^0.34.1",
+    "pdf-lib": "^1.17.1",
+    "@ffmpeg-installer/ffmpeg": "^1.1.0"
+  }
+}

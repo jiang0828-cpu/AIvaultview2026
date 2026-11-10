@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "sqlite"
+  url = env("DATABASE_URL")
+}
+model Config {
+  key String @id
+  value String
+}
+model Content {
+  id Int @id @default(autoincrement())
+  title String
+  type String
+  scene String @default("other")
+  topics Json?
+  description String @default("")
+  coverUrl String?
+  fileUrl String?
+  hlsUrl String?
+  pdfUrl String?
+  imagesJson Json?
+  sortOrder Int @default(0)
+  parentId Int?
+  parent Content? @relation("ContentTree", fields: [parentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  children Content[] @relation("ContentTree")
+  writers LiteraryWriter[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([parentId, sortOrder])
+  @@index([scene, sortOrder])
+}
+model LiteraryWriter {
+  id String @id
+  projectId Int
+  project Content @relation(fields: [projectId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  data Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([projectId])
+}
+model AccessLog {
+  id Int @id @default(autoincrement())
+  ip String
+  userAgent String?
+  contentId Int?
+  action String
+  createdAt DateTime @default(now())
+  @@index([createdAt])
+}
