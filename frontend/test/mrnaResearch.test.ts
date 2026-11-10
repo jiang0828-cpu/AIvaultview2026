@@ -49,3 +49,22 @@ test('early immune response denominators are distinct from registered enrollment
   assert.equal(later.length,2);
   assert.match(later.map((e:{interpretation:string})=>e.interpretation).join(' '),/同一|延长|非随机/);
 });
+
+test('result text retains treatment arms, units and endpoint denominators',()=>{
+  const bnt=data.evidence.find((e:{id:string})=>e.id==='E-BNT111-PH2');
+  for(const word of ['18.1','17.4','13.6','94','46','44','月'])assert.ok(bnt.result.includes(word),word);
+  assert.notEqual(data.evidence.find((e:{id:string})=>e.id==='E-V940-III-ITT').control,'未披露');
+  assert.notEqual(data.evidence.find((e:{id:string})=>e.id==='E-BNT122-CRC-STOP').control,'未披露');
+  const wg=data.evidence.find((e:{id:string})=>e.id==='E-WGC-2026');
+  assert.equal(wg.dataCutoff,null);
+  assert.equal(wg.observationDates.crOngoing,'2026-01-11');
+  const youcare=data.trials.find((t:{id:string})=>t.id==='NCT07631793');
+  assert.match(youcare.company,/悦康|Youcare/);
+});
+
+test('charts derive their numbers from the same clinical evidence',()=>{
+  const itt=data.evidence.find((e:{id:string})=>e.id==='E-V940-III-ITT');
+  const hr=itt.endpoints.find((e:{name:string})=>e.name==='RFS');
+  assert.deepEqual([data.chart.rfs[0].hr,data.chart.rfs[0].low,data.chart.rfs[0].high],[hr.value,...hr.ci]);
+  assert.deepEqual(data.chart.safety.map((s:{value:number})=>s.value),[itt.safetyRaw.grade3to5TRAE.arm,itt.safetyRaw.grade3to5TRAE.control]);
+});

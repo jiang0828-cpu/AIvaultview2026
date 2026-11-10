@@ -140,7 +140,8 @@
 .mrna-limitations h3 { display: flex; align-items: center; gap: 8px; color: #847d57; }
 .mrna-limitations ul { padding-left: 18px; margin: 10px 0 0; font-size: 12px; line-height: 1.85; color: #838066; }
 .mrna-source-register article { display: flex; gap: 17px; padding: 17px 0; border-bottom: 1px solid var(--mrna-line); min-width: 0; }
-.mrna-source-id { color: #8ea99a; font-size: 11px; padding-top: 2px; width: 38px; flex-shrink: 0; }
+.mrna-source-id { color: #8ea99a; font-size: 11px; padding-top: 2px; width: 112px; flex-shrink: 0; overflow-wrap: anywhere; }
+.mrna-source-register article > div { min-width: 0; }
 .mrna-source-register a { font-size: 13px; line-height: 1.8; overflow-wrap: anywhere; }
 .mrna-source-register a svg { margin-left: 5px; vertical-align: middle; }
 .mrna-source-register p { font-size: 11px; margin: 4px 0 0; }

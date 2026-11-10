@@ -19,7 +19,7 @@ export type MrnaResearchData = {
   sources: ResearchSource[];
   deliverables: { title: string; description: string; url: string; format: string }[];
   limitations: string[]; chartSourceIds?: string[];
-  chart?: { rfs: { label: string; hr: number; low: number; high: number }[]; safety: { label: string; value: number }[]; followUp: string | number; n: string | number };
+  chart?: { rfs: { label: string; hr: number; low: number; high: number }[]; safety: { label: string; value: number }[]; followUp: string | number; n: string | number; safetyContext?:string };
 };
 
 const tabs = [
@@ -65,13 +65,13 @@ function EvidenceCharts({ data }: { data: MrnaResearchData }) {
           <line x1={plotX(0)} x2={plotX(1)} y1={rfs.length * 61 + 8} y2={rfs.length * 61 + 8} stroke="#d5dfd8" />
         </svg>
       </div>
-      <p className="mrna-chart-note">ITT 与 mITT 来自同一试验，分析人群不同；不据此比较跨试验疗效。<SourceLinks ids={data.chartSourceIds} sources={data.sources} /></p>
+      <p className="mrna-chart-note">ITT 与 mITT 来自同一试验；mITT限至少接受一剂计划内V940/安慰剂的人群，不能替代ITT。<SourceLinks ids={data.chartSourceIds} sources={data.sources} /></p>
     </section>
     <section className="mrna-chart-panel">
       <div className="mrna-section-head"><div><span className="mrna-eyebrow">V940 · 安全性</span><h3>≥3级治疗相关不良事件</h3></div><span className="mrna-chip">TRAE</span></div>
       <div className="mrna-safety">{safety.map((row, index) => <div className="mrna-safety-row" key={row.label}><div><span>{row.label}</span><strong>{row.value.toFixed(1)}<small>%</small></strong></div><div className="mrna-bar-track"><span style={{ width: `${Math.min(row.value / 20 * 100, 100)}%`, background: index === 0 ? '#177568' : '#777cb0' }} /></div></div>)}</div>
       <div className="mrna-safety-axis"><span>0</span><span>10%</span><span>20%</span></div>
-      <p className="mrna-chart-note">按公开披露的分组发生率展示，不能替代完整安全性分析。<SourceLinks ids={data.chartSourceIds} sources={data.sources} /></p>
+      <p className="mrna-chart-note">{data.chart?.safetyContext}。按公开披露的分组发生率展示，不能替代完整安全性分析。<SourceLinks ids={data.chartSourceIds} sources={data.sources} /></p>
     </section>
   </div>;
 }
@@ -80,7 +80,7 @@ function EvidenceItem({ item, sources }: { item: Evidence; sources: ResearchSour
   return <article className={`mrna-evidence-item ${item.sentiment}`}>
     <div className="mrna-evidence-heading"><div><span className="mrna-eyebrow">{item.phase || '分期未标明'} · {item.trial}</span><h3>{item.program}</h3></div><span className={`mrna-status ${item.sentiment}`}>{sentimentLabels[item.sentiment] || '审慎解读'}</span></div>
     <p className="mrna-evidence-population">{displayValue(item.population)} · {displayValue(item.analysisSet)}</p>
-    <div className="mrna-evidence-result"><span>{item.endpoint}</span><strong>{item.result}</strong></div>
+    <div className="mrna-evidence-result"><span>{item.endpoint || '尚无结果分析'}</span><strong>{item.result || '本次更新未披露临床结果；不将计划入组当作已完成治疗。'}</strong></div>
     <dl className="mrna-evidence-facts">{([
       ['样本量', item.n], ['数据截点', item.dataCutoff], ['随访', item.followUp], ['试验设计', item.design], ['试验方案', item.regimen], ['对照方案', item.control], ['安全性', item.safety],
     ] as const).map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{displayValue(value)}</dd></div>)}</dl>
@@ -97,11 +97,11 @@ function Pipeline({ trials, sources }: { trials: ResearchTrial[]; sources: Resea
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const options = useMemo(() => ({ routes: Array.from(new Set(trials.map((item) => item.route))).filter(Boolean).sort(), countries: Array.from(new Set(trials.flatMap((item) => item.countries))).sort(), statuses: Array.from(new Set(trials.map((item) => item.status))).filter(Boolean).sort() }), [trials]);
   const filtered = trials.filter((item) => (!route || item.route === route) && (!country || item.countries.includes(country)) && (!status || item.status === status) && (!scope || scopeLabel(item.scope) === scope) && `${item.id} ${item.program} ${item.sponsor} ${item.indication}`.toLowerCase().includes(query.toLowerCase()));
-  const selected = trials.find((item) => item.id === selectedId);
+  const selected = filtered.find((item) => item.id === selectedId);
   return <section className="mrna-section">
     <div className="mrna-section-head"><div><span className="mrna-eyebrow">CLINICAL TRIAL REGISTER</span><h2>管线台账</h2></div><span className="mrna-muted">{filtered.length} / {trials.length} 条注册快照（含相邻）</span></div>
     <div className="mrna-scope-filter" role="group" aria-label="筛选研究范围">{['', '核心扩展范围', '相邻技术', '相邻排除'].map((value) => <button key={value} aria-pressed={scope === value} className={scope === value ? 'active' : ''} onClick={() => setScope(value)}>{value || '全部范围'}</button>)}</div>
-    <div className="mrna-filters"><label className="mrna-search"><Search size={16} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="项目、申办方、适应证或 NCT 编号" aria-label="检索临床试验" /></label><select aria-label="筛选技术路线" value={route} onChange={(event) => setRoute(event.target.value)}><option value="">全部技术路线</option>{options.routes.map((value) => <option key={value}>{value}</option>)}</select><select aria-label="筛选国家" value={country} onChange={(event) => setCountry(event.target.value)}><option value="">全部国家</option>{options.countries.map((value) => <option key={value}>{value}</option>)}</select><select aria-label="筛选状态" value={status} onChange={(event) => setStatus(event.target.value)}><option value="">全部状态</option>{options.statuses.map((value) => <option key={value}>{value}</option>)}</select>{(query || route || country || status) && <button className="mrna-reset" title="重置筛选" aria-label="重置筛选" onClick={() => { setQuery(''); setRoute(''); setCountry(''); setStatus(''); }}><RefreshCw size={16} /></button>}</div>
+    <div className="mrna-filters"><label className="mrna-search"><Search size={16} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="项目、申办方、适应证或 NCT 编号" aria-label="检索临床试验" /></label><select aria-label="筛选技术路线" value={route} onChange={(event) => setRoute(event.target.value)}><option value="">全部技术路线</option>{options.routes.map((value) => <option key={value}>{value}</option>)}</select><select aria-label="筛选国家" value={country} onChange={(event) => setCountry(event.target.value)}><option value="">全部国家</option>{options.countries.map((value) => <option key={value}>{value}</option>)}</select><select aria-label="筛选状态" value={status} onChange={(event) => setStatus(event.target.value)}><option value="">全部状态</option>{options.statuses.map((value) => <option key={value}>{value}</option>)}</select>{(query || route || country || status || scope) && <button className="mrna-reset" title="重置筛选" aria-label="重置筛选" onClick={() => { setQuery(''); setRoute(''); setCountry(''); setStatus(''); setScope(''); setSelectedId(null); }}><RefreshCw size={16} /></button>}</div>
     <div className="mrna-table-wrap"><table className="mrna-table"><thead><tr><th>项目 / 注册号</th><th>范围</th><th>路线 / 适应证</th><th>分期 / 状态</th><th>国家 / 地区</th><th>计划样本</th><th>实际入组</th><th>注册更新日</th></tr></thead><tbody>{filtered.map((item) => <tr key={item.id} className={selectedId === item.id ? 'selected' : ''}><td><button className="mrna-trial-link" onClick={() => setSelectedId(selectedId === item.id ? null : item.id)} aria-expanded={selectedId === item.id}><strong>{item.program}</strong><span>{item.id}<ChevronRight size={13} /></span></button><small>{item.sponsor}</small></td><td><span className={`mrna-scope-badge ${scopeLabel(item.scope) === '相邻排除' ? 'excluded' : scopeLabel(item.scope) === '相邻技术' ? 'adjacent' : ''}`}>{scopeLabel(item.scope)}</span>{item.exclusionReason && <small>{item.exclusionReason}</small>}</td><td>{item.route}<small>{item.indication}</small></td><td>{item.phase || '未标明'}<small className="mrna-trial-status">{item.status}</small></td><td>{item.countries.length ? item.countries.join('、') : '未披露'}</td><td className="mrna-number">{item.plannedEnrollment?.toLocaleString() ?? '未披露'}</td><td className="mrna-number">{item.actualEnrollment?.toLocaleString() ?? '未披露'}</td><td className="mrna-date">{item.registryUpdatedAt || '未披露'}</td></tr>)}</tbody></table>{!filtered.length && <div className="mrna-empty">未找到符合条件的注册记录。请调整筛选条件。</div>}</div>
     {selected && <aside className="mrna-trial-detail"><div className="mrna-section-head"><h3>{selected.program} · {selected.id}</h3><a href={selected.registryUrl} target="_blank" rel="noreferrer">注册原文<ExternalLink size={14} /></a></div><p><span className="mrna-scope-badge">{scopeLabel(selected.scope)}</span> {selected.exclusionReason}</p><p>{selected.notes}</p><p className="mrna-muted">主要完成日期：{selected.primaryCompletion || '未披露'}<SourceLinks ids={selected.sourceIds} sources={sources} /></p></aside>}
     <p className="mrna-chart-note">计划样本与实际入组按注册字段分别保留，未披露不记为 0。注册更新日与结果披露日不同。本台账包含相邻技术、观察性记录与癌前病变研究，不将其统称肿瘤治疗试验；本次样本不代表全球管线总量。</p>

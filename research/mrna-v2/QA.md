@@ -4,7 +4,7 @@
 
 ## 工程与数据硬检查
 
-- `npm test`：backend 22/22，frontend 23/23。新增研究来源唯一性、分析集/注册分母、阴性保留、相邻范围、鉴权下载测试。
+- `npm test`：backend 24/24，frontend 25/25。新增研究来源唯一性、分析集/注册分母、阴性保留、相邻范围、鉴权下载、元数据修改保护、端点语义和图表一致性测试。
 - `npm run typecheck`、`npm run lint`、`npm run build`：通过。现有前端bundle体积警告仍存在，不影响构建与本轮功能。
 - 结构化数据：65条去重NCT注册快照；30个药物/平台归一名称（不含ctDNA观察筛查）；16个分析更新、47个数值/未披露终点、102个来源记录（同一机构文档可支持不同条目，并非102篇独立论文）。
 - 工作簿11个sheet，artifact-tool生成后用openpyxl重新导入：Summary为30/65/16/102，Trials65、Evidence16、Endpoints47、Sources102；错误单元格0。每个sheet均渲染预览，修正标题行高、日期格式、缺口JSON展示。截图产物位于output/mrna-research。
@@ -23,7 +23,9 @@
 
 ## 审稿人标准：五项误导风险
 
-具体逐项修订见`research-data.json.reviewFixes`及交付物03。独立审查报告另存于本目录；本文件不代替独立审稿人的结论，也不宣称已调用不可用的Claude后端。
+独立原生Astra证据审稿、Sol产品审稿均对首个候选给出USE:no，原始报告完整保存在audit-evidence.md与audit-product.md，不覆盖其历史结论。已按意见修订YKYY031归属、端点治疗臂/分母/单位、方案对照、LK101给药、WGc日期、CureVac集团、数据派生、更新所有权指纹、来源列和筛选重置。最终复核结论由审稿人追加新SHA，不能将首轮no改写为既往已通过。
+
+五个最可能误导决策的问题及逐项依据同步写入`research-data.json.reviewFixes`、报告第10节、Excel Review及交付物03。更新后的桌面截图显示102来源；移动端来源列检测overlap=false。本文件不代替独立审稿人结论，也不宣称已调用不可用的Claude后端。
 
 ## 保留的限制
 
