@@ -76,3 +76,34 @@
 USE: no
 
 不愿把该候选SHA直接作为最终版交给BD。先修复E1、E2，并尽量同时处理E3–E5；生成后的JSON、报告、Excel需按本报告实例回查。修复后可重新独立判断，不能将本次no改写为既往已通过。
+
+## 修订候选复核：7e114e87ee1bfa2b9df1fc00d398229abc5f1f62
+
+复核日期：2026-11-10。独立原生 Astra 代理复核，未调用Claude。开始复核时确认HEAD等于上述SHA且工作区干净；以下追加不改变前一候选的USE no记录。未修改产品文件。本轮复用上文实际独立核验的原始来源，针对修订内容回查，没有声称重新通读全部论文或重新完成UI视觉验收。
+
+### E1–E5关闭验证
+
+| 原问题 | 当前实际交付物检查 | 结果 |
+|---|---|---|
+| E1 YKYY031公司错误 | JSON的NCT07631793公司、Excel `Programs!B31`均为“悦康药业 / Youcare”；注册申办方法人仍保留Beijing Youcare Kechuang Pharmaceutical Technology Co., Ltd.。报告质量修订段中的“远大医药”仅用于说明被纠正的历史错误，并非当前归属。 | 关闭 |
+| E2 结果语义丢失 | JSON16条control均为具体对照/研究设计/未公开的说明，不再统一“未披露”。Excel `Evidence!G5`为安慰剂+pembrolizumab、`G8`为watchful waiting；`G10/K10`保留BNT111历史10%主假设，以及三臂18.1%/17.4%/13.6%、n94/46/44、PFS/OS月。完整报告相同结果文字已更新，原始endpoints的数值、CI和人数没有变化。 | 关闭 |
+| E3 LK101给药 | NCT05886439及Excel `Evidence!F15`为mRNA转染DC皮内注射；NCT06054932明确给药途径待逐方案核验。报告两条试验分别呈现，没有向另一个方案推定皮内途径。 | 关闭 |
+| E4 WGc-043日期 | JSON `dataCutoff`为null；`observationDates`分别保存CR观察日2026-01-11与摘要更新日2026-05-12。Excel `Evidence!M14`为未披露，O14说明两日期均非已披露的全局临床截止日；完整报告截止日“未明确披露”，观察日期仍可见。 | 关闭 |
+| E5 CureVac集团 | CureVac相关试验保留历史申办方，增加currentGroup及S-BNT-Q3；Excel `Programs!I11`标BioNTech并明确具体资产后续开发未确认，报告说明收购不推定历史资产继续开发。 | 关闭 |
+
+### 交叉检查结果
+
+- 只读重新打开当前实际XLSX，11个sheet存在，Trials65、Evidence16、Endpoints47、Sources102。未发现Excel错误类型单元格。
+- 逐条对比当前JSON与旧候选16条证据的endpoints、nRaw、safetyRaw、followUpRaw：无差异，说明本次修订没有意外改动已核临床数字及分析人数。
+- 逐条核对Excel Evidence的方案、对照和结果与当前JSON：全部实质一致。唯一原始值差异是ITI-5000无结果的JSON空字符串在Excel中存为空单元格，不是数字丢失；其“非随机首人体，无结果”对照说明保留。
+- 当前47条Excel Endpoints的指标值和治疗臂与JSON对应，无错配。trials、evidence、sources均无重复ID；上述条目及technology、bd所引用的来源ID均存在。
+- 图表生成已从E-V940-III-ITT/E-V940-III-SENS端点及安全数据派生；当前ITT/mITT和TRAE值保持一致，并增加安全集755/380说明。本项核对的是生成逻辑及数据，不替代浏览器视觉验收。
+- reviewFixes已经改为本次五个具体修订，并附相应原始来源链接。原有访问限制、尚未取得全文及非全球穷尽等边界仍保留，没有把修订说明写成未知事实已经核实。
+
+### 当前使用决定
+
+剩余Critical：0。剩余Major：0。原E1–E5均关闭；未发现本轮引入的新决策级证据错误。
+
+USE: yes
+
+愿意把候选`7e114e87ee1bfa2b9df1fc00d398229abc5f1f62`直接交给BD作为截至2026-11-10的公开资料研究与合作线索材料。此结论包含材料已明确列出的资料缺口与非全球穷尽范围，不将其解释为完整资产尽调、监管确认或商业授权证明。

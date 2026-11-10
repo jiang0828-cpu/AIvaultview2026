@@ -55,3 +55,29 @@
 原候选不宜直接交付：必须先解决三个 Major 并复核新 SHA。产品可用性及工程可靠性尚不满足 STANDARD 的“每项至少 8/10、无 Major”要求。
 
 USE: no
+
+## 修订候选复核
+
+复核日期：2026-11-10。新候选 SHA：`7e114e87ee1bfa2b9df1fc00d398229abc5f1f62`。复核开始时 HEAD 与此 SHA 一致且工作树干净；上文原候选结论保留，仅本节评价修订候选。本代理仅修改审核记录，没有修改产品。
+
+### Major 关闭情况
+
+- M1 已关闭。检查新 JSON 和格式器，BNT111 三个 ORR 分别显示组合/BNT111单药/cemiplimab单药及 n=94/46/44，PFS/OS 数值明确带“月”；显式 clinicalSchemes 提供试验方案和对照，页面/Excel 保留两个独立字段，报告研究设计中也仍保留比较方案。
+- M2 已关闭。森林图按稳定分析 ID 提取 RFS HR/CI，安全图取 `safetyRaw.grade3to5TRAE`，样本量、随访与安全集人数从 evidence 派生；缺少关键数值时生成器报错而非补 0。Excel Summary 的 V940 判断从 `data.chart` 派生，负向项目从 evidence 解读派生。新增同值测试通过。当前实际值仍为 ITT 0.58[0.45,0.75]、mITT 0.51[0.39,0.67]、安全率14.2%/13.4%。
+- M3 已关闭。新 `mrna-ownership.ts` fingerprint 覆盖 title/type/scene/topics/description/sortOrder/parentId；seed 按 v3 baseline 判断，v2 正文 hash 升级还要求其他受管字段匹配，marker 不再授予覆盖权限。所有后续写入的受管字段都受 fingerprint 保护。新增仅元数据编辑、正文编辑及 marker 不授权的测试通过；静态检查确认 seed 实际调用此 helper。
+
+### Minor 复核
+
+来源 ID 列现在为112px并允许断行，正文设 `min-width:0`；无结果页面显式显示“尚无结果分析”和未披露提示；重置清除 scope 与所选行，详情仅查找当前过滤集。完整 Trials 日期在 Excel 导入为原生 datetime；月粒度及未披露原文不强转。已查看刷新后的桌面截图，来源数为102，与 JSON/Excel 一致。已查看移动来源页截图第一屏，未见整体横向溢出；深处来源行的 overlap=false 来自主代理的浏览器复核，本代理未重新操作共享浏览器，不将其表述为自己的交互实测。
+
+### 修订候选验证
+
+- 独立重新运行 `npm test`：backend 24/24、frontend 25/25，49项全部通过，包含鉴权下载和本轮新增回归。
+- 独立 openpyxl 只读导入新工作簿：11表；Summary 30/65/16/102；Trials/Evidence/Sources/BD 全量 ID 与顺序匹配当前 JSON；38个数值终点保持数值；错误单元格0；Trials日期样本为datetime。
+- 读取 `.tmp/mrna-typecheck-final.log`、`.tmp/mrna-lint-final.log`、`.tmp/mrna-build-final.log`，记录显示两端类型检查、lint与build完成，无错误；仅有已披露的前端bundle体积警告。这三项为主代理执行日志复核，不冒称本代理另行执行。
+
+仍有一项非阻断维护建议：`scripts/build_mrna_v2.mjs` 的 `v940SourceIds` 继续通过1137字符串搜索 evidence；当前实际解析为正确的 `S-V940-III`，没有来源错配。后续可直接按 `E-V940-III-ITT` 取 sourceIds，以免样本量变化或其他项目出现相同数字时引用漂移。此建议不影响当前候选的数字或来源正确性。
+
+新候选无未解决 Critical/Major；在本次公开研究样本和已有浏览器复核边界内，产品可用性8/10、工程可靠性8/10，可直接使用。此结论不代替独立证据审核，也不承诺全球检索穷尽。
+
+USE: yes
