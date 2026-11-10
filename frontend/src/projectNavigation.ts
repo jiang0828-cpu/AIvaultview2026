@@ -23,6 +23,12 @@ export function projectFolder(project: Content, id: number | null) {
   );
 }
 
+export function professionalModuleTarget(module: Content | undefined) {
+  if (!module) return null;
+  if (module.type !== "folder") return module;
+  return module.children?.find((item) => item.type !== "folder") || module;
+}
+
 export function projectStats(content: Content) {
   const descendants = flatten(content.children || []);
   const documents = descendants.filter((item) => item.type !== "folder");

@@ -26,7 +26,7 @@ import {
 } from "lucide-react";
 import { scenes, type Content, type ContentType } from "./types";
 import { flatten } from "./types";
-import { isCastleProject } from "./projectNavigation";
+import { isCastleProject, professionalModuleTarget } from "./projectNavigation";
 
 export function Brand() {
   return (
@@ -207,15 +207,16 @@ export function ProfessionalGrowthDashboard({
           const module = availableModules.find((item) =>
             growthModuleMatch[view].some((keyword) => item.title.includes(keyword)),
           );
+          const target = professionalModuleTarget(module || undefined);
           return (
             <div className="growth-module-note">
               <div>
                 <strong>{activeLabel}</strong>
                 <span>{module ? (module.type === "folder" ? "课程方案与记录模板" : "实践记录模板") : "请从下方资料目录选择"}</span>
               </div>
-              {module && (
-                <button type="button" className="text-link" onClick={() => onOpenModule(module)}>
-                  {module.type === "folder" ? "进入栏目" : "打开记录"} <ArrowRight size={14} />
+              {target && (
+                <button type="button" className="text-link" onClick={() => onOpenModule(target)}>
+                  打开模板 <ArrowRight size={14} />
                 </button>
               )}
             </div>

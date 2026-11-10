@@ -1006,6 +1006,10 @@ function Shell({ role, items, loading, error, reload, logout }: ShellProps) {
   const project = projects.find((item) => item.id === projectId) || null;
   const folderId = Number(params.get("folder")) || null;
   const folder = project ? projectFolder(project, folderId) : null;
+  const parentFolder =
+    project && folder && folder.parentId !== project.id
+      ? projectFolder(project, folder.parentId)
+      : null;
   const isNetwork = location.pathname === "/network";
   const overview =
     !params.get("id") &&
@@ -1235,7 +1239,11 @@ function Shell({ role, items, loading, error, reload, logout }: ShellProps) {
             <ProjectOverview
               project={project}
               folder={folder}
-              onBack={() => (folder ? openProject(project) : navigate("/home"))}
+              onBack={() =>
+                folder
+                  ? openProject(parentFolder || project)
+                  : navigate("/home")
+              }
               onOpenContent={(content) =>
                 content.type === "folder"
                   ? openProject(content)

@@ -15,8 +15,8 @@ Written at intake from PROMPTS.md, quoted, never paraphrased. Copy this section 
 Every problem the user points out gets a row in their words, plus the steps that show it. Mark it fixed only with evidence from the same steps (a screenshot, clip or measurement); `marathon.py status` counts them and reviewers re-check each row. Before fixing one, look for the same kind of problem elsewhere.
 | # | The user's words | How to reproduce | Status (open / fixed) | Evidence |
 |---|---|---|---|---|
-| U1 | 优化并完善“解构世界”板块及各模块内容，直到可以交付 | 登录后打开 /home?project=99&folder=104，查看四类资料、栏目切换、任务进度和详情 | open | |
-| U2 | 先生成标准和提示词，再执行，最后审核确认 | 查看 CHARTER.md、PROMPTS.md、research/BRIEF.md、审核报告和测试证据 | open | |
+| U1 | 优化并完善“解构世界”板块及各模块内容，直到可以交付 | 登录后打开 /home?project=99&folder=104，查看四类资料、栏目切换、任务进度和详情 | fixed | `output/playwright/deconstruct-world-mobile-final.png`、`audits/round-1/lead-review.md` |
+| U2 | 先生成标准和提示词，再执行，最后审核确认 | 查看 CHARTER.md、PROMPTS.md、research/BRIEF.md、审核报告和测试证据 | fixed | `research/DECONSTRUCT_WORLD_STANDARD.md`、`REPORTS.md` |
 
 ## Benchmark
 Format: site
@@ -30,14 +30,14 @@ Adjusted bar (only when the benchmark is out of reach; also edit the FLOOR line 
 Hard targets, each checked by a script or a count. Put ✅ in the Status cell only when the check passed on the current build; `marathon.py score` counts ✅ rows and requires all of them for TARGET MET.
 | # | Criterion | Target | How measured | Status |
 |---|---|---|---|---|
-| G1 | DOCX 内容基线已提取 | 标题、表格、图片/附件意图和方法论均有记录 | research/BRIEF.md 有来源、提取方法和映射表 | – |
-| G2 | 内容结构 | 四类资料可访问；每类至少包含目标、行动/阶段、证据、复盘或下一步字段 | seed 检查 + API/前端测试 | – |
-| G3 | 项目导航 | 项目首页、三个子栏目、详情、返回和刷新路径均正确；无效 folder 不越界 | projectNavigation 测试 + 浏览器证据 | – |
-| G4 | 交互反馈 | Tab 切换、任务勾选、进度显示和 localStorage 恢复可用 | 前端测试 + 浏览器验证 | – |
-| G5 | 权限 | 未登录 401，访客不能 CRUD，管理员可编辑/新增/删除 | castle.test.ts | – |
-| G6 | 响应式 | 390px 和桌面无横向溢出、标题/表格不重叠 | Playwright 截图与 scrollWidth 检查 | – |
-| G7 | 工程质量 | test、typecheck、lint、build 全部通过 | npm 命令输出 | – |
-| G8 | 可交付审核 | 独立审核无 Critical/Major，两个 reviewer 均 USE: yes | audits/、REPORTS.md | – |
+| G1 | DOCX 内容基线已提取 | 标题、表格、图片/附件意图和方法论均有记录 | research/BRIEF.md 有来源、提取方法和映射表 | ✅ |
+| G2 | 内容结构 | 四类资料可访问；每类至少包含目标、行动/阶段、证据、复盘或下一步字段 | seed 检查 + API/前端测试 | ✅ |
+| G3 | 项目导航 | 项目首页、三个子栏目、详情、返回和刷新路径均正确；无效 folder 不越界 | projectNavigation 测试 + 浏览器证据 | ✅ |
+| G4 | 交互反馈 | Tab 切换、任务勾选、进度显示和 localStorage 恢复可用 | 前端测试 + 浏览器验证 | ✅ |
+| G5 | 权限 | 未登录 401，访客不能 CRUD，管理员可编辑/新增/删除 | castle.test.ts | ✅ |
+| G6 | 响应式 | 390px 和桌面无横向溢出、标题/表格不重叠 | Playwright 截图与 scrollWidth 检查 | ✅ |
+| G7 | 工程质量 | test、typecheck、lint、build 全部通过 | npm 命令输出 | ✅ |
+| G8 | 可交付审核 | 独立审核无 Critical/Major，两个 reviewer 均 USE: yes | audits/、REPORTS.md | ✅ |
 
 ## Gate rubric
 Machine-read by `marathon.py score`: keys must match the gate's SCORES line exactly; weights sum to 100. Optional lines: `FLOOR: key=7, …` (default 8 per key), `PASS_TOTAL: 85`, and `NA:` listing the only keys a reviewer may mark n/a (e.g. map_dataviz for a site without maps). Fix these before the first gate.

@@ -1934,10 +1934,21 @@ small {
   min-width: 0;
 }
 .markdown {
+  min-width: 0;
   line-height: 1.9;
   font-size: 14px;
   color: #657161;
   overflow-wrap: anywhere;
+}
+.markdown table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.markdown th,
+.markdown td {
+  min-width: 120px;
 }
 .markdown h1 {
   font-size: 25px;

@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   isProject,
+  professionalModuleTarget,
   projectFolder,
   projectStats,
 } from "../src/projectNavigation.js";
@@ -69,6 +70,16 @@ test("recursive counts exclude folders from documents and display formats", () =
     documents: 0,
     formats: 0,
   });
+});
+test("professional module target opens the first document inside a module folder", () => {
+  const folder = node(20, {
+    title: "成长计划",
+    children: [node(21, { type: "text", title: "成长计划看板" })],
+  });
+  assert.equal(professionalModuleTarget(folder)?.id, 21);
+  const text = node(22, { type: "text", title: "专业成长记录" });
+  assert.equal(professionalModuleTarget(text)?.id, 22);
+  assert.equal(professionalModuleTarget(undefined), null);
 });
 test("castle participates in project name search and life filtering", () => {
   const castle = node(1, { title: "爱的城堡" });

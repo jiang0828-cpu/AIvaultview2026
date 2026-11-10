@@ -1,0 +1,10 @@
+id,started,ended,agent,model,effort,class,status,first_pass,fix_lines,critical,major,minutes,input,cached,output,thread,report,note,backend
+GN-opus,2026-11-10T18:20,,claude,opus,xhigh,gate,running,,,,,,,,,,,sha=b6ecf403d6bc712443799bc7fe1c7a28973d9c6b,
+GN-astra,2026-11-10T18:21,2026-11-10T18:36,codex,gpt-6-astra,high,gate,timeout,,,,,15.0,4483608,4311040,13814,01a1c4fa-94d8-7f72-a69a-dfa2d5605876,.tmp\reports\GN-astra.a1.md,"ro=1; sha=b6ecf403d6bc712443799bc7fe1c7a28973d9c6b; a1 astra ended 2026-11-10T18:36: timeout-partial (subscription); partial work in tree; steer to continue; Incorrect API key provided: sk-9edda*******************************************************7656. You can find your API key at https://platform.openai.com/account/api-keys."",
+    ""type"": ""invalid_request_error"",
+    ""code"": ""invalid_api_key"",
+    ""param"": null
+  },
+  ""status"": 401
+}
+attempt timed out",subscription

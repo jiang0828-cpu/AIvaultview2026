@@ -49,10 +49,10 @@
 
 | 编号 | 检查项 | 证据位置 | 状态 |
 | --- | --- | --- | --- |
-| S1 | 标准和提示词已先行生成 | 本文件、PROMPTS.md | 待执行 |
-| S2 | 四类资料与工作台一一对应 | seed、前端测试 | 待执行 |
-| S3 | 项目导航、返回、刷新恢复 | projectNavigation、浏览器 | 待执行 |
-| S4 | 权限与 CRUD 无回归 | backend/test/castle.test.ts | 待执行 |
-| S5 | 390px 与桌面无溢出 | 浏览器截图和 scrollWidth | 待执行 |
-| S6 | test/typecheck/lint/build 通过 | REPORTS.md | 待执行 |
-| S7 | 独立审查无 Critical/Major | audits/、REPORTS.md | 待执行 |
+| S1 | 标准和提示词已先行生成 | 本文件、PROMPTS.md | ✅ |
+| S2 | 四类资料与工作台一一对应 | seed、前端测试、浏览器 | ✅ |
+| S3 | 项目导航、返回、刷新恢复 | projectNavigation、Playwright | ✅ |
+| S4 | 权限与 CRUD 无回归 | backend/test/castle.test.ts | ✅ |
+| S5 | 390px 与桌面无溢出 | Playwright scrollWidth 375/390、1425/1440 | ✅ |
+| S6 | test/typecheck/lint/build 通过 | REPORTS.md | ✅ |
+| S7 | 独立审查无 Critical/Major | audits/、REPORTS.md | ✅（主审 + 独立复核） |
