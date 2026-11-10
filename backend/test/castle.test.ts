@@ -62,17 +62,17 @@ test("castle seed creates five ordered sections and templates, preserves edits a
   const professional = project.children[2];
   assert.equal(professional.title, "“解构世界”-科技特长（专业）");
   assert.deepEqual(
-    professional.children.slice(1).map((item) => item.title),
+    professional.children.filter((item) => item.type === "folder").map((item) => item.title),
     ["成长计划", "阶段方案", "成果展示"],
   );
-  for (const child of [professional.children[0], ...professional.children.slice(1)]) {
-    const document = child.type === "text" ? child : child.children[0];
+  const professionalFolders = professional.children.filter((item) => item.type === "folder");
+  for (const document of [professional.children[0], ...professionalFolders.map((item) => item.children[0])]) {
     assert.ok(document.description.includes("下一") || document.description.includes("复盘"));
   }
   for (const [index, folder] of project.children.entries()) {
     assert.equal(folder.type, "folder");
     assert.equal(folder.sortOrder, index);
-    assert.equal(folder.children.length, index === 2 ? 4 : 1);
+    assert.equal(folder.children.length, index === 2 ? 7 : 1);
     assert.equal(folder.children[0].type, "text");
     assert.equal(
       folder.children[0].title,
@@ -85,20 +85,24 @@ test("castle seed creates five ordered sections and templates, preserves edits a
     );
     assert.match(folder.children[0].description, /\| ---/);
     if (index === 2) {
+      const sectionFolders = folder.children.filter((item) => item.type === "folder");
       assert.match(folder.children[0].description, /双螺旋过程/);
       assert.match(folder.children[0].description, /技术向善检查/);
       assert.deepEqual(
-        folder.children.slice(1).map((item) => item.title),
+        sectionFolders.map((item) => item.title),
         ["成长计划", "阶段方案", "成果展示"],
       );
-      for (const subfolder of folder.children.slice(1)) {
+      for (const subfolder of sectionFolders) {
         assert.equal(subfolder.type, "folder");
-        assert.equal(subfolder.children.length, 1);
+        assert.ok(subfolder.children.length >= 4);
         assert.equal(subfolder.children[0].type, "text");
       }
-      assert.match(folder.children[1].children[0].description, /本周三步棋/);
-      assert.match(folder.children[2].children[0].description, /启蒙.*筑基.*进阶.*实战.*迁移/s);
-      assert.match(folder.children[3].children[0].description, /证据清单/);
+      assert.match(sectionFolders[0].children[0].description, /本周三步棋/);
+      assert.match(sectionFolders[1].children[0].description, /启蒙.*筑基.*进阶.*实战.*迁移/s);
+      assert.match(sectionFolders[2].children[0].description, /证据清单/);
+      assert.ok(sectionFolders[0].children.some((item) => /12\s*周/.test(item.title)));
+      assert.ok(sectionFolders[0].children.some((item) => item.title.includes("Code 1")));
+      assert.ok(sectionFolders[2].children.some((item) => item.title.includes("评分量规")));
     }
   }
   const edited = project.children[0].children[0];
