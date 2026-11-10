@@ -1,4 +1,6 @@
-# Evidence for round 1
+# Historical evidence for round 1 attempt
+
+> This file records the first gate attempt and is retained for audit history. The final candidate and current acceptance evidence are in `audits/round-1/lead-review.md`, `audits/round-1/independent-review.md`, and `REPORTS.md`.
 
 Artifact: b6ecf403d6bc712443799bc7fe1c7a28973d9c6b
 Changes: [CHANGED.md](CHANGED.md)
