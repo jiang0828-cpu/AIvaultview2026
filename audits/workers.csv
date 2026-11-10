@@ -1,3 +1,4 @@
 id,started,ended,agent,model,effort,class,status,first_pass,fix_lines,critical,major,minutes,input,cached,output,thread,report,note,backend
 GN-opus,2026-11-10T18:20,2026-11-10T18:36,claude,opus,xhigh,gate,unavailable,,,,,,,,,,,no report produced; replaced by manual review,
 GN-astra,2026-11-10T18:21,2026-11-10T18:36,codex,gpt-6-astra,high,gate,unavailable,,,,,15.0,,,,,,no report produced; provider invocation did not yield a review,
+GN-astra-final,2026-11-10T18:55,2026-11-10T19:05,codex,gpt-6-astra,high,gate,timeout,,,,,10.0,2991844,2890112,11033,01a1c519-0ff7-7482-b142-0ebb62df886c,.tmp\reports\GN-astra-final.a1.md,"ro=1; sha=3a6f15b127f2897d31bb438a49c56f7f6fded79e; worker backend timed out after 10 minutes without a review report; auth/connection warnings recorded in .tmp/reports/GN-astra-final.a1.err.txt",subscription

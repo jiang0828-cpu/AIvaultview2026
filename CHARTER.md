@@ -62,9 +62,9 @@ The user's own 0-100 scores outrank the reviewers (references/review-principles.
 Every user message is checked against this table. Q items are answered directly; R items are built.
 | id | Requirement or question | Date | Status (open / done / answered / rejected: why) |
 |---|---|---|---|
-| R-1 | 使用 marathon 流程完成优化、内容补全和审核 | 2026-11-10 | open |
-| R-2 | 参考 DOCX 作为内容基线 | 2026-11-10 | open |
-| R-3 | 先标准和提示词，再执行，最后审核 | 2026-11-10 | open |
+| R-1 | 使用 marathon 流程完成优化、内容补全和审核 | 2026-11-10 | done |
+| R-2 | 参考 DOCX 作为内容基线 | 2026-11-10 | done |
+| R-3 | 先标准和提示词，再执行，最后审核 | 2026-11-10 | done |
 
 ## Rejected options and don'ts
 - 不新增数据库 schema，不重建现有登录、权限、项目导航。
