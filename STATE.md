@@ -28,7 +28,7 @@ gate: opus+astra
 astra_wait: 10
 summary_words: 300
 asking: 
-metrics: backend_tests=21; frontend_tests=18; typecheck=pass; lint=pass; build=pass; mobile_scrollwidth=375/390
+metrics: backend_tests=21; frontend_tests=19; typecheck=pass; lint=pass; build=pass; mobile_scrollwidth=375/390
 resources: docx=1; embedded_xlsx=4; embedded_png=12; lan_url=http://10.5.2.31:5174/home?project=99&folder=104
 ---
 # 完善解构世界科技特长专业成长空间: state
@@ -36,15 +36,12 @@ resources: docx=1; embedded_xlsx=4; embedded_png=12; lan_url=http://10.5.2.31:51
 Decisions and Log keep the latest 5 entries each. Older entries move to DECISIONS.md; read it when history is needed.
 
 ## Now
-- 标准与提示词已生成；四模块工作台、模板入口、刷新恢复和响应式验证完成；等待独立审核。
+- 已交付：标准、提示词、四模块工作台、17 份专业成长资料、测试、局域网验证和主审/独立复核均完成。
 
 ## Next 3 steps
-1. 解析参考 DOCX，形成 research/BRIEF.md 和字段映射。
-2. 按提示词完善四类资料、项目工作台和测试。
-3. 运行完整验证并执行独立 gate 审核。
-- 完善四类模板与四 Tab 工作台；补导航、刷新、移动端和审核测试。
-- 读取两份独立审核，修复 Critical/Major（如有），写报告并关闭 gate。
-- 已交付；后续按课程更新计划维护 growth-curriculum.ts 与内容来源。
+1. 按课程更新计划维护 `growth-curriculum.ts` 与内容来源。
+2. 新增个人作品时补充证据、授权和隐私检查。
+3. worker 后端恢复后，可对最终提交补跑严格双模型 gate。
 
 ## Decisions
 - 2026-11-10T17:33 · run config: lead_style=thin, rotate_at=300, worker_fallback=astra,sonnet, astra_wait=10, summary_words=300, profile=codex, workers=sol61, gate=opus+astra, mode=balanced
