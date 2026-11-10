@@ -669,8 +669,10 @@ function ProjectOverview({
   const stats = projectStats(current);
   const castle = isCastleProject(project);
   const sectionIcons = [House, GraduationCap, FlaskConical, Dumbbell, Palmtree];
-  const topics = project.topics?.length
-    ? project.topics
+  const topics = folder?.topics?.length
+    ? folder.topics
+    : project.topics?.length
+      ? project.topics
     : Array.from(new Set(flatten([current]).flatMap((item) => item.topics || [])));
   const sceneLabel = sceneLabels[project.scene] || "内容项目";
   const summary =

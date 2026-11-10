@@ -97,29 +97,36 @@ export function ProfessionalGrowthDashboard({
 }) {
   const availableModules = modules ?? [];
   const [view, setView] = useState<GrowthView>(() => {
-    const saved = window.localStorage.getItem("vaultview-castle-growth-tab");
-    return growthModuleLabels.some(([key]) => key === saved)
-      ? (saved as GrowthView)
-      : "record";
+    try {
+      const saved = window.localStorage.getItem("vaultview-castle-growth-tab");
+      return growthModuleLabels.some(([key]) => key === saved)
+        ? (saved as GrowthView)
+        : "record";
+    } catch {
+      return "record";
+    }
   });
   const [checked, setChecked] = useState<Record<string, boolean>>(() => {
     try {
-      return JSON.parse(
+      const saved: unknown = JSON.parse(
         window.localStorage.getItem("vaultview-castle-growth-checklist") ||
           "{}",
-      ) as Record<string, boolean>;
+      );
+      return saved && typeof saved === "object" && !Array.isArray(saved)
+        ? Object.fromEntries(Object.entries(saved).filter(([, value]) => typeof value === "boolean"))
+        : {};
     } catch {
       return {};
     }
   });
   useEffect(() => {
-    window.localStorage.setItem(
+    try { window.localStorage.setItem(
       "vaultview-castle-growth-checklist",
       JSON.stringify(checked),
-    );
+    ); } catch { /* Keep the current session usable when storage is unavailable. */ }
   }, [checked]);
   useEffect(() => {
-    window.localStorage.setItem("vaultview-castle-growth-tab", view);
+    try { window.localStorage.setItem("vaultview-castle-growth-tab", view); } catch { /* Session state still works. */ }
   }, [view]);
   const tasks: Array<[string, GrowthView]> = [
     ["写下一个真实问题和验收标准", "record"],
@@ -173,16 +180,28 @@ export function ProfessionalGrowthDashboard({
             key={key}
             className={view === key ? "active" : ""}
             role="tab"
+            id={"growth-tab-" + key}
+            tabIndex={view === key ? 0 : -1}
             aria-selected={view === key}
             aria-controls={"growth-panel-" + key}
             onClick={() => setView(key)}
+            onKeyDown={(event) => {
+              if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+              event.preventDefault();
+              const index = growthModuleLabels.findIndex(([value]) => value === key);
+              const nextIndex = event.key === "Home" ? 0 : event.key === "End" ? growthModuleLabels.length - 1
+                : (index + (event.key === "ArrowRight" ? 1 : -1) + growthModuleLabels.length) % growthModuleLabels.length;
+              const nextView = growthModuleLabels[nextIndex][0];
+              setView(nextView);
+              document.getElementById("growth-tab-" + nextView)?.focus();
+            }}
           >
             <span>{label}</span>
             <small>{hint}</small>
           </button>
         ))}
       </div>
-      <div className="growth-dashboard-body" id={"growth-panel-" + view} role="tabpanel">
+      <div className="growth-dashboard-body" id={"growth-panel-" + view} role="tabpanel" aria-labelledby={"growth-tab-" + view}>
         {(() => {
           const activeLabel = growthModuleLabels.find(([key]) => key === view)?.[1] || "";
           const module = availableModules.find((item) =>
@@ -192,11 +211,11 @@ export function ProfessionalGrowthDashboard({
             <div className="growth-module-note">
               <div>
                 <strong>{activeLabel}</strong>
-                <span>{module ? "已配置模板，可直接填写" : "模板入口待补"}</span>
+                <span>{module ? (module.type === "folder" ? "课程方案与记录模板" : "实践记录模板") : "请从下方资料目录选择"}</span>
               </div>
               {module && (
                 <button type="button" className="text-link" onClick={() => onOpenModule(module)}>
-                  打开模板 <ArrowRight size={14} />
+                  {module.type === "folder" ? "进入栏目" : "打开记录"} <ArrowRight size={14} />
                 </button>
               )}
             </div>
