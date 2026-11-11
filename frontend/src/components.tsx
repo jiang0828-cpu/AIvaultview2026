@@ -23,22 +23,40 @@ import {
   Sparkles,
   ShieldCheck,
   RotateCcw,
+  Hash,
+  CalendarDays,
+  Swords,
+  Mountain,
+  Flag,
+  Feather,
+  ScrollText,
 } from "lucide-react";
 import { scenes, type Content, type ContentType } from "./types";
 import { flatten } from "./types";
-import { isCastleProject, professionalModuleTarget } from "./projectNavigation";
+import { professionalModuleTarget } from "./projectNavigation";
 
 export function Brand() {
   return (
     <div className="brand">
       <span className="brand-mark">
-        <BookOpen size={23} />
+        <span aria-hidden="true">藏</span>
       </span>
       <span>
         <strong>藏览</strong>
-        <small>VaultView</small>
+        <small>江湖行者 · VaultView</small>
       </span>
     </div>
+  );
+}
+
+export function PersonalMotto({ compact = false }: { compact?: boolean }) {
+  return (
+    <p
+      className={`personal-motto${compact ? " compact" : ""}`}
+      title="化用《孟子·尽心上》。原文：穷则独善其身，达则兼善天下。"
+    >
+      <span>穷则独善其身，</span><span>达则兼济天下。</span>
+    </p>
   );
 }
 export function TypeIcon({
@@ -62,14 +80,21 @@ export function TypeIcon({
 export function TopicPills({ topics }: { topics: string[] | null }) {
   return (
     <span className="topic-pills">
-      {(topics || []).map((topic, index) => (
-        <span
-          className={`topic-pill ${index === 0 && ["长期性", "阶段性", "临时性"].includes(topic) ? "project-cycle-pill" : ""}`}
-          key={`${topic}-${index}`}
-        >
-          #{topic}
-        </span>
-      ))}
+      {(topics || []).map((topic, index) => {
+        const isCycle = index === 0 && ["长期性", "阶段性", "临时性"].includes(topic);
+        const Icon = isCycle ? CalendarDays : Hash;
+        return (
+          <span
+            className={`topic-pill ${isCycle ? "project-cycle-pill" : ""}`}
+            data-topic={topic.toLowerCase()}
+            data-cycle={isCycle ? topic : undefined}
+            key={`${topic}-${index}`}
+          >
+            <Icon size={11} aria-hidden="true" />
+            <span>{topic}</span>
+          </span>
+        );
+      })}
     </span>
   );
 }
@@ -315,97 +340,79 @@ export function ErrorMessage({ message }: { message: string }) {
     </div>
   ) : null;
 }
+const sceneIcons = {
+  system: ShieldCheck,
+  tools: Swords,
+  life: Mountain,
+  work: Flag,
+  hobbies: Feather,
+  other: ScrollText,
+};
+
+function FolderTreeNode({ item, selected, onSelect, onOpenFolder, scene }: {
+  item: Content;
+  selected: number | null;
+  onSelect: (id: number) => void;
+  onOpenFolder?: (folder: Content) => void;
+  scene?: (typeof scenes)[number];
+}) {
+  const containsSelected = flatten(item.children || []).some((node) => node.id === selected);
+  const [open, setOpen] = useState(containsSelected || scene?.key === "other");
+  useEffect(() => {
+    if (containsSelected) setOpen(true);
+  }, [containsSelected, selected]);
+  const label = scene?.label || item.title;
+  const SceneIcon = scene ? sceneIcons[scene.key] : null;
+  const childrenId = `tree-children-${item.id}`;
+  return (
+    <div className={scene ? "scene-tree-node" : "folder-tree-node"}>
+      <div className={`tree-folder-row ${scene ? "scene-folder-row" : ""} ${selected === item.id ? "active" : ""}`}>
+        <button
+          type="button"
+          className="tree-folder-toggle"
+          aria-label={`${open ? "折叠" : "展开"}${label}`}
+          aria-expanded={open}
+          aria-controls={childrenId}
+          onClick={() => setOpen((current) => !current)}
+          title={`${open ? "折叠" : "展开"}${label}`}
+        >
+          <ChevronRight size={15} className={open ? "chevron expanded" : "chevron"} />
+        </button>
+        <button
+          type="button"
+          className="tree-folder-link"
+          title={label}
+          aria-current={selected === item.id ? "page" : undefined}
+          onClick={() => onOpenFolder?.(item)}
+        >
+          {SceneIcon && scene ? <SceneIcon size={24} className={`scene-icon ${scene.key}`} strokeWidth={1.7} aria-hidden="true" /> : <Folder size={17} />}
+          <span>{label}</span>
+          <small>{item.children?.length || 0}</small>
+        </button>
+      </div>
+      <div id={childrenId} hidden={!open}>
+        <ContentTree items={item.children || []} selected={selected} onSelect={onSelect} onOpenFolder={onOpenFolder} />
+      </div>
+    </div>
+  );
+}
+
 export function ContentTree({
   items,
   selected,
   onSelect,
   onOpenFolder,
-  navigable = false,
 }: {
   items: Content[];
   selected: number | null;
   onSelect: (id: number) => void;
   onOpenFolder?: (folder: Content) => void;
-  navigable?: boolean;
 }) {
   return (
     <div className="content-tree">
       {items.map((item) =>
-        item.type === "folder" &&
-        (isCastleProject(item) || navigable) &&
-        onOpenFolder ? (
-          <details
-            key={item.id}
-            open={flatten([item]).some((node) => node.id === selected)}
-          >
-            <summary className="castle-folder-summary">
-              <ChevronRight size={15} className="chevron" />
-              <button
-                className="castle-folder-link"
-                onClick={(event) => {
-                  event.preventDefault();
-                  onOpenFolder(item);
-                }}
-              >
-                <Folder size={17} />
-                <span>{item.title}</span>
-              </button>
-              <small>{item.children?.length || 0}</small>
-            </summary>
-            <ContentTree
-              items={item.children || []}
-              selected={selected}
-              onSelect={onSelect}
-              onOpenFolder={onOpenFolder}
-              navigable
-            />
-          </details>
-        ) : item.type === "folder" &&
-          item.title.startsWith("项目") &&
-          onOpenFolder ? (
-          <button
-            key={item.id}
-            className="tree-item project-folder-summary"
-            onClick={() => onOpenFolder(item)}
-            title={item.title}
-          >
-            <Folder size={17} />
-            <span>{item.title}</span>
-            <small>{item.children?.length || 0}</small>
-          </button>
-        ) : item.type === "folder" ? (
-          <details key={item.id} open={!item.title.startsWith("项目")}>
-            <summary
-              className={
-                item.title.startsWith("项目") ? "project-folder-summary" : ""
-              }
-              onClick={(event) => {
-                if (item.title.startsWith("项目") && onOpenFolder) {
-                  const target = event.target;
-                  const clickedChevron =
-                    target instanceof Element &&
-                    Boolean(target.closest(".project-folder-chevron"));
-                  if (clickedChevron) return;
-                  event.preventDefault();
-                  onOpenFolder(item);
-                }
-              }}
-            >
-              <ChevronRight
-                size={15}
-                className="chevron project-folder-chevron"
-              />
-              <Folder size={17} />
-              <span>{item.title}</span>
-              <small>{item.children?.length || 0}</small>
-            </summary>
-            <ContentTree
-              items={item.children || []}
-              selected={selected}
-              onSelect={onSelect}
-              onOpenFolder={onOpenFolder}
-            />
-          </details>
+        item.type === "folder" ? (
+          <FolderTreeNode key={item.id} item={item} selected={selected} onSelect={onSelect} onOpenFolder={onOpenFolder} />
         ) : (
           <button
             key={item.id}
@@ -442,31 +449,8 @@ export function SceneNavigator({
             item.parentId === null,
         );
         return (
-          <details
-            key={scene.key}
-            open={
-              scene.key === "other" ||
-              flatten(root?.children || []).some(
-                (child) => child.id === selected,
-              )
-            }
-          >
-            <summary>
-              <span className={`scene-dot ${scene.key}`} />
-              <span>{scene.label}</span>
-              <small>{root?.children?.length || 0}</small>
-            </summary>
-            {root ? (
-              <ContentTree
-                items={root.children || []}
-                selected={selected}
-                onSelect={onSelect}
-                onOpenFolder={onOpenFolder}
-              />
-            ) : (
-              <p className="muted scene-empty">暂无资料</p>
-            )}
-          </details>
+          root ? <FolderTreeNode key={scene.key} item={root} scene={scene} selected={selected} onSelect={onSelect} onOpenFolder={onOpenFolder} />
+            : <div className="scene-empty" key={scene.key}>{scene.label} · 暂无资料</div>
         );
       })}
     </div>

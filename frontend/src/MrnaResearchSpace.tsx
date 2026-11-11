@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Activity, ArrowLeft, ArrowUpRight, BookOpen, CheckCircle2, ChevronRight, Download, ExternalLink, FileSpreadsheet, FlaskConical, GitBranch, Layers3, RefreshCw, Search, ShieldAlert, Target } from 'lucide-react';
+import { Activity, ArrowLeft, ArrowUpRight, BookOpen, CheckCircle2, ChevronRight, Dna, Download, ExternalLink, FileSpreadsheet, FlaskConical, GitBranch, Layers3, RefreshCw, Search, ShieldAlert, Target } from 'lucide-react';
 import type { Content } from './types';
 import { isProject } from './projectNavigation';
+import { MrnaFoundations } from './MrnaDrugFoundations';
 import './mrna-research.css';
 
 type SourceRef = { sourceIds: string[] };
@@ -23,6 +24,7 @@ export type MrnaResearchData = {
 };
 
 const tabs = [
+  { key: 'foundations', label: '药物基础', Icon: Dna },
   { key: 'overview', label: '研究概览', Icon: Activity },
   { key: 'evidence', label: '临床证据', Icon: FlaskConical },
   { key: 'pipeline', label: '管线台账', Icon: GitBranch },
@@ -110,7 +112,7 @@ function Pipeline({ trials, sources }: { trials: ResearchTrial[]; sources: Resea
 
 export function MrnaResearchSpace({ project, onBack }: { project: Content; onBack: () => void }) {
   const [params, setParams] = useSearchParams();
-  const view = tabs.some((tab) => tab.key === params.get('view')) ? params.get('view')! : 'overview';
+  const view = tabs.some((tab) => tab.key === params.get('view')) ? params.get('view')! : 'foundations';
   const [data, setData] = useState<MrnaResearchData | null>(null);
   const [error, setError] = useState('');
   const [retry, setRetry] = useState(0);
@@ -131,7 +133,7 @@ export function MrnaResearchSpace({ project, onBack }: { project: Content; onBac
     <div className="mrna-topline"><button className="back-link" onClick={onBack}><ArrowLeft size={14} />返回空间概览</button><span><FlaskConical size={14} />生物医药 · 肿瘤药物研究</span></div>
     <header className="mrna-header"><div><span className="mrna-eyebrow">ONCOLOGY RESEARCH DESK</span><h1 id="mrna-title">mRNA 肿瘤药物<span>研究工作台</span></h1><p>{data?.summary || '肿瘤疫苗与蛋白表达 · 临床证据 · 技术与商务拓展'}</p></div><div className="mrna-header-meta"><span className="mrna-update-dot" />资料截至 <strong>{data?.asOf || '载入中'}</strong>{data?.deliverables.find((item) => /xlsx|excel/i.test(item.format)) && <a className="mrna-download" href={data.deliverables.find((item) => /xlsx|excel/i.test(item.format))!.url} download><FileSpreadsheet size={16} />下载研究台账</a>}</div></header>
     <nav className="mrna-tabs" aria-label="mRNA研究导航">{tabs.map(({ key, label, Icon }) => <button key={key} className={view === key ? 'active' : ''} aria-current={view === key ? 'page' : undefined} onClick={() => navigate(key)}><Icon size={16} />{label}</button>)}</nav>
-    {error ? <div className="mrna-load-error" role="alert"><ShieldAlert size={23} /><p>{error}</p><button className="button" onClick={() => setRetry((value) => value + 1)}><RefreshCw size={15} />重新加载</button></div> : !data ? <div className="mrna-loading" role="status"><Activity size={22} />正在载入研究资料与注册台账…</div> : <>
+    {view === 'foundations' ? <MrnaFoundations onNavigate={navigate} /> : error ? <div className="mrna-load-error" role="alert"><ShieldAlert size={23} /><p>{error}</p><button className="button" onClick={() => setRetry((value) => value + 1)}><RefreshCw size={15} />重新加载</button></div> : !data ? <div className="mrna-loading" role="status"><Activity size={22} />正在载入研究资料与注册台账…</div> : <>
       {view === 'overview' && <>
         <div className="mrna-metrics"><div><FlaskConical size={18} /><strong>{data.trials.length}</strong><span>注册快照（含相邻）</span></div><div><Layers3 size={18} /><strong>{new Set(data.trials.map((item) => item.route)).size}</strong><span>样本技术路线</span></div><div><BookOpen size={18} /><strong>{data.sources.length}</strong><span>可追溯来源</span></div><div><ShieldAlert size={18} /><strong>{negativeEvidence.length}</strong><span>关键负向证据</span></div></div>
         <div className="mrna-highlights">{data.highlights.map((item) => <article key={item.title}><span className="mrna-chip">{item.tag}</span><h3>{item.title}</h3><p>{item.detail}</p><SourceLinks ids={item.sourceIds} sources={data.sources} /></article>)}</div>

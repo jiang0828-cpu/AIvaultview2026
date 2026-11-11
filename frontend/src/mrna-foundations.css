@@ -1,0 +1,71 @@
+.mrna-foundations { min-width: 0; }
+.mrna-foundations h2 { font-size: 21px; line-height: 1.5; }
+.mrna-foundations h3 { font-size: 15px; line-height: 1.6; }
+.mrna-foundations p { line-height: 1.95; font-size: 13px; overflow-wrap: anywhere; }
+.mrna-found-intro { padding: 8px 0 27px; border-bottom: 1px solid var(--mrna-line); }
+.mrna-found-intro h2 { margin: 8px 0; font-size: 25px; }
+.mrna-found-intro > div > p { max-width: 820px; }
+.mrna-found-concepts { display: flex; gap: 24px; align-items: center; margin: 23px 0 14px; }
+.mrna-found-concepts dt { color: var(--mrna-ink); font-size: 15px; font-weight: 600; }
+.mrna-found-concepts dd { margin: 6px 0 0; font-size: 12px; color: var(--mrna-muted); }
+.mrna-found-concepts > svg { color: #819b90; flex-shrink: 0; }
+.mrna-rna-strip { display: grid; grid-template-columns: .9fr 1fr 2.4fr 1fr 1.2fr; gap: 4px; padding: 16px 0; }
+.mrna-rna-part { min-width: 0; min-height: 83px; padding: 12px 7px; border: 1px solid #c5d9cf; border-bottom: 4px solid #a2bdad; border-radius: 4px; background: #f1f6f0; color: #35564a; text-align: center; }
+.mrna-rna-part.orf { background: #e9f3f1; border-color: #a4c9c0; }
+.mrna-rna-part.cap, .mrna-rna-part.polya { background: #f4f1e9; border-color: #d9ceb8; }
+.mrna-rna-part strong, .mrna-rna-part span { display: block; overflow-wrap: anywhere; }
+.mrna-rna-part strong { font-size: 14px; }
+.mrna-rna-part span { margin-top: 8px; font-size: 11px; }
+.mrna-rna-part.selected { border-bottom-color: var(--mrna-teal); box-shadow: inset 0 0 0 1px var(--mrna-teal); }
+.mrna-found-detail { padding: 19px 22px; background: #f4f7f5; border-left: 3px solid #6d9e8a; }
+.mrna-found-detail h3 { margin: 0; color: var(--mrna-ink); }
+.mrna-found-detail p { margin: 8px 0; }
+.mrna-foundations .mrna-found-implication { color: #67776d; font-size: 12px; }
+.mrna-carrier-layout { display: grid; grid-template-columns: minmax(220px, .9fr) minmax(0, 1.4fr); align-items: center; gap: 32px; margin-top: 28px; }
+.mrna-carrier-figure { margin: 0; }
+.mrna-carrier-figure svg { display: block; width: 100%; max-width: 390px; margin: auto; }
+.mrna-carrier-figure figcaption { color: var(--mrna-muted); font-size: 11px; line-height: 1.9; }
+.mrna-carrier-parts { margin: 12px 0; }
+.mrna-carrier-parts > div { display: grid; grid-template-columns: 112px 1fr; gap: 15px; border-bottom: 1px solid var(--mrna-line); padding: 12px 0; }
+.mrna-carrier-parts dt { font-size: 13px; color: var(--mrna-ink); }
+.mrna-carrier-parts dd { margin: 0; font-size: 12px; color: #718079; line-height: 1.85; }
+.mrna-carrier-parts i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 7px; background: #177568; }
+.mrna-carrier-parts i.violet { background: #8582ad; }.mrna-carrier-parts i.ochre { background: #b39250; }.mrna-carrier-parts i.blue { background: #6488ad; }
+.mrna-route-switch { display: inline-flex; gap: 3px; padding: 4px; background: #eaf0ec; border-radius: 6px; max-width: 100%; }
+.mrna-route-switch button { border: 0; border-radius: 4px; background: transparent; padding: 10px 15px; color: #647c6d; font-size: 12px; }
+.mrna-route-switch button[aria-pressed=true] { background: white; color: var(--mrna-ink); box-shadow: 0 1px 3px #213e3510; }
+.mrna-route-purpose { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 20px 0; font-size: 12px; color: #718079; line-height: 1.8; }
+.mrna-route-purpose strong { color: #426354; font-weight: 500; }
+.mrna-mechanism-steps { display: grid; grid-template-columns: repeat(var(--step-count), minmax(0, 1fr)); list-style: none; padding: 0; margin: 0 0 13px; gap: 7px; }
+.mrna-mechanism-steps li { min-width: 0; }
+.mrna-mechanism-steps button { display: flex; flex-direction: column; align-items: flex-start; width: 100%; min-height: 121px; padding: 14px 12px; border: 1px solid var(--mrna-line); border-radius: 5px; background: white; text-align: left; }
+.mrna-mechanism-steps button > span { color: #91aa9b; font-size: 12px; margin-bottom: 9px; }
+.mrna-mechanism-steps strong { font-size: 13px; color: #355a49; line-height: 1.7; }
+.mrna-mechanism-steps small { color: #87978d; font-size: 10px; line-height: 1.7; margin-top: 5px; }
+.mrna-mechanism-steps button[aria-pressed=true] { border-color: #7da795; background: #f0f6f2; }
+.mrna-mechanism-barrier { display: flex; align-items: flex-start; gap: 10px; border-top: 1px solid #dce5df; padding-top: 12px; margin: 14px 0 10px; }
+.mrna-mechanism-barrier svg { flex-shrink: 0; margin-top: 6px; color: #887b58; }
+.mrna-mechanism-barrier p { margin: 0; font-size: 12px; }
+.mrna-mechanism-barrier strong { display: block; color: #887b58; }
+.mrna-antigen-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.mrna-antigen-grid article { border-top: 2px solid #c5d9ce; padding: 17px 0; }
+.mrna-antigen-grid article:nth-child(2) { border-top-color: #c7c4dc; }.mrna-antigen-grid article:nth-child(3) { border-top-color: #d4c7ab; }
+.mrna-antigen-grid h3 { margin: 12px 0 7px; }
+.mrna-checkpoint-band { display: flex; gap: 17px; padding: 23px 0; margin-top: 8px; border-top: 1px solid var(--mrna-line); border-bottom: 1px solid var(--mrna-line); }
+.mrna-checkpoint-band > svg { flex-shrink: 0; color: var(--mrna-teal); margin-top: 4px; }.mrna-checkpoint-band h3 { margin: 0; }
+.mrna-found-table-wrap { overflow-x: auto; margin-top: 25px; }
+.mrna-found-table { border-collapse: collapse; width: 100%; font-size: 12px; text-align: left; }
+.mrna-found-table caption { text-align: left; font-size: 14px; color: var(--mrna-ink); font-weight: 600; margin-bottom: 13px; }
+.mrna-found-table th, .mrna-found-table td { padding: 12px; border-bottom: 1px solid var(--mrna-line); vertical-align: top; line-height: 1.9; }
+.mrna-found-table thead { background: #edf3ef; color: #4c6e5c; }.mrna-found-table tbody th { min-width: 90px; color: #4c6e5c; font-weight: 500; }.mrna-found-table td { color: #718079; }
+.mrna-found-faq details { border-bottom: 1px solid var(--mrna-line); }
+.mrna-found-faq summary, .mrna-found-sources > summary { display: flex; align-items: center; justify-content: space-between; gap: 15px; list-style: none; cursor: pointer; color: var(--mrna-ink); font-size: 13px; padding: 17px 0; line-height: 1.8; }
+.mrna-found-faq summary::-webkit-details-marker, .mrna-found-sources > summary::-webkit-details-marker { display: none; }
+.mrna-found-faq summary svg { flex-shrink: 0; }.mrna-found-faq details[open] summary svg, .mrna-found-sources[open] > summary svg { transform: rotate(90deg); }
+.mrna-found-faq p { margin: 0 0 18px; max-width: 920px; }
+.mrna-found-next { border-top: 1px solid var(--mrna-line); border-bottom: 1px solid var(--mrna-line); display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 20px 0; font-size: 13px; color: #718079; }
+.mrna-found-next > div { display: flex; flex-wrap: wrap; gap: 18px; }.mrna-found-next button { display: inline-flex; align-items: center; gap: 8px; padding: 9px 0; border: 0; background: transparent; color: var(--mrna-teal); font-size: 12px; }
+.mrna-found-sources > summary { border-bottom: 1px solid var(--mrna-line); font-weight: 600; }.mrna-found-sources > summary span { display: inline-flex; align-items: center; gap: 10px; color: var(--mrna-muted); font-size: 11px; font-weight: 400; }
+.mrna-foundations button:focus-visible, .mrna-foundations summary:focus-visible { outline: 2px solid var(--mrna-teal); outline-offset: 3px; }
+@media (max-width: 1000px) { .mrna-carrier-layout { gap: 20px; grid-template-columns: minmax(180px, .8fr) minmax(0, 1.2fr); }.mrna-carrier-parts > div { grid-template-columns: 1fr; gap: 5px; }.mrna-antigen-grid { gap: 14px; } }
+@media (max-width: 720px) { .mrna-found-intro h2 { font-size: 22px; }.mrna-found-concepts { gap: 13px; }.mrna-found-concepts dt { font-size: 13px; }.mrna-foundations h2 { font-size: 19px; }.mrna-rna-strip { grid-template-columns: .9fr 1fr 1.5fr 1fr 1.2fr; gap: 3px; }.mrna-rna-part { padding: 12px 3px; min-height: 80px; }.mrna-rna-part strong { font-size: 11px; }.mrna-rna-part span { font-size: 9px; }.mrna-found-detail { padding: 17px 14px; }.mrna-carrier-layout, .mrna-antigen-grid { grid-template-columns: 1fr; }.mrna-carrier-figure { max-width: 360px; margin: auto; }.mrna-carrier-parts > div { grid-template-columns: 105px 1fr; gap: 10px; }.mrna-route-switch { display: grid; grid-template-columns: 1fr; width: 100%; }.mrna-route-switch button { text-align: left; }.mrna-mechanism-steps { grid-template-columns: 1fr; gap: 5px; }.mrna-mechanism-steps button { display: grid; grid-template-columns: 24px 1fr; gap: 0 10px; min-height: 66px; padding: 10px 12px; }.mrna-mechanism-steps button > span { grid-row: span 2; margin: 3px 0 0; }.mrna-mechanism-steps small { margin-top: 0; }.mrna-antigen-grid { gap: 5px; }.mrna-checkpoint-band { gap: 10px; }.mrna-found-table th, .mrna-found-table td { padding: 10px 7px; }.mrna-found-table tbody th { min-width: 60px; }.mrna-found-next { align-items: flex-start; flex-direction: column; }.mrna-found-sources > summary { flex-wrap: wrap; gap: 5px; }.mrna-found-sources .mrna-source-id { width: 34px; } }

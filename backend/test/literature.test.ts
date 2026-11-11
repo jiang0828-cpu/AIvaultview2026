@@ -40,7 +40,9 @@ test('targeted initialization creates the literature space, preserves user edits
   const edited = project.children[0];
   await db.content.update({ where: { id: edited.id }, data: { description: 'Editor revision' } });
   const count = await db.content.count();
+  await db.content.update({ where: { id }, data: { topics: ['阶段性', 'literature', 'writers'] } });
   assert.equal(await seedLiterature(db), id);
+  assert.deepEqual((await db.content.findUniqueOrThrow({ where: { id } })).topics, ['阶段性', 'literature', 'writers']);
   assert.equal(await db.content.count(), count);
   assert.equal((await db.content.findUniqueOrThrow({ where: { id: edited.id } })).description, 'Editor revision');
   assert.equal((await db.content.findUniqueOrThrow({ where: { id: unrelated.id } })).description, 'Keep this');

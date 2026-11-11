@@ -24,7 +24,6 @@ import {
   RefreshCw,
   ShieldCheck,
   FolderOpen,
-  BookOpen,
   ChevronRight,
   Compass,
   Layers3,
@@ -40,12 +39,12 @@ import {
   GraduationCap,
   FlaskConical,
   Dumbbell,
-  Palmtree,
   Network,
   Link2,
   Tags,
 } from "lucide-react";
 import { api, ApiError } from "./api";
+import { ProjectCycleTag } from "./ProjectCycleTag";
 import {
   filterProjects,
   getProjectMetadata,
@@ -55,15 +54,19 @@ import {
   readProjectFilters,
 } from "./projectFilters";
 import { LiteratureSpace, isLiteratureProject } from "./LiteratureSpace";
+import { WorldSpace } from './WorldSpace';
+import { isWorldProject } from './worldModel';
 import { MrnaResearchSpace, isMrnaProject } from "./MrnaResearchSpace";
 import {
   isCastleProject,
   isProject,
   projectFolder,
+  folderNavigationPath,
   projectStats,
 } from "./projectNavigation";
 import {
   Brand,
+  PersonalMotto,
   SceneNavigator,
   ContentBody,
   ErrorMessage,
@@ -134,6 +137,14 @@ export function App() {
       setError(error instanceof Error ? error.message : "退出失败");
     }
   }
+  function updateProject(updated: Content) {
+    const replace = (rows: Content[]): Content[] => rows.map((item) => ({
+      ...item,
+      ...(item.id === updated.id ? updated : {}),
+      ...(item.children ? { children: replace(item.children) } : {}),
+    }));
+    setItems((current) => replace(current));
+  }
   if (checking)
     return (
       <div className="initial-loading">
@@ -173,6 +184,7 @@ export function App() {
               error={error}
               reload={reload}
               logout={logout}
+              onProjectSaved={updateProject}
             />
           )
         }
@@ -227,13 +239,14 @@ function Login({ onLogin }: { onLogin: (role: Role) => void }) {
         <div className="login-symbol">
           <LockKeyhole size={30} />
         </div>
-        <p className="eyebrow">VAULTVIEW</p>
+        <p className="eyebrow">江湖行者 · VAULTVIEW</p>
         <h1>藏览</h1>
         <p className="login-subtitle">
-          沉淀值得留下的内容，
+          行走江湖，藏有所思，
           <br />
-          展示值得分享的成果。
+          览有所见。
         </p>
+        <PersonalMotto />
         <form onSubmit={submit}>
           <input
             type="text"
@@ -310,7 +323,7 @@ function Login({ onLogin }: { onLogin: (role: Role) => void }) {
         </form>
       </main>
       <footer>
-        VaultView <span>收藏、整理，也可对外展示</span>
+        VaultView <span>藏一路所学，览天地万象。</span>
       </footer>
     </div>
   );
@@ -323,10 +336,11 @@ type ShellProps = {
   error: string;
   reload: () => Promise<void>;
   logout: () => Promise<void>;
+  onProjectSaved: (project: Content) => void;
 };
 
 const projectSummaries: Record<string, string> = {
-  爱的城堡: "共同安排日常、拓展认知、精进专业、坚持运动，收藏每一次家庭假期。",
+  爱的城堡: "从通识学习到专业成长，再到运动习惯，收藏每一次认真生活。",
   "项目01｜中国高铁运行现状及盈亏分析":
     "围绕路线、车次、客流、成本和盈亏口径，建立一份可复核的中国高铁运行研究。",
   "项目02｜mRNA 肿瘤药物研究及开发进展":
@@ -343,22 +357,35 @@ const projectDateFormat = new Intl.DateTimeFormat("zh-CN", {
   month: "2-digit",
   day: "2-digit",
 });
+const projectDateTimeFormat = new Intl.DateTimeFormat("zh-CN", {
+  timeZone: "Asia/Shanghai",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  hourCycle: "h23",
+});
 
-function formatProjectDate(value: string) {
+function formatProjectDate(value: string, includeTime = false) {
   const date = new Date(value);
   return Number.isNaN(date.getTime())
     ? "未记录"
-    : projectDateFormat.format(date);
+    : (includeTime ? projectDateTimeFormat : projectDateFormat).format(date);
 }
 
 function SpaceOverview({
   projects,
   contentCount,
   onOpen,
+  role,
+  onProjectSaved,
 }: {
   projects: Content[];
   contentCount: number;
   onOpen: (project: Content) => void;
+  role: Role;
+  onProjectSaved: (project: Content) => void;
 }) {
   const [params, setParams] = useSearchParams();
   const filters = readProjectFilters(params);
@@ -387,19 +414,25 @@ function SpaceOverview({
   return (
     <section className="space-overview" aria-labelledby="space-overview-title">
       <div className="overview-hero">
+        <img
+          className="overview-landscape"
+          src="/images/jianghu-landscape.webp"
+          alt="青绿山水间，一名戴笠游侠沿石径远行"
+          width={2172}
+          height={724}
+          loading="eager"
+        />
         <div>
-          <p className="eyebrow">WELCOME TO VAULTVIEW</p>
-          <h1 id="space-overview-title">藏览空间</h1>
+          <p className="eyebrow">行者手记 · VAULTVIEW</p>
+          <h1 id="space-overview-title">藏览<span className="hero-title-note">一名游侠的见闻与作品</span></h1>
           <p className="overview-lead">
-            一个用于收藏、整理与展示的内容空间。
-            <br />
-            把个人知识、研究项目和课程成果，组织成可以被持续访问的窗口。
+            藏一路所学，览天地万象。<br />
+            记下研究、行旅与实践，与同路人分享所得。
           </p>
+          <PersonalMotto />
+          <span className="motto-origin">处世自勉 · 化用《孟子·尽心上》</span>
         </div>
-        <div className="overview-mark" aria-hidden="true">
-          <BookOpen size={28} />
-          <span>收藏 · 研究 · 展示</span>
-        </div>
+        <span className="hero-seal" aria-hidden="true">行<br />远</span>
       </div>
       <div className="overview-stats" aria-label="空间概览统计">
         <div>
@@ -417,7 +450,7 @@ function SpaceOverview({
       </div>
       <div className="overview-section-heading">
         <div>
-          <p className="eyebrow">PROJECTS</p>
+          <p className="eyebrow">行有所记 · 学有所成</p>
           <h2>项目列表</h2>
         </div>
         <span className="muted" role="status">
@@ -590,7 +623,7 @@ function SpaceOverview({
                 <span className="project-icon">
                   <FolderOpen size={18} />
                 </span>
-                <span>{scene?.label || "内容项目"}</span>
+                <span className="scene-label" data-scene={project.scene}>{scene?.label || "内容项目"}</span>
                 <span className="project-count">
                   {projectStats(project).folders > 0 &&
                     `${projectStats(project).folders} 个板块 · `}
@@ -615,15 +648,18 @@ function SpaceOverview({
                     <span>更新时间</span>
                     <time
                       dateTime={updatedAt}
-                      title="项目及资料的最近修改日期（北京时间）"
+                      title="项目及资料的最近修改时间（北京时间，精确到分钟）"
                     >
-                      {formatProjectDate(updatedAt)}
+                      {formatProjectDate(updatedAt, true)}
                     </time>
                   </span>
                   <span className="project-card-topics">
                     <span>项目标签</span>
                     {topics.length ? (
-                      <TopicPills topics={topics} />
+                      <span className="topic-pills">
+                        <ProjectCycleTag project={project} editable={role === "admin"} onSaved={onProjectSaved} />
+                        <TopicPills topics={topics.slice(1)} />
+                      </span>
                     ) : (
                       <span>暂无标签</span>
                     )}
@@ -659,17 +695,21 @@ function ProjectOverview({
   folder,
   onOpenContent,
   onBack,
+  role,
+  onProjectSaved,
 }: {
   project: Content;
   folder?: Content | null;
   onOpenContent: (content: Content) => void;
   onBack: () => void;
+  role: Role;
+  onProjectSaved: (project: Content) => void;
 }) {
   const current = folder || project;
   const children = current.children || [];
   const stats = projectStats(current);
   const castle = isCastleProject(project);
-  const sectionIcons = [House, GraduationCap, FlaskConical, Dumbbell, Palmtree];
+  const sectionIcons = [GraduationCap, FlaskConical, Dumbbell];
   const topics = folder?.topics?.length
     ? folder.topics
     : project.topics?.length
@@ -711,11 +751,8 @@ function ProjectOverview({
           </h1>
           <p>{summary}</p>
           <div className="project-topic-row">
-            {topics.slice(0, 3).map((topic, index) => (
-              <span className={index === 0 ? "project-cycle-tag" : ""} key={topic}>
-                {index === 0 ? `周期 · ${topic}` : `#${topic}`}
-              </span>
-            ))}
+            {!folder && isProject(project) && <ProjectCycleTag project={project} editable={role === "admin"} onSaved={onProjectSaved} />}
+            <TopicPills topics={!folder && isProject(project) ? topics.slice(1) : topics} />
           </div>
         </div>
         <div className="project-overview-emblem" aria-hidden="true">
@@ -744,10 +781,10 @@ function ProjectOverview({
       <div className="project-overview-heading">
         <div>
           <p className="eyebrow">PROJECT NAVIGATION</p>
-          <h2>{folder ? (folder.title === "“解构世界”-科技特长（专业）" ? "专业成长工作台" : "板块资料") : castle ? "生活板块" : "项目导览"}</h2>
+          <h2>{folder ? (folder.title === "专业" ? "专业成长工作台" : "板块资料") : castle ? "生活板块" : "项目导览"}</h2>
         </div>
       </div>
-      {folder?.title === "“解构世界”-科技特长（专业）" && (
+      {folder?.title === "专业" && (
         <ProfessionalGrowthDashboard
           modules={children}
           onOpenModule={onOpenContent}
@@ -991,7 +1028,7 @@ function ContentNetwork({
   );
 }
 
-function Shell({ role, items, loading, error, reload, logout }: ShellProps) {
+function Shell({ role, items, loading, error, reload, logout, onProjectSaved }: ShellProps) {
   const [params, setParams] = useSearchParams();
   const location = useLocation();
   const navigate = useNavigate();
@@ -1006,7 +1043,8 @@ function Shell({ role, items, loading, error, reload, logout }: ShellProps) {
   const projectId = Number(params.get("project")) || null;
   const project = projects.find((item) => item.id === projectId) || null;
   const folderId = Number(params.get("folder")) || null;
-  const folder = project ? projectFolder(project, folderId) : null;
+  const folder = project ? projectFolder(project, folderId)
+    : all.find((item) => item.id === folderId && item.type === "folder") || null;
   const parentFolder =
     project && folder && folder.parentId !== project.id
       ? projectFolder(project, folder.parentId)
@@ -1015,6 +1053,7 @@ function Shell({ role, items, loading, error, reload, logout }: ShellProps) {
   const overview =
     !params.get("id") &&
     !project &&
+    !folder &&
     !search &&
     !isNetwork &&
     location.pathname !== "/admin";
@@ -1038,15 +1077,7 @@ function Shell({ role, items, loading, error, reload, logout }: ShellProps) {
     setSearch("");
   };
   const openProject = (projectToOpen: Content) => {
-    const owner = projects.find(
-      (candidate) =>
-        candidate.id === projectToOpen.id ||
-        projectFolder(candidate, projectToOpen.id),
-    );
-    if (!owner) return;
-    navigate(
-      `/home?project=${owner.id}${owner.id === projectToOpen.id ? "" : `&folder=${projectToOpen.id}`}`,
-    );
+    navigate(folderNavigationPath(projects, projectToOpen));
     setMobileMenu(false);
     setSearch("");
   };
@@ -1099,10 +1130,10 @@ function Shell({ role, items, loading, error, reload, logout }: ShellProps) {
           </button>
         </div>
         <div className="workspace-label">
-          <span className="workspace-avatar">览</span>
+          <span className="workspace-avatar"><Compass size={19} /></span>
           <div>
-            <strong>藏览空间</strong>
-            <small>CONTENT SPACE</small>
+            <strong>江湖行者</strong>
+            <small>以所学修身，以所得助人</small>
           </div>
           <LockKeyhole size={14} />
         </div>
@@ -1141,7 +1172,7 @@ function Shell({ role, items, loading, error, reload, logout }: ShellProps) {
             selected={
               isAdmin || overview
                 ? null
-                : folder?.id || project?.id || selectedId
+                : selectedId || Number(params.get("doc")) || folder?.id || Number(params.get("issue")) || project?.id || null
             }
             onSelect={choose}
             onOpenFolder={openProject}
@@ -1149,6 +1180,10 @@ function Shell({ role, items, loading, error, reload, logout }: ShellProps) {
           {!items.length && !loading && (
             <p className="muted sidebar-empty">暂无目录</p>
           )}
+        </div>
+        <div className="sidebar-creed">
+          <span>行走有界，心有山河</span>
+          <PersonalMotto compact />
         </div>
         <div className="sidebar-bottom">
           <span className="session-avatar">
@@ -1195,7 +1230,7 @@ function Shell({ role, items, loading, error, reload, logout }: ShellProps) {
                 : isAdmin
                   ? "内容管理"
                   : folder
-                    ? `${project?.title || "项目"} / ${folder.title}`
+                    ? project ? `${project.title} / ${folder.title}` : folder.title
                     : activeProject
                       ? `${activeProject.title.replace(/^项目\d+｜/, "")}${parent?.type === "folder" ? ` / ${parent.title}` : ""}`
                       : project?.title ||
@@ -1222,6 +1257,13 @@ function Shell({ role, items, loading, error, reload, logout }: ShellProps) {
               重新加载
             </button>
           )}
+          {!isAdmin && !isNetwork && project &&
+            (Boolean(folder) || isMrnaProject(project) || isLiteratureProject(project) || isWorldProject(project)) && (
+              <div className="project-cycle-toolbar">
+                <ProjectCycleTag project={project} editable={role === "admin"} onSaved={onProjectSaved} />
+                <TopicPills topics={project.topics?.slice(1) || []} />
+              </div>
+            )}
           {isNetwork ? (
             <ContentNetwork projects={projects} onOpen={openProject} />
           ) : isAdmin ? (
@@ -1230,24 +1272,28 @@ function Shell({ role, items, loading, error, reload, logout }: ShellProps) {
             ) : (
               <Navigate to="/home" replace />
             )
-          ) : project && isMrnaProject(project) ? (
+          ) : project && !folder && isWorldProject(project) ? (
+            <WorldSpace key={project.id} project={project} onBack={() => navigate('/home')} />
+          ) : project && !folder && isMrnaProject(project) ? (
             <MrnaResearchSpace
               key={project.id}
               project={project}
               onBack={() => navigate("/home")}
             />
-          ) : project && isLiteratureProject(project) ? (
+          ) : project && !folder && isLiteratureProject(project) ? (
             <LiteratureSpace
               key={project.id}
               project={project}
               onBack={() => navigate("/home")}
             />
-          ) : project ? (
+          ) : project || folder ? (
             <ProjectOverview
-              project={project}
-              folder={folder}
+              project={(project || folder)!}
+              role={role}
+              onProjectSaved={onProjectSaved}
+              folder={project ? folder : null}
               onBack={() =>
-                folder
+                project && folder
                   ? openProject(parentFolder || project)
                   : navigate("/home")
               }
@@ -1263,6 +1309,8 @@ function Shell({ role, items, loading, error, reload, logout }: ShellProps) {
             ) : (
               <SpaceOverview
                 projects={projects}
+                role={role}
+                onProjectSaved={onProjectSaved}
                 contentCount={leaves.length}
                 onOpen={openProject}
               />
@@ -1477,7 +1525,7 @@ function Shell({ role, items, loading, error, reload, logout }: ShellProps) {
         </main>
         <footer className="app-footer">
           <span>藏览 / VaultView</span>
-          <span>收藏、整理，也让内容被看见。</span>
+          <span>一程山水，一程求索。</span>
         </footer>
       </div>
     </div>

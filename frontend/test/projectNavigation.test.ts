@@ -4,6 +4,7 @@ import {
   isProject,
   professionalModuleTarget,
   projectFolder,
+  folderNavigationPath,
   projectStats,
 } from "../src/projectNavigation.js";
 import { filterProjects, readProjectFilters } from "../src/projectFilters.js";
@@ -70,6 +71,25 @@ test("recursive counts exclude folders from documents and display formats", () =
     documents: 0,
     formats: 0,
   });
+});
+
+test("folder navigation resolves project, nested folder and standalone directory independently", () => {
+  const nested = node(3);
+  const project = node(1, { title: "项目｜Test", children: [node(2, { children: [nested] })] });
+  assert.equal(folderNavigationPath([project], project), "/home?project=1");
+  assert.equal(folderNavigationPath([project], nested), "/home?project=1&folder=3");
+  assert.equal(folderNavigationPath([project], node(8)), "/home?folder=8");
+});
+
+test("world issue title navigates to that issue rather than the latest issue", () => {
+  const issue1 = node(11, { scene: "system", description: "<!-- WORLD_ISSUE -->", sortOrder: 1 });
+  const issue2 = node(12, { scene: "system", description: "<!-- WORLD_ISSUE -->", sortOrder: 2 });
+  const method = node(13, { scene: "system" });
+  const world = node(10, { title: "观天下", scene: "system", description: "<!-- WORLD_PROJECT -->", children: [issue1, issue2, method] });
+  assert.equal(folderNavigationPath([world], world), "/home?project=10");
+  assert.equal(folderNavigationPath([world], issue1), "/home?project=10&issue=11");
+  assert.equal(folderNavigationPath([world], issue2), "/home?project=10&issue=12");
+  assert.equal(folderNavigationPath([world], method), "/home?project=10&folder=13");
 });
 test("professional module target opens the first document inside a module folder", () => {
   const folder = node(20, {

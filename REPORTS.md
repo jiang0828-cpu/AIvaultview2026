@@ -32,6 +32,12 @@
 
 当前最终提交：`3a6f15b`。最终回归：`npm test`（backend 21、frontend 19）、`npm run typecheck`、`npm run lint`、`npm run build`、`npm run db:seed:castle` 全部通过。嵌套导航实测确认：阶段方案详情可返回 `folder=120`，再返回爱的城堡项目首页；无效目录不会越界。
 
+## 增量结构调整
+
+2026-11-10：爱的城堡已收敛为三个直属板块 `通识`、`专业`、`运动`。seed 会将旧版五板块中的通识、专业、运动目录迁移为新名称，并移除日常与家庭游目录；专业下的成长计划、阶段方案、成果展示及 17 份课程资料保留。局域网实测 `/home?project=99` 的直属目录数量为 3，`/home?project=99&folder=104` 仍打开专业成长工作台。
+
+本次增量回归：backend 25、frontend 25 全部通过，`npm run typecheck`、`npm run lint`、`npm run build` 和 `npm run db:seed:castle` 全部通过。
+
 ## 剩余风险
 
 - Vite 构建仍提示 bundle 大于 500 kB；不影响本地 MVP 使用，可在后续做 code splitting。

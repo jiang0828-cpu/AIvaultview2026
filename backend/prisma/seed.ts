@@ -2,8 +2,10 @@ import "../src/config.js";
 import { PrismaClient } from "@prisma/client";
 import { caseProjects, type CaseNode } from "./cases.js";
 import { seedLiterature } from "./seed-literature.js";
+import { seedWorld } from "./seed-world.js";
 import { seedWriters } from "./seed-writers.js";
 import { seedCastle } from "./seed-castle.js";
+import { hasProjectCycle } from "../src/projectTags.js";
 const db = new PrismaClient();
 const scenes = [
   ["system", "系统管理"],
@@ -21,7 +23,8 @@ async function ensureCaseNode(node: CaseNode, parentId: number) {
     title: node.title,
     type: node.type,
     scene: node.scene,
-    topics: node.topics,
+    topics: node.type === "folder" && existing && hasProjectCycle(existing.topics)
+      ? existing.topics : node.topics,
     imagesJson: node.imagesJson,
     coverUrl: node.coverUrl,
     fileUrl: node.fileUrl,
@@ -231,6 +234,7 @@ try {
   await consolidateAiCourse();
   await seedWriters(db, await seedLiterature(db));
   await seedCastle(db);
+  await seedWorld(db);
   console.log("Six scene modules are ready.");
 } finally {
   await db.$disconnect();

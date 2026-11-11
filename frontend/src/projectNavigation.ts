@@ -1,4 +1,5 @@
 import { flatten, type Content } from "./types.js";
+import { isWorldProject, worldIssues } from './worldModel.js';
 
 export function isCastleProject(content: Content) {
   return (
@@ -11,7 +12,7 @@ export function isCastleProject(content: Content) {
 export function isProject(content: Content) {
   return (
     content.type === "folder" &&
-    (content.title.startsWith("项目") || isCastleProject(content))
+    (content.title.startsWith("项目") || isCastleProject(content) || isWorldProject(content))
   );
 }
 
@@ -21,6 +22,15 @@ export function projectFolder(project: Content, id: number | null) {
       (item) => item.type === "folder" && item.id === id,
     ) || null
   );
+}
+
+export function folderNavigationPath(projects: Content[], folder: Content) {
+  const owner = projects.find((project) => project.id === folder.id || projectFolder(project, folder.id));
+  if (!owner) return `/home?folder=${folder.id}`;
+  if (owner.id === folder.id) return `/home?project=${owner.id}`;
+  if (isWorldProject(owner) && worldIssues(owner).some((issue) => issue.id === folder.id))
+    return `/home?project=${owner.id}&issue=${folder.id}`;
+  return `/home?project=${owner.id}&folder=${folder.id}`;
 }
 
 export function professionalModuleTarget(module: Content | undefined) {

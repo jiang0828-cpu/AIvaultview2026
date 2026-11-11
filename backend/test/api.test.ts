@@ -274,6 +274,38 @@ test("topics are limited to three labels and child content inherits its scene", 
     .send({ title: "Bad tag", type: "text", topics: ["food drink"] })
     .expect(400);
 });
+test("project cycle changes persist, retain themes and fields, and require administrator permission", async () => {
+  const agent = await login("admin");
+  const project = (await agent.post("/api/contents").send({
+    title: "项目｜Cycle editing", type: "folder", scene: "tools",
+    topics: ["长期性", "AI", "learning"], description: "Keep this", sortOrder: 12,
+  }).expect(201)).body;
+  await request(app).patch(`/api/contents/${project.id}/cycle`).send({ cycle: "临时性" }).expect(401);
+  const visitor = await login();
+  await visitor.patch(`/api/contents/${project.id}/cycle`).send({ cycle: "临时性" }).expect(403);
+  for (const cycle of ["阶段性", "临时性", "长期性"]) {
+    const response = await agent.patch(`/api/contents/${project.id}/cycle`).send({ cycle }).expect(200);
+    assert.deepEqual(response.body.topics, [cycle, "AI", "learning"]);
+    assert.equal(response.body.description, "Keep this");
+    assert.equal(response.body.sortOrder, 12);
+    assert.equal(response.body.scene, "tools");
+    const stored = (await agent.get(`/api/contents/${project.id}`).expect(200)).body;
+    assert.deepEqual(stored.topics, [cycle, "AI", "learning"]);
+  }
+  for (const body of [{ cycle: "永久" }, {}, { cycle: "临时性", title: "Unexpected edit" }]) {
+    await agent.patch(`/api/contents/${project.id}/cycle`).send(body).expect(400);
+  }
+  assert.deepEqual((await db.content.findUniqueOrThrow({ where: { id: project.id } })).topics,
+    ["长期性", "AI", "learning"]);
+  await agent.patch("/api/contents/999999/cycle").send({ cycle: "临时性" }).expect(404);
+  const folder = (await agent.post("/api/contents").send({ title: "Folder", type: "folder" }).expect(201)).body;
+  await agent.patch(`/api/contents/${folder.id}/cycle`).send({ cycle: "临时性" }).expect(400);
+  const castle = (await agent.post("/api/contents").send({
+    title: "爱的城堡", type: "folder", scene: "life", topics: ["长期性", "family", "life"],
+  }).expect(201)).body;
+  await agent.patch(`/api/contents/${castle.id}/cycle`).send({ cycle: "阶段性" }).expect(200);
+});
+
 test("access log persists valid actions and rejects unknown content", async () => {
   const row = await db.content.create({
     data: { title: "Article", type: "text" },

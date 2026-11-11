@@ -33,7 +33,7 @@ after(async () => {
   if (directory) await rm(directory, { recursive: true, force: true });
 });
 
-test("castle seed creates five ordered sections and templates, preserves edits and repairs missing templates", async () => {
+test("castle seed creates three ordered sections and templates, preserves edits and repairs missing templates", async () => {
   const unrelated = await db.content.create({
     data: {
       title: "Existing project",
@@ -59,8 +59,10 @@ test("castle seed creates five ordered sections and templates, preserves edits a
     project.children.map((item) => item.title),
     castleProject.sections.map((section) => section.title),
   );
-  const professional = project.children[2];
-  assert.equal(professional.title, "“解构世界”-科技特长（专业）");
+  assert.equal(project.children.length, 3);
+  assert.deepEqual(project.children.map((item) => item.title), ["通识", "专业", "运动"]);
+  const professional = project.children[1];
+  assert.equal(professional.title, "专业");
   assert.deepEqual(
     professional.children.filter((item) => item.type === "folder").map((item) => item.title),
     ["成长计划", "阶段方案", "成果展示"],
@@ -72,7 +74,7 @@ test("castle seed creates five ordered sections and templates, preserves edits a
   for (const [index, folder] of project.children.entries()) {
     assert.equal(folder.type, "folder");
     assert.equal(folder.sortOrder, index);
-    assert.equal(folder.children.length, index === 2 ? 7 : 1);
+    assert.equal(folder.children.length, index === 1 ? 7 : 1);
     assert.equal(folder.children[0].type, "text");
     assert.equal(
       folder.children[0].title,
@@ -84,7 +86,7 @@ test("castle seed creates five ordered sections and templates, preserves edits a
       castleProject.sections[index].topics,
     );
     assert.match(folder.children[0].description, /\| ---/);
-    if (index === 2) {
+    if (index === 1) {
       const sectionFolders = folder.children.filter((item) => item.type === "folder");
       assert.match(folder.children[0].description, /双螺旋过程/);
       assert.match(folder.children[0].description, /技术向善检查/);
@@ -111,7 +113,9 @@ test("castle seed creates five ordered sections and templates, preserves edits a
     data: { description: "User revision", sortOrder: 7 },
   });
   const count = await db.content.count();
+  await db.content.update({ where: { id }, data: { topics: ["临时性", "family", "life"] } });
   assert.equal(await seedCastle(db), id);
+  assert.deepEqual((await db.content.findUniqueOrThrow({ where: { id } })).topics, ["临时性", "family", "life"]);
   assert.equal(await db.content.count(), count);
   const kept = await db.content.findUniqueOrThrow({ where: { id: edited.id } });
   assert.equal(kept.description, "User revision");
@@ -122,7 +126,7 @@ test("castle seed creates five ordered sections and templates, preserves edits a
     "Keep this",
   );
   await db.content.delete({
-    where: { id: project.children[4].children[0].id },
+    where: { id: project.children[2].children[0].id },
   });
   await seedCastle(db);
   assert.equal(await db.content.count(), count);
@@ -152,7 +156,7 @@ test("castle tree is authenticated and administrators can edit templates and add
   const project = scene.children.find(
     (item: { title: string }) => item.title === "爱的城堡",
   );
-  assert.equal(project.children.length, 5);
+  assert.equal(project.children.length, 3);
   const folder = project.children[0];
   const template = folder.children[0];
   await visitor

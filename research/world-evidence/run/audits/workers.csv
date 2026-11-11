@@ -1,0 +1,8 @@
+id,started,ended,agent,model,effort,class,status,first_pass,fix_lines,critical,major,minutes,input,cached,output,thread,report,note,backend
+macro-research,2026-11-11T09:26,2026-11-11T09:26,collaboration,inherit,inherit,research,done,,,,,,,,,,,research/world-evidence/notes/issue-001.md,
+nvidia-research,2026-11-11T09:26,2026-11-11T09:26,collaboration,inherit,inherit,research,done,,,,,,,,,,,research/world-evidence/notes/issue-002.md,
+evidence-ui,2026-11-11T09:26,2026-11-11T09:26,collaboration,inherit,inherit,ui,done,,,,,,,,,,,frontend-evidence-view,
+G1-opus,2026-11-11T09:27,2026-11-11T09:42,claude,opus,xhigh,gate,done,,,0,0,,,,,,audits/opus.md,sha=dfebbb6b16d36369fd10d464a0cc64e8d50f9278,
+G1-astra,2026-11-11T09:27,2026-11-11T09:42,collaboration,gpt-6-astra,high,gate,done,,,0,0,,,,,,audits/astra.md,sha=dfebbb6b16d36369fd10d464a0cc64e8d50f9278,
+G2-opus,2026-11-11T09:44,2026-11-11T09:54,claude,opus,xhigh,gate,done,,,0,0,,,,,,audits/opus-final.md,sha:c0c2172644229d81b982847e17a776420720d85a,
+G2-astra,2026-11-11T09:44,2026-11-11T09:52,collaboration,gpt-6-astra,high,gate,done,,,0,0,,,,,,audits/astra-final.md,sha:c0c2172644229d81b982847e17a776420720d85a,

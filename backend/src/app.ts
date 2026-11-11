@@ -12,6 +12,7 @@ import { resolve } from "node:path";
 import { Prisma, type PrismaClient, type Content } from "@prisma/client";
 import { z } from "zod";
 import { projectRoot, type AppConfig } from "./config.js";
+import { projectCycles, hasProjectCycle } from "./projectTags.js";
 
 type Role = "visitor" | "admin";
 export const sceneKeys = [
@@ -23,7 +24,7 @@ export const sceneKeys = [
   "other",
 ] as const;
 export type SceneKey = (typeof sceneKeys)[number];
-export const projectCycleKeys = ["长期性", "阶段性", "临时性"] as const;
+export const projectCycleKeys = projectCycles;
 class HttpError extends Error {
   constructor(
     public status: number,
@@ -396,6 +397,28 @@ export function createApp(db: PrismaClient, config: AppConfig) {
         return tx.content.update({
           where: { id },
           data: parent ? { ...data, scene: parent.scene } : data,
+        });
+      });
+      res.json(row);
+    }),
+  );
+  app.patch(
+    "/api/contents/:id/cycle",
+    admin,
+    wrap(async (req, res) => {
+      const id = idOf(req.params.id);
+      const { cycle } = z.object({ cycle: z.enum(projectCycles) }).strict().parse(req.body);
+      const row = await db.$transaction(async (tx) => {
+        const current = await tx.content.findUnique({ where: { id } });
+        if (!current) return fail(404, "NOT_FOUND", "项目不存在");
+        if (current.type !== "folder" ||
+          !(current.title.startsWith("项目") || (current.title === "爱的城堡" && current.scene === "life")))
+          return fail(400, "NOT_PROJECT", "只能修改项目的周期标签");
+        if (!hasProjectCycle(current.topics))
+          return fail(400, "INVALID_PROJECT_TOPICS", "请先在内容管理中设置项目周期和两个主题标签");
+        return tx.content.update({
+          where: { id },
+          data: { topics: [cycle, ...current.topics.slice(1)] },
         });
       });
       res.json(row);

@@ -1,0 +1,325 @@
+/* Shared controls use the same ink, seal and jade palette across project spaces. */
+:root {
+  --surface: #fff;
+  --surface-soft: #f0f3ef;
+  --control-line: #cdd7cf;
+  --focus-ring: #a33f3433;
+  --badge-ink: #486353;
+  --badge-wash: #edf3ee;
+  --badge-line: #d3e0d5;
+}
+::selection { background: #dce8db; color: #25392e; }
+input::placeholder, textarea::placeholder { color: #758379; opacity: 1; }
+input[type="checkbox"], input[type="radio"] { accent-color: var(--cinnabar); }
+time, .project-count, .overview-stats strong, .network-summary strong { font-variant-numeric: tabular-nums; }
+button, a, input, select, textarea { transition: color .15s ease, background-color .15s ease, border-color .15s ease, box-shadow .15s ease; }
+
+/* Static labels stay distinct from commands and share a stable baseline. */
+.topic-pills { gap: 6px; min-width: 0; max-width: 100%; vertical-align: middle; }
+.topic-pill, .project-card-topics .topic-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 25px;
+  max-width: 100%;
+  padding: 3px 7px;
+  border: 1px solid var(--badge-line);
+  border-radius: 3px;
+  background: var(--badge-wash);
+  color: var(--badge-ink);
+  font-size: 11px;
+  line-height: 17px;
+  white-space: normal;
+  cursor: default;
+}
+.topic-pill > span { min-width: 0; overflow-wrap: anywhere; }
+.topic-pill > svg { flex: 0 0 auto; opacity: .8; }
+.topic-pill[data-topic="ai"], .topic-pill[data-topic="technology"] {
+  --badge-ink: #47677c; --badge-wash: #eef3f7; --badge-line: #cfdee8;
+}
+.topic-pill[data-topic="health"], .topic-pill[data-topic="research"] {
+  --badge-ink: #38695c; --badge-wash: #edf5ef; --badge-line: #cfe1d6;
+}
+.topic-pill[data-topic="business"], .topic-pill[data-topic="finance"] {
+  --badge-ink: #776039; --badge-wash: #f5f1e8; --badge-line: #e3dac7;
+}
+.topic-pill[data-topic="travel"], .topic-pill[data-topic="nanjing"], .topic-pill[data-topic="food&drink"] {
+  --badge-ink: #8a5042; --badge-wash: #f8eeea; --badge-line: #e8d4cb;
+}
+[data-cycle="长期性"] { --badge-ink: #3d6958; --badge-wash: #eaf2eb; --badge-line: #c5d8c9; }
+[data-cycle="阶段性"] { --badge-ink: #914a3d; --badge-wash: #f7ece7; --badge-line: #e3c8bc; }
+[data-cycle="临时性"] { --badge-ink: #7a633c; --badge-wash: #f5f0e5; --badge-line: #e0d4b9; }
+.topic-pill.project-cycle-pill, .project-cycle-field {
+  color: var(--badge-ink, #914a3d);
+  background: var(--badge-wash, #f7ece7);
+  border: 1px solid var(--badge-line, #e3c8bc);
+  border-left: 2px solid var(--badge-ink, #914a3d);
+  border-radius: 3px;
+  font-weight: 600;
+}
+.project-cycle-control { max-width: 100%; gap: 7px; }
+.project-cycle-field { padding: 0 7px; gap: 5px; min-height: 30px; }
+.project-cycle-field select { font-weight: 600; min-height: 28px; min-width: 76px; padding: 0 3px; color: inherit; }
+.project-cycle-field:focus-within { outline: 2px solid #a33f3455; outline-offset: 2px; }
+.project-cycle-field select:focus { outline: none; }
+.cycle-save-status { display: inline-flex; align-items: center; gap: 4px; color: #617366; font-size: 11px; }
+.status-spinner { animation: seal-spin 1s linear infinite; }
+@keyframes seal-spin { to { transform: rotate(360deg); } }
+
+.type-badge, .project-overview-status, .mrna-chip, .mrna-status, .mrna-scope-badge,
+.world-timeline-status, .literature-stage, .travel-region, .writer-genres > span, .writer-tags > span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 25px;
+  max-width: 100%;
+  gap: 5px;
+  padding: 3px 7px;
+  border: 1px solid #d8e1d9;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 17px;
+  overflow-wrap: anywhere;
+}
+.type-badge, .type-square, .project-content-type { background: #edf3ee; color: #496952; }
+.type-badge.video, .type-square.video, .project-content-type.video { background: #edf2f7; color: #4f6b86; }
+.type-badge.ppt, .type-square.ppt, .project-content-type.ppt { background: #f7ede7; color: #92543e; }
+.type-badge.pdf, .type-square.pdf, .project-content-type.pdf { background: #f7ecec; color: #985858; }
+.type-badge.longimage, .type-square.longimage, .project-content-type.longimage { background: #edf2f3; color: #4b7180; }
+.type-badge.mindmap, .type-square.mindmap, .project-content-type.mindmap { background: #edf3e9; color: #577144; }
+.type-square, .project-content-type { border: 1px solid #243b3910; border-radius: 4px; }
+.project-overview-status { color: #53685a; background: #ffffffc9; }
+.literature-stage { color: #fff6e4; background: #3b5548; border-color: #6d8471; }
+.writer-genres > span, .writer-tags > span, .travel-tags > span { color: #546c59; background: #eff4ec; border-color: #dbe5d4; }
+.travel-tags > span { display: inline-flex; padding: 3px 7px; border: 1px solid #dbe5d4; border-radius: 3px; line-height: 17px; font-size: 11px; }
+.world-timeline-status.scheduled { border-style: dashed; }
+.mrna-status.negative { border-color: #dfbaba; }
+.mrna-status.mixed, .mrna-status.caution { border-color: #dfd1b4; }
+.mrna-status { color: #3d6953; }
+.mrna-status.negative { color: #864b3c; }
+.mrna-status.mixed, .mrna-status.caution { color: #705c26; }
+.mrna-scope-badge { color: #35654b; }
+.mrna-scope-badge.adjacent { color: #526478; background: #edf1f7; border-color: #d7dfe9; }
+.mrna-scope-badge.excluded { color: #854b39; background: #f6e9e1; border-color: #e6cdbf; }
+.scene-label { display: inline-flex; min-height: 24px; align-items: center; padding: 2px 6px; border: 1px solid #dbe3d7; background: #f0f4ec; color: #4e654b; border-radius: 3px; font-size: 11px; }
+.scene-label[data-scene="tools"] { color: #4e6676; border-color: #d6e0e5; background: #eff3f5; }
+.scene-label[data-scene="work"] { color: #815041; border-color: #e5d6cc; background: #f6eeea; }
+.writer-tags > button { border: 1px solid #c8d7bd; min-height: 30px; color: #4c6544; background: #eef4e9; }
+.writer-tags > button:hover { color: #8b4033; background: #f7ece5; border-color: #c89e8c; }
+
+.button { min-height: 36px; padding: 8px 13px; border-color: var(--control-line); border-radius: 4px; color: #41584a; background: #fff; font-weight: 500; }
+.button:hover:not(:disabled) { background: #edf2ed; border-color: #a4b8aa; }
+.button.primary { color: #fff; background: var(--cinnabar); border-color: var(--cinnabar); box-shadow: inset 0 0 0 1px #ffffff0f; }
+.button.primary:hover:not(:disabled) { color: #fff; background: #863329; border-color: #863329; }
+.button.subtle { background: transparent; border-color: transparent; }
+.button:disabled { opacity: .55; }
+.icon-button { border-radius: 4px; }
+.icon-button.danger:hover { background: #f9e9e5; color: #9c3b30; }
+.text-link, .back-link { color: #496b59; gap: 6px; min-height: 30px; }
+.text-link:hover, .back-link:hover { color: var(--cinnabar); text-decoration: underline; text-underline-offset: 4px; }
+.world-download, .mrna-download { border-radius: 4px; min-height: 36px; }
+.world-download:hover { border-color: #a8bcad; background: #f0f4ee; }
+.mrna-download { background: #38675d; border-color: #38675d; }
+.mrna-download:hover { background: #2b534a; }
+
+.project-list-search, .search-box, .password-input, .world-source-search, .mrna-search, .writer-search {
+  border-color: var(--control-line);
+  border-radius: 4px;
+  background: #fff;
+}
+.project-list-search:hover, .search-box:hover, .password-input:hover { border-color: #9fb4a5; }
+.project-list-search:focus-within, .search-box:focus-within, .password-input:focus-within,
+.world-source-search:focus-within, .mrna-search:focus-within, .writer-search:focus-within {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+  border-color: #ad6759;
+}
+.project-list-select select, .project-date-grid input,
+.editor-fields input, .editor-fields select, .editor-fields textarea,
+.mrna-filters select, .writer-filters select, .literature-index-filters select,
+.travel-toolbar select, .world-edition-bar select {
+  border: 1px solid var(--control-line);
+  border-radius: 4px;
+  color: #384f41;
+  background-color: #fff;
+}
+.project-list-select select:hover, .project-date-grid input:hover,
+.editor-fields input:hover, .editor-fields select:hover, .editor-fields textarea:hover { border-color: #9fb4a5; }
+.world-edition-bar select { min-height: 36px; padding: 6px 8px; }
+.world-edition-bar label { gap: 8px; flex-wrap: wrap; }
+.project-date-filters summary { border-radius: 3px; padding-right: 8px; }
+.project-date-filters summary:hover { color: var(--cinnabar); }
+.project-date-filters[open] { border-bottom-color: #b6c7b9; }
+.project-date-grid { padding: 12px 0 4px; }
+.project-list-icon { border-color: var(--control-line); }
+.project-list-icon:hover { border-color: #b28c79; background: #f7eeea; }
+
+/* View tabs use a seal-coloured underline; filters use a compact segmented treatment. */
+.project-content-tabs, .world-nav, .mrna-tabs, .literature-tabs { gap: 20px; scrollbar-width: thin; scrollbar-color: #b6c4b6 transparent; }
+.project-content-tabs > button, .world-nav > button, .mrna-tabs > button, .literature-tabs > button {
+  position: relative;
+  color: #5b7061;
+  min-height: 47px;
+  border-bottom-width: 2px;
+  border-bottom-style: solid;
+  border-bottom-color: transparent;
+}
+.project-content-tabs > button.selected, .world-nav > button.active,
+.mrna-tabs > button.active, .literature-tabs > button.active {
+  color: var(--cinnabar);
+  border-bottom-color: var(--cinnabar);
+  font-weight: 600;
+}
+.literature-tabs button.active::after { display: none; }
+.project-content-tabs > button:hover, .world-nav > button:hover,
+.mrna-tabs > button:hover, .literature-tabs > button:hover { color: #863329; background: #a33f3406; }
+.course-tabs button, .network-modes button, .travel-city-tabs button,
+.world-lens-tabs button, .world-segments button, .world-scenario-tabs button,
+.mrna-scope-filter button, .writer-pagination button {
+  border: 1px solid var(--control-line);
+  border-radius: 4px;
+  background: #fafcf9;
+  color: #526b59;
+  min-height: 34px;
+  font-weight: 500;
+}
+.course-tabs button:hover, .network-modes button:hover, .travel-city-tabs button:hover,
+.world-lens-tabs button:hover, .world-segments button:hover, .mrna-scope-filter button:hover,
+.writer-pagination button:hover:not(:disabled) { border-color: #b1bfae; background: #edf2e9; }
+.course-tabs button.active, .network-modes button.active, .travel-city-tabs button.active,
+.world-lens-tabs button[aria-selected="true"], .world-segments button[aria-pressed="true"],
+.mrna-scope-filter button.active, .writer-pagination button[aria-current="page"] {
+  color: #8b4033;
+  border-color: #c89e8c;
+  background: #f7ece5;
+  box-shadow: inset 0 -2px 0 #a33f3426;
+}
+.world-scenario-tabs button[aria-pressed="true"] { border-width: 1px; box-shadow: inset 0 -2px 0 currentColor; }
+.course-document-header { background: #f6f7f5f5; }
+
+.sidebar .nav-link > span, .sidebar .tree-folder-link small, .sidebar .tree-heading > span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 21px;
+  min-height: 19px;
+  padding: 1px 5px;
+  background: #ffffff0b;
+  border: 1px solid #ffffff12;
+  border-radius: 3px;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+.sidebar .nav-link.active > span { color: #f0d9bc; border-color: #b790663b; background: #cba17617; }
+.sidebar .tree-folder-toggle { min-height: 40px; }
+.sidebar .tree-item.active { box-shadow: inset 2px 0 0 #c4775f; }
+.sidebar .content-tree .content-tree { border-left: 1px solid #75877930; }
+.sidebar .tree-folder-link > svg { opacity: .85; }
+.sidebar .tree-folder-toggle:hover > svg { color: #e6c69a; }
+.workspace-label { border-top-color: #66756a55; border-bottom-color: #66756a55; }
+
+.overview-section-heading h2, .library-heading h1, .network-heading h1 { font-weight: 600; }
+.overview-section-heading h2::before { content: ""; display: inline-block; width: 4px; height: 16px; margin-right: 9px; border-radius: 1px; background: var(--cinnabar); }
+.project-card { padding: 20px 20px 17px; }
+.project-card-topline { gap: 8px; }
+.project-count { line-height: 1.6; }
+.project-card-footer { gap: 12px; align-items: flex-end; }
+.project-card-metadata { font-size: 11px; gap: 8px 12px; }
+.project-card-date { font-size: 11px; gap: 7px; }
+.project-card-topics { gap: 7px; align-items: flex-start; }
+.project-card-topics > span:first-child { line-height: 25px; }
+.project-card-footer .text-link { min-height: 30px; white-space: nowrap; }
+.project-overview-emblem { letter-spacing: 0; background: #ffffff8c; border-radius: 4px; }
+.project-overview-tools { --project-accent: #506e7c; --project-soft: #edf2f3; }
+.project-overview-work { --project-accent: #8c5846; --project-soft: #f4eeea; }
+.project-overview-stats > div { background: #fdfefb; }
+.project-content-card { border-radius: 4px; border-color: #d6dfd5; }
+.project-content-card:hover { border-color: #a5b8a8; background: #fafcf8; }
+.result-row:hover { background: #edf2e9; }
+.result-row small { color: #657767; }
+.detail-heading { flex-wrap: wrap; }
+.detail-heading > .muted { color: #687a6c; font-size: 11px; }
+.network-hub { border-color: #b0876a; background: #f7eee4; color: #844737; box-shadow: 0 0 0 5px #f7eee44d; }
+.network-hub span { color: #7f6c53; }
+.network-node { border-radius: 4px; box-shadow: 0 3px 12px #263b3009; }
+.network-node.focused { border-color: #b2846d; }
+.network-node:nth-of-type(5n) { border-top-color: #65766a; }
+.network-node.focused { box-shadow: 0 0 0 2px #c7ad8f55, 0 6px 18px #315d4d18; }
+.network-node-kicker { color: #637768; }
+.network-open { color: #526c5b; }
+.network-open:hover { color: #963f32; background: #f7eeea; }
+
+.markdown { line-height: 1.95; }
+.markdown h2 { padding-bottom: 9px; border-bottom: 1px solid #dce4da; }
+.markdown h3 { border-left: 2px solid #b48b6f; padding-left: 10px; }
+.markdown a { color: #386c5c; text-decoration-color: #92b4a2; text-underline-offset: 3px; }
+.markdown a:hover { color: var(--cinnabar); text-decoration-color: var(--cinnabar); }
+.markdown pre { background: #ecf0ea; border: 1px solid #d8e0d6; border-radius: 4px; }
+.markdown :not(pre) > code { background: #edf0e9; color: #795241; border-radius: 3px; padding: 2px 4px; }
+.markdown th { color: #405a47; background: #eaf0e6; }
+.markdown td { color: #465c4c; }
+.markdown tbody tr:nth-child(even) { background: #f6f8f2; }
+.markdown blockquote { border-left-color: #b26c54; background: #f3f3ec; }
+.mindmap-viewer { background: #f2f6ee; border-color: #d3decf; border-radius: 4px; }
+.mindmap-root { background: #e8f0e2; border-color: #91a77e; color: #456334; border-radius: 4px; }
+.mindmap-branch { border-radius: 4px; background: #ffffffd9; }
+.slide-viewer, .long-image-viewer { border-color: #cfd9cf; border-radius: 4px; }
+.slide-controls, .pdf-toolbar { color: #4d6656; background: #f0f4eb; border-color: #d4dfce; }
+.slide-controls .icon-button, .pdf-toolbar .icon-button { color: #49694e; }
+.slide-controls .icon-button:hover, .pdf-toolbar .icon-button:hover { background: #e1e9da; }
+.long-image-viewer summary { color: #496b55; }
+
+.error, .project-cycle-error { color: #943c32; background: #faece7; border: 1px solid #ebcec4; border-radius: 4px; }
+.project-cycle-error { padding: 5px 7px; font-size: 11px; }
+.empty > svg { color: #8ca184; }
+.empty h3 { font-family: var(--literary-font); color: #4d6650; }
+.table-wrap { border: 1px solid #d6dfd2; border-radius: 4px; background: #fff; }
+.table-wrap th { background: #edf2e8; color: #51694f; font-weight: 600; }
+.table-wrap td { color: #51664f; }
+.table-wrap tbody tr:hover { background: #f5f8f0; }
+.table-wrap .table-title { color: #314b36; }
+.table-wrap th:last-child, .table-wrap td:last-child { white-space: nowrap; }
+.table-wrap .topic-pills { min-width: 100px; }
+.editor-dialog { border: 1px solid #c9d5c5; border-radius: 6px; box-shadow: 0 24px 80px #20362833; }
+.editor-dialog::backdrop { background: #202d2599; backdrop-filter: blur(3px); }
+.dialog-heading { background: #f0f4e9; border-color: #d4dfce; }
+.dialog-heading h2 { font-family: var(--literary-font); color: #354f38; }
+.editor-fields label { color: #4f664e; font-weight: 500; }
+.editor-fields textarea { line-height: 1.7; }
+.dialog-actions { border-top: 1px solid #d8e1d2; background: #f8faf4; }
+.editor-fields, .table-wrap, .project-content-tabs, .course-tabs { scrollbar-width: thin; scrollbar-color: #b3c3ae transparent; }
+.growth-dashboard { border-radius: 6px; }
+.growth-tabs button, .growth-route, .growth-module-note, .growth-showcase-grid article { border-radius: 4px; }
+.growth-tabs button.active { border-color: #b78e65; background: #f8efdc; }
+.travel-sort button { min-height: 32px; padding: 5px 9px; border: 1px solid transparent; border-radius: 3px; }
+.travel-sort button.active { color: #8b4033; background: #f7ece5; border-color: #dfbfae; }
+.travel-attraction-top > b { padding: 3px 6px; border: 1px solid #d8e3d0; border-radius: 3px; color: #506946; background: #f0f5e9; font-size: 11px; }
+.world-source-links a, .mrna-source-links a { border-radius: 3px; text-underline-offset: 3px; }
+.world-source-links a:hover, .mrna-source-links a:hover { color: var(--cinnabar); background: #f6eae2; }
+
+@media (max-width: 760px) {
+  .topic-pill, .project-card-topics .topic-pill { min-height: 26px; padding: 3px 6px; }
+  .project-card { padding: 17px 15px 15px; }
+  .project-card-footer { flex-wrap: wrap; gap: 8px; }
+  .project-card-metadata { flex-basis: 100%; }
+  .project-card-footer > .text-link { margin-left: auto; }
+  .project-card-topics > span:first-child { line-height: 26px; }
+  .project-card-date { font-size: 11px; }
+  .project-content-tabs, .world-nav, .mrna-tabs, .literature-tabs { gap: 15px; }
+  .project-content-tabs > button, .world-nav > button, .mrna-tabs > button, .literature-tabs > button { min-height: 46px; }
+  .course-tabs button, .world-lens-tabs button, .world-segments button,
+  .world-scenario-tabs button, .mrna-scope-filter button { min-height: 38px; }
+  .project-cycle-toolbar { gap: 7px; }
+  .project-cycle-field, .project-cycle-field select { min-height: 34px; }
+  .world-edition-bar label, .world-edition-bar select { width: 100%; }
+  .detail-heading { gap: 9px; }
+  .detail-heading .topic-pills { margin-left: 0; margin-right: 0; }
+  .type-badge { flex-shrink: 0; }
+  .editor-fields { padding: 18px 16px; }
+  .dialog-heading { padding: 16px; }
+  .world-timeline-status, .mrna-chip, .mrna-status, .mrna-scope-badge { white-space: normal; }
+}
+@media (prefers-reduced-motion: reduce) {
+  button, a, input, select, textarea { transition: none; }
+  .status-spinner { animation: none; }
+}

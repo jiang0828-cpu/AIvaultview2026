@@ -1,0 +1,74 @@
+[
+  {
+    "id": "HH26",
+    "url": "https://www.stats.gov.cn/sj/zxfb/202610/t20261019_1965612.html",
+    "retrievedAt": "2026-11-11T01:25:29.007Z",
+    "status": 200,
+    "bytes": 249068,
+    "sha256": "dfe47867a33572595e64fc8647e370444306d2ec75561943bd02c2abec9d9c6d"
+  },
+  {
+    "id": "GDP26",
+    "url": "https://www.stats.gov.cn/sj/zxfbhjd/202610/t20261020_1965658.html",
+    "retrievedAt": "2026-11-11T01:25:29.873Z",
+    "status": 200,
+    "bytes": 267619,
+    "sha256": "4547c1d958e50d2fe694e83a26a8ef73ebd3b66b65baa8a6c8cf1f867cff81d9"
+  },
+  {
+    "id": "PROFIT26",
+    "url": "https://www.stats.gov.cn/sj/zxfb/202610/t20261027_1965697.html",
+    "retrievedAt": "2026-11-11T01:25:30.382Z",
+    "status": 200,
+    "bytes": 496021,
+    "sha256": "23484a3b31b9dca6fc045635270e5b52fbc7e66d813d74e2512ae10893d2714c"
+  },
+  {
+    "id": "BISRULE",
+    "url": "https://www.govinfo.gov/content/pkg/FR-2026-01-15/pdf/2026-00789.pdf",
+    "retrievedAt": "2026-11-11T01:25:31.574Z",
+    "status": 200,
+    "bytes": 252319,
+    "sha256": "7fb7dae40d9b277a61ac64df1e1ba09a7bdab98dc6c2ed720aacdfd87edf8125"
+  },
+  {
+    "id": "HOUSELETTER",
+    "url": "https://foreignaffairs.house.gov/news/press-releases/chairmen-mast-moolenaar-and-crawford-request-jensen-huang-brief-congress-on-link-to-chinese-intelligence-asset",
+    "retrievedAt": "2026-11-11T01:25:35.264Z",
+    "status": 200,
+    "bytes": 51056,
+    "sha256": "08495ad026837a52d79300599eecf27822113efb0c7b277a92fc8a6f868d369a"
+  },
+  {
+    "id": "PRICECHECK",
+    "url": "https://stockanalysis.com/stocks/nvda/history/?period=daily",
+    "retrievedAt": "2026-11-11T01:25:37.267Z",
+    "status": 200,
+    "bytes": 116541,
+    "sha256": "b214a00d5bf85e0497a73d6f14782d9bd08beacbdddf570383d3f00653717e47"
+  },
+  {
+    "id": "10Q",
+    "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000075/nvda-20260726.htm",
+    "retrievedAt": "2026-11-11T01:25:39.221Z",
+    "status": 200,
+    "bytes": 1517518,
+    "sha256": "0a7775a542489e68ce4c371cc55a973688668a8e789fdf66ef0ebeff455358d5"
+  },
+  {
+    "id": "LETTER",
+    "url": "https://nvidianews.nvidia.com/news/a-message-to-our-company",
+    "retrievedAt": "2026-11-11T01:25:40.562Z",
+    "status": 200,
+    "bytes": 60005,
+    "sha256": "87b6c780360d838f76399d47f9199933ecc62627b73c69e075be497134881000"
+  },
+  {
+    "id": "COUNSEL",
+    "url": "https://nvidianews.nvidia.com/news/statement-from-the-independent-members-of-the-nvidia-board",
+    "retrievedAt": "2026-11-11T01:25:41.739Z",
+    "status": 200,
+    "bytes": 59324,
+    "sha256": "731721e95cb60d1fff50b01428ec890921299a6454f96adf791497c6e8cb885f"
+  }
+]

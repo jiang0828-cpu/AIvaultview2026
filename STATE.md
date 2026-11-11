@@ -28,7 +28,7 @@ gate: opus+astra
 astra_wait: 10
 summary_words: 300
 asking: 
-metrics: backend_tests=21; frontend_tests=19; typecheck=pass; lint=pass; build=pass; mobile_scrollwidth=375/390
+metrics: backend_tests=25; frontend_tests=25; typecheck=pass; lint=pass; build=pass; castle_sections=3; mobile_scrollwidth=375/390
 resources: docx=1; embedded_xlsx=4; embedded_png=12; lan_url=http://10.5.2.31:5174/home?project=99&folder=104
 ---
 # 完善解构世界科技特长专业成长空间: state
@@ -36,7 +36,7 @@ resources: docx=1; embedded_xlsx=4; embedded_png=12; lan_url=http://10.5.2.31:51
 Decisions and Log keep the latest 5 entries each. Older entries move to DECISIONS.md; read it when history is needed.
 
 ## Now
-- 已交付：标准、提示词、四模块工作台、17 份专业成长资料、测试、局域网验证和主审/独立复核均完成。
+- 已交付：标准、提示词、三板块爱的城堡、专业成长工作台、17 份专业成长资料、测试和局域网验证均完成。
 
 ## Next 3 steps
 1. 按课程更新计划维护 `growth-curriculum.ts` 与内容来源。

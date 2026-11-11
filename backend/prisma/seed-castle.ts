@@ -1,9 +1,27 @@
 import type { PrismaClient } from "@prisma/client";
 import { castleProject } from "./castle.js";
 import { growthCurriculumDocuments } from "./growth-curriculum.js";
+import { hasProjectCycle } from "../src/projectTags.js";
 
 export async function seedCastle(db: PrismaClient) {
   return db.$transaction(async (tx) => {
+    const deleteTree = async (id: number): Promise<void> => {
+      const children = await tx.content.findMany({
+        where: { parentId: id },
+        select: { id: true },
+      });
+      for (const child of children) await deleteTree(child.id);
+      await tx.content.delete({ where: { id } });
+    };
+    const legacySectionTitles: Record<string, string[]> = {
+      通识: ["“求知如”-生而为人（通识）"],
+      专业: ["“解构世界”-科技特长（专业）"],
+      运动: ["“奔赴热爱”-体育特长（运动）"],
+    };
+    const obsoleteSectionTitles = [
+      "“玩”起来-日程安排（日常）",
+      "“愉快假期”家庭游（游乐）",
+    ];
     const scene =
       (await tx.content.findFirst({
         where: {
@@ -40,16 +58,28 @@ export async function seedCastle(db: PrismaClient) {
           parentId: scene.id,
         },
       }));
-    project = await tx.content.update({
+    if (!hasProjectCycle(project.topics)) project = await tx.content.update({
       where: { id: project.id },
       data: { topics: castleProject.topics },
     });
     for (const [sortOrder, section] of castleProject.sections.entries()) {
-      const folder =
-        (await tx.content.findFirst({
-          where: { title: section.title, parentId: project.id, type: "folder" },
-        })) ??
-        (await tx.content.create({
+      let folder = await tx.content.findFirst({
+        where: { title: section.title, parentId: project.id, type: "folder" },
+      });
+      let migrated = false;
+      if (!folder) {
+        for (const legacyTitle of legacySectionTitles[section.title] || []) {
+          folder = await tx.content.findFirst({
+            where: { title: legacyTitle, parentId: project.id, type: "folder" },
+          });
+          if (folder) {
+            migrated = true;
+            break;
+          }
+        }
+      }
+      if (!folder) {
+        folder = await tx.content.create({
           data: {
             title: section.title,
             description: section.summary,
@@ -59,7 +89,23 @@ export async function seedCastle(db: PrismaClient) {
             sortOrder,
             parentId: project.id,
           },
-        }));
+        });
+      } else if (migrated) {
+        folder = await tx.content.update({
+          where: { id: folder.id },
+          data: {
+            title: section.title,
+            description: section.summary,
+            topics: section.topics,
+            sortOrder,
+          },
+        });
+      } else if (folder.sortOrder !== sortOrder) {
+        folder = await tx.content.update({
+          where: { id: folder.id },
+          data: { sortOrder },
+        });
+      }
       const document = await tx.content.findFirst({
         where: {
           title: section.documentTitle,
@@ -137,7 +183,7 @@ export async function seedCastle(db: PrismaClient) {
           });
         }
       }
-      if (section.title === "“解构世界”-科技特长（专业）") {
+      if (section.title === "专业") {
         const folderForModule = new Map<string, number>([["record", folder.id]]);
         for (const extra of section.additionalSections || []) {
           const extraFolder = await tx.content.findFirst({
@@ -180,6 +226,15 @@ export async function seedCastle(db: PrismaClient) {
         }
       }
     }
+    const obsoleteFolders = await tx.content.findMany({
+      where: {
+        title: { in: obsoleteSectionTitles },
+        parentId: project.id,
+        type: "folder",
+      },
+      select: { id: true },
+    });
+    for (const folder of obsoleteFolders) await deleteTree(folder.id);
     return project.id;
   });
 }
