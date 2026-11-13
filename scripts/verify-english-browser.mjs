@@ -109,6 +109,7 @@ try {
       checks.push('sentence audio and self-assessment, device fallback and visible failure state');
       stage='documents';await mode('课程文档');
       const docs=space.getByRole('navigation',{name:'英语课程文档'}).getByRole('button');
+      await docs.nth(5).waitFor();
       if(await docs.count()!==6)throw new Error('Missing lessons');
       await docs.last().click();
       await space.locator('.english-document').getByRole('heading',{name:'英语学习记录',exact:true}).waitFor();
