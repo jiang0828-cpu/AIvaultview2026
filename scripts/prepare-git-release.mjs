@@ -9,10 +9,16 @@ const env = { ...process.env, GIT_INDEX_FILE: join(directory, 'index') };
 const git = (args, input) => execFileSync('git', args, { env, input, encoding: 'utf8', windowsHide: true }).trim();
 try {
   const frozen = process.env.RELEASE_SOURCE_ROOT;
+  // Read the source snapshot from the real worktree index before switching to
+  // the isolated release index used to assemble the sanitized tree.
+  const sourceFiles = frozen
+    ? execFileSync('git', ['ls-files', '-z', '--cached', '--others', '--exclude-standard'], {
+      encoding: 'utf8', windowsHide: true,
+    }).split('\0').filter(Boolean)
+    : null;
   git(['read-tree', frozen ? 'origin/main' : 'HEAD']);
   if (frozen) {
     const localTracked = new Set(git(['ls-tree', '-r', '--name-only', 'HEAD']).split('\n'));
-    const sourceFiles = git(['ls-files', '-z', '--cached', '--others', '--exclude-standard']).split('\0').filter(Boolean);
     const allowed = /^(?:\.github\/|frontend\/|backend\/|shared\/|python\/|scripts\/|deploy\/|docs\/|research\/world-evidence\/|package(?:-lock)?\.json$|\.env\.example$|\.gitignore$|README\.md$|eslint\.config\.mjs$)/;
     for (const file of sourceFiles.filter(file => allowed.test(file))) {
       try {
