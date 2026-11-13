@@ -26,6 +26,7 @@
     "typecheck": "npm run typecheck --workspaces",
     "test": "npm run test -w backend && npm run test:frontend",
     "test:frontend": "tsx --test frontend/test/*.test.ts",
+    "test:release": "node --test scripts/release-merge.test.mjs scripts/release-data.test.mjs scripts/github-deploy.test.mjs",
     "lint": "eslint .",
     "db:generate": "npm run db:generate -w backend",
     "db:migrate": "npm run db:migrate -w backend",

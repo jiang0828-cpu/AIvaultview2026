@@ -1,0 +1,116 @@
+name: VaultView - Verify and Publish
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Verify and package
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      DATABASE_URL: file:./ci.db
+      INVESTMENT_AUTO_UPDATE: 'false'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.13'
+      - run: npm ci --no-audit --no-fund
+      - run: npm run db:generate
+      - run: npm test
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run precision:test
+      - run: npm run test:release
+      - run: npm run compare:install
+      - run: npm run test:compare
+      - run: npm run lint:compare
+      - run: npm run typecheck:compare
+      - run: npm run build
+      - name: Package verified code without private databases
+        id: package
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: |
+          node scripts/package-upgrade.mjs --code-only > "$RUNNER_TEMP/vaultview-package.json"
+          node --input-type=module -e 'import fs from "node:fs"; const value=JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP+"/vaultview-package.json","utf8")); fs.appendFileSync(process.env.GITHUB_OUTPUT, "directory="+value.output+"\n");'
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: steps.package.outcome == 'success'
+        with:
+          name: vaultview-${{ github.sha }}
+          retention-days: 14
+          if-no-files-found: error
+          path: |
+            ${{ steps.package.outputs.directory }}/vaultview-upgrade.tar.gz
+            ${{ steps.package.outputs.directory }}/vaultview-content-update.tar.gz
+            ${{ steps.package.outputs.directory }}/upgrade.sh
+            ${{ steps.package.outputs.directory }}/SHA256SUMS
+            ${{ steps.package.outputs.directory }}/manifest.json
+      - name: Review instructions
+        if: steps.package.outcome == 'success'
+        env:
+          DEPLOY_ENABLED: ${{ vars.VAULTVIEW_DEPLOY_ENABLED }}
+        run: |
+          {
+            echo '## Verified release candidate'
+            echo "Commit: $GITHUB_SHA"
+            echo 'This artifact contains code only. Online accounts and private records remain on the server.'
+            if [ "$DEPLOY_ENABLED" = true ]; then
+              echo 'Open Review deployments and approve production to publish this exact candidate.'
+            else
+              echo 'SSH installation is pending. After setup, enable VAULTVIEW_DEPLOY_ENABLED and run this workflow on main.'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  deploy:
+    name: Approve production deployment
+    needs: verify
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && vars.VAULTVIEW_DEPLOY_ENABLED == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    concurrency:
+      group: vaultview-production
+      cancel-in-progress: false
+    environment:
+      name: production
+      url: https://vault.trialmatch.xin
+    permissions:
+      contents: read
+      deployments: read
+      actions: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22'
+      - name: Require configured human review
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/check-deployment-approval.mjs
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: vaultview-${{ github.sha }}
+          path: .tmp/ci-candidate
+      - name: Deploy the approved candidate over SSH
+        env:
+          VAULTVIEW_DEPLOY_HOST: ${{ vars.VAULTVIEW_DEPLOY_HOST }}
+          VAULTVIEW_DEPLOY_PORT: ${{ vars.VAULTVIEW_DEPLOY_PORT }}
+          VAULTVIEW_DEPLOY_USER: ${{ vars.VAULTVIEW_DEPLOY_USER }}
+          VAULTVIEW_SSH_PRIVATE_KEY: ${{ secrets.VAULTVIEW_SSH_PRIVATE_KEY }}
+          VAULTVIEW_SSH_KNOWN_HOSTS: ${{ secrets.VAULTVIEW_SSH_KNOWN_HOSTS }}
+        run: node scripts/deploy-github-release.mjs .tmp/ci-candidate

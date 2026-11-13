@@ -8,11 +8,12 @@ const directory = await mkdtemp(resolve('output/git-release-'));
 const env = { ...process.env, GIT_INDEX_FILE: join(directory, 'index') };
 const git = (args, input) => execFileSync('git', args, { env, input, encoding: 'utf8', windowsHide: true }).trim();
 try {
-  git(['read-tree', 'HEAD']);
   const frozen = process.env.RELEASE_SOURCE_ROOT;
+  git(['read-tree', frozen ? 'origin/main' : 'HEAD']);
   if (frozen) {
+    const localTracked = new Set(git(['ls-tree', '-r', '--name-only', 'HEAD']).split('\n'));
     const sourceFiles = git(['ls-files', '-z', '--cached', '--others', '--exclude-standard']).split('\0').filter(Boolean);
-    const allowed = /^(?:frontend\/|backend\/|shared\/|python\/|scripts\/|deploy\/|docs\/|research\/world-evidence\/|package(?:-lock)?\.json$|\.env\.example$|\.gitignore$|README\.md$|eslint\.config\.mjs$)/;
+    const allowed = /^(?:\.github\/|frontend\/|backend\/|shared\/|python\/|scripts\/|deploy\/|docs\/|research\/world-evidence\/|package(?:-lock)?\.json$|\.env\.example$|\.gitignore$|README\.md$|eslint\.config\.mjs$)/;
     for (const file of sourceFiles.filter(file => allowed.test(file))) {
       try {
         const bytes = await readFile(join(resolve(frozen), file));
@@ -21,7 +22,7 @@ try {
       } catch (error) {
         if (error.code !== 'ENOENT') throw error;
         // Only remove a missing source file, never an intentionally excluded runtime directory.
-        if (!/(?:^|\/)(?:dist|node_modules|data|\.venv|__pycache__)(?:\/|$)/.test(file))
+        if (localTracked.has(file) && !/(?:^|\/)(?:dist|node_modules|data|\.venv|__pycache__)(?:\/|$)/.test(file))
           git(['update-index', '--force-remove', '--', file]);
       }
     }
