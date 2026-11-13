@@ -6,11 +6,12 @@ import { join, resolve } from "node:path";
 import { execFileSync } from "node:child_process";
 import { PrismaClient } from "@prisma/client";
 import request from "supertest";
-import bcrypt from "bcryptjs";
 import { createApp } from "../src/app.js";
-import { projectRoot, type AppConfig } from "../src/config.js";
+import { projectRoot } from "../src/config.js";
+import { seedTestUsers, type TestConfig } from './helpers.js';
 
-const config: AppConfig = {
+const config: TestConfig = {
+  adminUsername: 'admin',
   secret: "test-only-jwt-secret-with-at-least-32-characters",
   sitePassword: "test-visitor-password",
   adminPassword: "test-admin-password",
@@ -39,8 +40,10 @@ before(async () => {
 });
 beforeEach(async () => {
   await db.accessLog.deleteMany();
+  await db.user.deleteMany();
   await db.content.updateMany({ data: { parentId: null } });
   await db.content.deleteMany();
+  await seedTestUsers(db, config);
   app = createApp(db, config);
 });
 after(async () => {
@@ -53,7 +56,7 @@ async function login(role: "visitor" | "admin" = "visitor", target = app) {
     .post("/api/auth/login")
     .send({
       password: role === "admin" ? config.adminPassword : config.sitePassword,
-      role,
+      username: role,
     })
     .expect(200);
   return agent;
@@ -63,15 +66,15 @@ test("login sets 30-day httpOnly strict cookie; session survives requests and lo
   const agent = request.agent(app);
   const response = await agent
     .post("/api/auth/login")
-    .send({ password: config.sitePassword })
+    .send({ username: 'visitor', password: config.sitePassword })
     .expect(200);
   const cookies = String(response.headers["set-cookie"]);
   assert.match(cookies, /HttpOnly/);
   assert.match(cookies, /SameSite=Strict/);
   assert.match(cookies, /Max-Age=2592000/);
-  assert.equal(response.body.role, "visitor");
+  assert.equal(response.body.user.role, "visitor");
   assert.equal(
-    (await agent.get("/api/auth/me").expect(200)).body.role,
+    (await agent.get("/api/auth/me").expect(200)).body.user.role,
     "visitor",
   );
   await agent.post("/api/auth/logout").send({}).expect(200);
@@ -79,6 +82,10 @@ test("login sets 30-day httpOnly strict cookie; session survives requests and lo
 });
 
 test('mRNA research data and workbook require a session and remain downloadable to visitors', async()=>{
+  const project = await db.content.create({ data: { title: 'Research', type: 'folder', isProject: true,
+    fileUrl: '/media/projects/mrna/research-data.json' } });
+  const user = await db.user.findUniqueOrThrow({ where: { username: 'visitor' } });
+  await db.projectAccess.create({ data: { userId: user.id, projectId: project.id } });
   await request(app).get('/media/projects/mrna/research-data.json').expect(401);
   await request(app).get('/media/projects/mrna/02_mRNA肿瘤药物主台账.xlsx').expect(401);
   const agent=await login();
@@ -91,11 +98,11 @@ test("five invalid logins lock the IP for 15 minutes, across both roles", async 
   for (let i = 0; i < 5; i++)
     await request(app)
       .post("/api/auth/login")
-      .send({ password: "wrong" })
+      .send({ username: 'visitor', password: "wrong" })
       .expect(401);
   const response = await request(app)
     .post("/api/auth/login")
-    .send({ password: config.adminPassword, role: "admin" })
+    .send({ username: 'admin', password: config.adminPassword })
     .expect(429);
   assert.ok(Number(response.headers["retry-after"]) <= 900);
   assert.ok(Number(response.headers["retry-after"]) > 895);
@@ -104,27 +111,24 @@ test("successful login resets failed attempts", async () => {
   for (let i = 0; i < 4; i++)
     await request(app)
       .post("/api/auth/login")
-      .send({ password: "wrong" })
+      .send({ username: 'visitor', password: "wrong" })
       .expect(401);
   await login();
   for (let i = 0; i < 4; i++)
     await request(app)
       .post("/api/auth/login")
-      .send({ password: "wrong" })
+      .send({ username: 'visitor', password: "wrong" })
       .expect(401);
   await login();
 });
 test("bcrypt password support and production secure-cookie flag", async () => {
-  const hashed = await bcrypt.hash(config.sitePassword, 4);
   const secureApp = createApp(db, {
     ...config,
     production: true,
-    sitePassword: hashed,
-    siteHashed: true,
   });
   const response = await request(secureApp)
     .post("/api/auth/login")
-    .send({ password: config.sitePassword })
+    .send({ username: 'visitor', password: config.sitePassword })
     .expect(200);
   assert.match(String(response.headers["set-cookie"]), /Secure/);
 });
@@ -143,7 +147,7 @@ test("anonymous requests cannot read content or media; visitor cannot mutate con
   await visitor.delete("/api/contents/1").send({}).expect(403);
   await request(app)
     .post("/api/auth/login")
-    .send({ password: config.sitePassword, role: "admin" })
+    .send({ password: config.sitePassword, username: "admin" })
     .expect(401);
 });
 test("administrator CRUD persists and returns sorted nested tree", async () => {
@@ -277,7 +281,7 @@ test("topics are limited to three labels and child content inherits its scene", 
 test("project cycle changes persist, retain themes and fields, and require administrator permission", async () => {
   const agent = await login("admin");
   const project = (await agent.post("/api/contents").send({
-    title: "项目｜Cycle editing", type: "folder", scene: "tools",
+    title: "项目｜Cycle editing", type: "folder", scene: "tools", isProject: true,
     topics: ["长期性", "AI", "learning"], description: "Keep this", sortOrder: 12,
   }).expect(201)).body;
   await request(app).patch(`/api/contents/${project.id}/cycle`).send({ cycle: "临时性" }).expect(401);
@@ -301,7 +305,7 @@ test("project cycle changes persist, retain themes and fields, and require admin
   const folder = (await agent.post("/api/contents").send({ title: "Folder", type: "folder" }).expect(201)).body;
   await agent.patch(`/api/contents/${folder.id}/cycle`).send({ cycle: "临时性" }).expect(400);
   const castle = (await agent.post("/api/contents").send({
-    title: "爱的城堡", type: "folder", scene: "life", topics: ["长期性", "family", "life"],
+    title: "爱的城堡", type: "folder", scene: "life", isProject: true, topics: ["长期性", "family", "life"],
   }).expect(201)).body;
   await agent.patch(`/api/contents/${castle.id}/cycle`).send({ cycle: "阶段性" }).expect(200);
 });
@@ -310,7 +314,7 @@ test("access log persists valid actions and rejects unknown content", async () =
   const row = await db.content.create({
     data: { title: "Article", type: "text" },
   });
-  const agent = await login();
+  const agent = await login('admin');
   await agent
     .post("/api/log")
     .send({ contentId: row.id, action: "view_text" })
@@ -387,17 +391,17 @@ test("cross-origin and non-JSON mutations are rejected; malformed JSON uses stan
     .expect(400);
   assert.equal(response.body.error.code, "INVALID_BODY");
 });
-test("changing configured password invalidates existing sessions", async () => {
+test("changing environment passwords does not replace database credentials", async () => {
   const loginResponse = await request(app)
     .post("/api/auth/login")
-    .send({ password: config.sitePassword });
+    .send({ username: 'visitor', password: config.sitePassword });
   const cookie = String(loginResponse.headers["set-cookie"][0]).split(";")[0];
   const changedApp = createApp(db, {
     ...config,
-    sitePassword: "changed-test-password",
+    adminPassword: "changed-test-password",
   });
   await request(changedApp)
     .get("/api/auth/me")
     .set("Cookie", cookie)
-    .expect(401);
+    .expect(200);
 });

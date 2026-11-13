@@ -15,6 +15,8 @@ const evidenceReview = z.object({ revisedOn: date, scope: text, method: text, re
   calculations: z.array(evidenceCalculation), claims: z.array(z.object({ id: text, title: text,
     level: z.enum(['supported', 'bounded', 'insufficient', 'conditional']), conclusion: text, reasoning: text,
     counter: text, verify: text, recordIds: refs, calculationIds: z.array(text) })).min(1) });
+const responseMeasure = z.object({ id: text, title: text, actor: text, objective: text, trigger: text,
+  actions: z.array(text).min(2), limitation: text, metric: text, sourceIds: refs });
 
 export function calculateWorldEvidence(calculation: z.infer<typeof evidenceCalculation>, records: z.infer<typeof evidenceRecord>[]) {
   const left = records.find((record) => record.id === calculation.left)?.value;
@@ -31,7 +33,10 @@ export const worldReportSchema = z.object({
     status: z.enum(['confirmed', 'reported', 'position', 'filed', 'scheduled']) })).min(1).optional(),
   scenarioAudience: z.object({ business: text, household: text }).optional(),
   evidenceReview: evidenceReview.optional(),
-  sources: z.array(z.object({ id: text, publisher: text, title: text, published: date, period: text,
+  responses: z.array(responseMeasure).min(1).optional(),
+  takeaways: z.array(z.object({ title: text, detail: text, sourceIds: refs })).min(1).optional(),
+  sources: z.array(z.object({ id: text, publisher: text, title: text, published: date,
+    datePrecision: z.enum(['day', 'month', 'year', 'accessed']).optional(), period: text,
     url: z.string().url().refine((url) => url.startsWith('https://')), scope: text })).min(1),
   metrics: z.array(z.object({ label: text, value: z.number().finite(), unit: text, period: text,
     kind: evidence, note: text, sourceIds: refs })).min(1),
@@ -49,11 +54,11 @@ export const worldReportSchema = z.object({
 }).superRefine((report, ctx) => {
   const ids = new Set(report.sources.map((source) => source.id));
   if (ids.size !== report.sources.length) ctx.addIssue({ code: 'custom', message: 'Duplicate source IDs' });
-  for (const collection of [report.charts, report.lenses, report.channels, report.scenarios]) {
+  for (const collection of [report.charts, report.lenses, report.channels, report.scenarios, ...(report.responses ? [report.responses] : [])]) {
     if (new Set(collection.map((item) => item.id)).size !== collection.length)
       ctx.addIssue({ code: 'custom', message: 'Duplicate section IDs' });
   }
-  for (const item of [...report.metrics, ...report.charts, ...report.lenses, ...report.channels, ...report.watchlist, ...(report.timeline ?? []), ...(report.evidenceReview?.records ?? [])]) {
+  for (const item of [...report.metrics, ...report.charts, ...report.lenses, ...report.channels, ...report.watchlist, ...(report.timeline ?? []), ...(report.evidenceReview?.records ?? []), ...(report.responses ?? []), ...(report.takeaways ?? [])]) {
     if (item.sourceIds.some((id) => !ids.has(id))) ctx.addIssue({ code: 'custom', message: 'Unknown source ID' });
   }
   for (const chart of report.charts) {

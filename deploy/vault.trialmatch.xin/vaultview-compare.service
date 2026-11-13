@@ -1,0 +1,26 @@
+[Unit]
+Description=VaultView price comparison service
+After=network.target
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=vaultview
+Group=vaultview
+WorkingDirectory=/opt/vaultview/current
+EnvironmentFile=/etc/vaultview/vaultview.env
+Environment=COMPARE_DATABASE_URL=sqlite:////var/lib/vaultview/compare/compare.db
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=/opt/vaultview/current/python/.venv/bin/python -m uvicorn price_compare.main:app --app-dir /opt/vaultview/current/python --host 127.0.0.1 --port 8001
+Restart=on-failure
+RestartSec=5
+UMask=0027
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/vaultview
+
+[Install]
+WantedBy=multi-user.target

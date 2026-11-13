@@ -1,0 +1,15 @@
+[Unit]
+Description=VaultView database and media backup
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=/usr/local/sbin/vaultview-backup
+Nice=10
+IOSchedulingClass=idle
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/backups/vaultview
+UMask=0077

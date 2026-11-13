@@ -91,6 +91,25 @@
   color: #53665a; font-size: 12px; line-height: 1.85;
 }
 .world-evidence .world-refs a { color: #376b59; font-size: 11px; }
+.world-response-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.world-takeaways { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 23px; margin: 28px 0; }
+.world-takeaways article { border-top: 2px solid #699685; padding-top: 12px; min-width: 0; }
+.world-takeaways h3 { font-size: 16px; color: #304d40; margin: 0 0 8px; }
+.world-takeaways p { color: #53665a; font-size: 12px; line-height: 1.85; margin: 0 0 8px; }
+.world-response-card { position: relative; border: 1px solid #dbe6df; padding: 21px 22px 19px 54px; background: #fff; min-width: 0; }
+.world-response-number { position: absolute; top: 20px; left: 20px; color: #4f8974; font: 600 12px/1 ui-monospace, SFMono-Regular, Consolas, monospace; }
+.world-response-head h3 { margin: 7px 0 8px; color: #304d40; font-size: 17px; }
+.world-response-objective { margin: 0 0 14px; color: #536a5c; font-size: 12px; line-height: 1.8; }
+.world-response-card dl { display: grid; gap: 11px; margin: 0 0 14px; }
+.world-response-card dl div { border-top: 1px solid #edf2ee; padding-top: 9px; }
+.world-response-card dt { color: #7c8d82; font-size: 10px; margin-bottom: 4px; }
+.world-response-card dd { margin: 0; color: #53665a; font-size: 12px; line-height: 1.85; }
+.world-response-card ol { margin: 0; padding-left: 19px; }
+.world-response-card li { margin-bottom: 4px; }
+.world-response-principle { display: flex; gap: 12px; margin-top: 19px; padding: 17px 19px; border-left: 3px solid #4f8974; background: #eef4ef; color: #536a5c; }
+.world-response-principle svg { color: #3e7765; flex-shrink: 0; margin-top: 2px; }
+.world-response-principle strong { display: block; color: #356654; font-size: 12px; margin-bottom: 4px; }
+.world-response-principle p { margin: 0; font-size: 12px; line-height: 1.85; }
 .world-claim-references { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; margin-bottom: 6px; color: #89988d; font-size: 10px; }
 .world-claim-references a { color: #4d8072; text-underline-offset: 2px; }
 .world-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 28px 0; border-block: 1px solid #dce5dc; padding: 22px 0; }
@@ -247,6 +266,8 @@
   .world-chart-grid { grid-template-columns: minmax(0, 1fr); gap: 5px; }
   .world-timeline { grid-template-columns: minmax(0, 1fr); }
   .world-evidence-origins, .world-evidence-calculations { grid-template-columns: minmax(0, 1fr); }
+  .world-response-grid { grid-template-columns: minmax(0, 1fr); }
+  .world-takeaways { grid-template-columns: minmax(0, 1fr); }
   .world-evidence-claim dl { grid-template-columns: minmax(0, 1fr); gap: 10px; }
   .world-chart-rows { min-height: auto; }
   .world-lens-grid { grid-template-columns: minmax(0, 1fr); }

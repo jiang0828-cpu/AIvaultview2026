@@ -6,10 +6,12 @@ import { join, resolve } from "node:path";
 import { execFileSync } from "node:child_process";
 import { PrismaClient } from "@prisma/client";
 import request from "supertest";
-import { projectRoot, type AppConfig } from "../src/config.js";
+import { projectRoot } from "../src/config.js";
+import { seedTestUsers, type TestConfig } from './helpers.js';
 import { createApp } from "../src/app.js";
 import { seedCastle } from "../prisma/seed-castle.js";
 import { castleProject } from "../prisma/castle.js";
+import { seedEnglish } from "../prisma/seed-english.js";
 
 let directory: string;
 let db: PrismaClient;
@@ -33,7 +35,7 @@ after(async () => {
   if (directory) await rm(directory, { recursive: true, force: true });
 });
 
-test("castle seed creates three ordered sections and templates, preserves edits and repairs missing templates", async () => {
+test("castle seed creates current sections and English materials, preserves edits and repairs missing templates", async () => {
   const unrelated = await db.content.create({
     data: {
       title: "Existing project",
@@ -59,10 +61,10 @@ test("castle seed creates three ordered sections and templates, preserves edits 
     project.children.map((item) => item.title),
     castleProject.sections.map((section) => section.title),
   );
-  assert.equal(project.children.length, 3);
-  assert.deepEqual(project.children.map((item) => item.title), ["通识", "专业", "运动"]);
-  const professional = project.children[1];
-  assert.equal(professional.title, "专业");
+  const professional = project.children.find(item => item.title === "专业")!;
+  assert.ok(professional);
+  const general = project.children.find(item => item.title === "通识")!;
+  assert.ok(general.children.some(item => item.title === "英语学习及实战"));
   assert.deepEqual(
     professional.children.filter((item) => item.type === "folder").map((item) => item.title),
     ["成长计划", "阶段方案", "成果展示"],
@@ -74,7 +76,7 @@ test("castle seed creates three ordered sections and templates, preserves edits 
   for (const [index, folder] of project.children.entries()) {
     assert.equal(folder.type, "folder");
     assert.equal(folder.sortOrder, index);
-    assert.equal(folder.children.length, index === 1 ? 7 : 1);
+    assert.equal(folder.children.length, folder.title === "专业" ? 7 : folder.title === "通识" ? 2 : 1);
     assert.equal(folder.children[0].type, "text");
     assert.equal(
       folder.children[0].title,
@@ -86,7 +88,7 @@ test("castle seed creates three ordered sections and templates, preserves edits 
       castleProject.sections[index].topics,
     );
     assert.match(folder.children[0].description, /\| ---/);
-    if (index === 1) {
+    if (folder.title === "专业") {
       const sectionFolders = folder.children.filter((item) => item.type === "folder");
       assert.match(folder.children[0].description, /双螺旋过程/);
       assert.match(folder.children[0].description, /技术向善检查/);
@@ -126,14 +128,32 @@ test("castle seed creates three ordered sections and templates, preserves edits 
     "Keep this",
   );
   await db.content.delete({
-    where: { id: project.children[2].children[0].id },
+    where: { id: project.children.find(item => item.title === "运动")!.children[0].id },
   });
   await seedCastle(db);
   assert.equal(await db.content.count(), count);
 });
 
+test("English seed preserves edited lessons and restores missing lessons without creating separate access grants", async () => {
+  const seeded = await seedEnglish(db);
+  assert.equal(seeded.created, 0);
+  const project = await db.content.findUniqueOrThrow({ where: { id: seeded.projectId }, include: { children: true } });
+  assert.equal(project.isProject, false);
+  assert.equal(project.children.length, 6);
+  const [edited, removed] = project.children;
+  await db.content.update({ where: { id: edited.id }, data: { description: "My English lesson", sortOrder: 99 } });
+  await db.content.delete({ where: { id: removed.id } });
+  assert.equal((await seedEnglish(db)).created, 1);
+  assert.equal((await seedEnglish(db)).created, 0);
+  assert.equal(await db.content.count({ where: { parentId: seeded.projectId } }), 6);
+  const retained = await db.content.findUniqueOrThrow({ where: { id: edited.id } });
+  assert.equal(retained.description, "My English lesson");
+  assert.equal(retained.sortOrder, 99);
+});
+
 test("castle tree is authenticated and administrators can edit templates and add section materials", async () => {
-  const config: AppConfig = {
+  const config: TestConfig = {
+    adminUsername: 'admin',
     secret: "castle-tests-long-secret-at-least-32-characters",
     sitePassword: "test-site",
     adminPassword: "test-admin",
@@ -142,12 +162,13 @@ test("castle tree is authenticated and administrators can edit templates and add
     production: false,
     origin: "http://localhost:5173",
   };
+  await seedTestUsers(db, config);
   const app = createApp(db, config);
   await request(app).get("/api/contents").expect(401);
   const visitor = request.agent(app);
   await visitor
     .post("/api/auth/login")
-    .send({ password: config.sitePassword })
+    .send({ username: 'visitor', password: config.sitePassword })
     .expect(200);
   const tree = (await visitor.get("/api/contents").expect(200)).body;
   const scene = tree.find(
@@ -156,8 +177,16 @@ test("castle tree is authenticated and administrators can edit templates and add
   const project = scene.children.find(
     (item: { title: string }) => item.title === "爱的城堡",
   );
-  assert.equal(project.children.length, 3);
+  assert.equal(project.children.length, castleProject.sections.length);
   const folder = project.children[0];
+  const english = folder.children.find((item: { title: string }) => item.title === "英语学习及实战");
+  assert.ok(english);
+  await visitor.get(`/api/contents/${english.children[0].id}`).expect(200);
+  const visitorUser = await db.user.findUniqueOrThrow({ where: { username: "visitor" } });
+  await db.projectAccess.delete({ where: { userId_projectId: { userId: visitorUser.id, projectId: project.id } } });
+  await visitor.get(`/api/contents/${english.id}`).expect(404);
+  await visitor.get(`/api/contents/${english.children[0].id}`).expect(404);
+  await db.projectAccess.create({ data: { userId: visitorUser.id, projectId: project.id } });
   const template = folder.children[0];
   await visitor
     .post("/api/contents")
@@ -171,7 +200,7 @@ test("castle tree is authenticated and administrators can edit templates and add
   const admin = request.agent(app);
   await admin
     .post("/api/auth/login")
-    .send({ password: config.adminPassword, role: "admin" })
+    .send({ password: config.adminPassword, username: "admin" })
     .expect(200);
   await admin
     .put(`/api/contents/${template.id}`)

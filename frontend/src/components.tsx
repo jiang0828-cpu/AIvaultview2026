@@ -42,7 +42,7 @@ export function Brand() {
         <span aria-hidden="true">藏</span>
       </span>
       <span>
-        <strong>藏览</strong>
+        <strong>观澜</strong>
         <small>江湖行者 · VaultView</small>
       </span>
     </div>
@@ -1107,7 +1107,7 @@ function CourseDocumentViewer({ description }: { description: string }) {
 export function ContentBody({ content }: { content: Content }) {
   const isCourseDocument =
     content.type === "text" &&
-    content.title.startsWith("课程文档｜AI") &&
+    content.title.startsWith("课程文档｜") &&
     content.description.includes("<!-- AI_COURSE_SECTIONS -->");
   const isTravelGuide =
     content.type === "text" &&
@@ -1157,13 +1157,13 @@ export function ContentBody({ content }: { content: Content }) {
       ) : isTravelGuide ? (
         <TravelGuideViewer description={content.description} />
       ) : isCourseDocument ? (
-        <CourseDocumentViewer description={content.description} />
+        <CourseDocumentViewer key={content.id} description={content.description} />
       ) : isMindMap ? null : content.description ? (
         <div
           className={`markdown ${content.type === "text" ? "article-body" : ""}`}
         >
           <ReactMarkdown remarkPlugins={[remarkGfm]}>
-            {content.description}
+            {content.description.replace(/^<!-- FAMILY_HEALTH_DOC:[a-z-]+ -->\s*/, '')}
           </ReactMarkdown>
         </div>
       ) : null}

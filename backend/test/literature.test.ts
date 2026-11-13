@@ -6,7 +6,8 @@ import { resolve, join } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { PrismaClient } from '@prisma/client';
 import request from 'supertest';
-import { projectRoot, type AppConfig } from '../src/config.js';
+import { projectRoot } from '../src/config.js';
+import { seedTestUsers, type TestConfig } from './helpers.js';
 import { createApp } from '../src/app.js';
 import { seedLiterature } from '../prisma/seed-literature.js';
 import { literatureSources } from '../prisma/literature-sources.js';
@@ -49,10 +50,11 @@ test('targeted initialization creates the literature space, preserves user edits
 });
 
 test('source archives retain substantial text and tables with authenticated original downloads', async () => {
-  const config: AppConfig = { secret: 'literature-tests-long-secret-at-least-32-characters', sitePassword: 'test-site', adminPassword: 'test-admin', siteHashed: false, adminHashed: false, production: false, origin: 'http://localhost:5173' };
+  const config: TestConfig = { adminUsername: 'admin', secret: 'literature-tests-long-secret-at-least-32-characters', sitePassword: 'test-site', adminPassword: 'test-admin', siteHashed: false, adminHashed: false, production: false, origin: 'http://localhost:5173' };
+  await seedTestUsers(db, config);
   const app = createApp(db, config);
   const agent = request.agent(app);
-  await agent.post('/api/auth/login').send({ password: config.sitePassword }).expect(200);
+  await agent.post('/api/auth/login').send({ username: 'visitor', password: config.sitePassword }).expect(200);
   for (const source of literatureSources) {
     assert.ok(source.markdown.length > 2000);
     assert.match(source.markdown, /\| ---/);

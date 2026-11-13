@@ -2,6 +2,7 @@ import type { PrismaClient } from "@prisma/client";
 import { castleProject } from "./castle.js";
 import { growthCurriculumDocuments } from "./growth-curriculum.js";
 import { hasProjectCycle } from "../src/projectTags.js";
+import { ensureEnglishProject } from "./seed-english.js";
 
 export async function seedCastle(db: PrismaClient) {
   return db.$transaction(async (tx) => {
@@ -51,6 +52,7 @@ export async function seedCastle(db: PrismaClient) {
         data: {
           title: castleProject.title,
           description: castleProject.description,
+          isProject: true,
           topics: castleProject.topics,
           sortOrder: castleProject.sortOrder,
           scene: "life",
@@ -58,6 +60,7 @@ export async function seedCastle(db: PrismaClient) {
           parentId: scene.id,
         },
       }));
+    if (!project.isProject) project = await tx.content.update({ where: { id: project.id }, data: { isProject: true } });
     if (!hasProjectCycle(project.topics)) project = await tx.content.update({
       where: { id: project.id },
       data: { topics: castleProject.topics },
@@ -183,6 +186,7 @@ export async function seedCastle(db: PrismaClient) {
           });
         }
       }
+      if (section.title === "通识") await ensureEnglishProject(tx, folder.id);
       if (section.title === "专业") {
         const folderForModule = new Map<string, number>([["record", folder.id]]);
         for (const extra of section.additionalSections || []) {

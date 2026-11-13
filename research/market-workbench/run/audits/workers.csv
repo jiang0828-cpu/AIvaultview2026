@@ -1,0 +1,5 @@
+id,started,ended,agent,model,effort,class,status,first_pass,fix_lines,critical,major,minutes,input,cached,output,thread,report,note,backend
+market_ops,2026-11-11T23:27,2026-11-12T00:16,codex,gpt-6.1-sol,high,ops,done,,,,,,,,,,,33 screenshots23 measurements;6QAuser5QAstudies cleaned;113Content unchanged;candidate1a1dfb5 clean;services200,
+market_backend,2026-11-11T23:28,2026-11-11T23:44,codex,gpt-6.1-sol,high,build,done,n,,,,,,,,,,研究11tests+CAS/大载荷/入口保护focused通过,
+market_frontend,2026-11-11T23:28,2026-11-12T00:04,codex,gpt-6.1-sol,high,build,done,,,,,,,,,,,六视图及dirty/reopen修复，source ESLint/typecheck通过；live3宽度验证,
+market_review,2026-11-11T23:48,2026-11-11T23:48,codex,gpt-6-astra,high,gate,done,,,0,0,,,,,,,独立工程预审3major修复闭环，额外跨scene缺口关闭；不是正式FULL gate,

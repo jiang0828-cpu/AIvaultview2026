@@ -23,10 +23,6 @@ if (!existsSync(".env")) {
       randomBytes(48).toString("hex"),
     )
     .replace(
-      "replace-with-a-visitor-password",
-      randomBytes(12).toString("base64url"),
-    )
-    .replace(
       "replace-with-a-different-admin-password",
       randomBytes(16).toString("base64url"),
     )

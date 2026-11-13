@@ -1,6 +1,7 @@
 import type { PrismaClient } from '@prisma/client';
 import { worldChapters, worldDataDocument, worldIssue, worldMethodDocument, worldProject } from './world.js';
 import { worldChapters002, worldDataDocument002, worldIssue002 } from './world-002.js';
+import { worldChapters003, worldDataDocument003, worldIssue003 } from './world-003.js';
 import { worldDataMarker, worldIssueMarker, worldProjectMarker } from '../src/worldSchema.js';
 
 export async function seedWorld(db: PrismaClient) {
@@ -18,6 +19,7 @@ export async function seedWorld(db: PrismaClient) {
       return tx.content.create({ data: { ...data, parentId } });
     }
     const project = await ensure(worldProject, scene.id);
+    if (!project.isProject) await tx.content.update({ where: { id: project.id }, data: { isProject: true } });
     if (!project.description.includes(worldProjectMarker)) throw new Error('Existing project has no WORLD_PROJECT marker; preserved without overwrite.');
     async function seedIssue(folder: typeof worldIssue, data: typeof worldDataDocument, chapters: typeof worldChapters) {
       const issue = await ensure(folder, project.id);
@@ -29,8 +31,9 @@ export async function seedWorld(db: PrismaClient) {
     }
     const issueId = await seedIssue(worldIssue, worldDataDocument, worldChapters);
     const issue002Id = await seedIssue(worldIssue002, worldDataDocument002, worldChapters002);
+    const issue003Id = await seedIssue(worldIssue003, worldDataDocument003, worldChapters003);
     await ensure(worldMethodDocument, project.id);
     if (created) await tx.content.update({ where: { id: project.id }, data: { updatedAt: new Date() } });
-    return { projectId: project.id, issueId, issue002Id, created };
+    return { projectId: project.id, issueId, issue002Id, issue003Id, created };
   });
 }

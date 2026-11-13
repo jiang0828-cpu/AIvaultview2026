@@ -1,0 +1,313 @@
+{
+  "runKey": "pm-2026-11-12-expanded-reviewed-v4",
+  "issueDate": "2026-11-12",
+  "windowStart": "2026-11-05T00:00:00+08:00",
+  "windowEnd": "2026-11-12T00:00:00+08:00",
+  "firstIssue": true,
+  "summary": "建议优先安排三项小规模评估：用既有随访资料检验术前分型与术后MRD能否增加风险分层价值；用去标识历史病例同时测量AI试验匹配的漏匹配率与医生复核耗时；以现有手工流程为对照，核算自动化的周转、返工和每有效样本成本。分别补齐临床增量价值、流程效率和经济性证据，再决定扩大投入；公司传播、RUO公告或小样本研究本身不足以支持落地。世和IPO问答尚不能替代正式审核文件，FDA药品批准也不能外推为检测许可或支付决定。",
+  "tasks": [
+    {
+      "kind": "company",
+      "status": "completed",
+      "rawReport": "世和官网中文首页最新两条为11月2日，英文官网最新11月3日，均早于窗口。窗口内可发布线索为11月6日省科技奖励报道和11月5日股东问答媒体转述；上交所项目页作为状态交叉核验入口，不把页面旧日期写成新增新闻。",
+      "coverage": "检索世和中文/英文官网、上交所IPO审核项目页、参股公司问答及主流财经媒体。官网新增公告均早于11月5日；成稿保留获奖与IPO两条不同事件，IPO仅陈述可由引用原文支持的媒体问答，不写成恢复、过会或上市确定。",
+      "errorMessage": ""
+    },
+    {
+      "kind": "competitors",
+      "status": "completed",
+      "rawReport": "除Guardant、Natera三季报外，核对Guardant 11月10日PRECISION研究公司公告。华大基因11月6日保险合作和11月9日BNCT合作均为窗口内线索，但因本栏每期最多3条留在覆盖记录，不与主条目重复。GRAIL、燃石、吉因加窗口内未取得可发布新原文。",
+      "coverage": "逐项打开Guardant、GRAIL、华大基因、燃石和吉因加官网及IR；排除GRAIL 11月4日财报、燃石9月及吉因加9月旧闻。新增消息按产品、研究和渠道合作拆分，避免重复同一财报。",
+      "errorMessage": ""
+    },
+    {
+      "kind": "regulation",
+      "status": "completed",
+      "rawReport": "FDA 11月10日批准pimicotinib用于症状性腱鞘巨细胞瘤，MANEUVER试验ORR 56%对安慰剂3.2%。窗口内未取得国家医保、NMPA或CDE关于肿瘤NGS/MRD准入的可靠新增原文。",
+      "coverage": "检索FDA肿瘤批准/CDRH、NMPA、CDE和国家医保局窗口内公告。仅纳入打开并核对全文的FDA药品批准；未将药品批准推成检测许可或支付决定，也未以会议预告和旧政策凑数。",
+      "errorMessage": ""
+    },
+    {
+      "kind": "science",
+      "status": "completed",
+      "rawReport": "窗口内保留JNCI Cancer Spectrum 11月10日AI试验匹配研究与Nature 11月11日AML克隆演化研究；npj甲基化线索未进入成稿。两条均补充队列、样本量、技术方法和外推限制，未将搜索摘要或旧文纳入。",
+      "coverage": "检索Nature/npj、PubMed、JNCI Cancer Spectrum、NEJM和ClinicalTrials.gov肿瘤NGS、ctDNA、MRD、多组学及医疗AI原始来源。成稿按AI临床流程与纵向克隆监测各保留一条；ClinicalTrials.gov未全库系统扫描，不声称无其他注册新增。",
+      "errorMessage": ""
+    },
+    {
+      "kind": "partners",
+      "status": "completed",
+      "rawReport": "窗口内保留Illumina MRD早期访问、PacBio三季报和Clear Labs与Pillar的RUO自动化合作；晶泰科技与皮尔法伯线索未进入成稿。三条分别覆盖技术、经营和实验室流程，不推导为临床许可、疗效或与世和的合作。",
+      "coverage": "检索Illumina、PacBio、Pillar、Clear Labs、MGI及药企原始发布。成稿按技术、经营和自动化流程各保留一条；对RUO、临床前合作和商业可用时间分别标注，不把供应链消息写成临床证据。",
+      "errorMessage": ""
+    }
+  ],
+  "items": [
+    {
+      "section": "company",
+      "title": "邵阳获2025年度江苏省青年科技杰出贡献奖",
+      "message": "新华日报·交汇点11月6日报道，世和基因创始人、董事长邵阳在当天省科学技术奖励大会领取2025年度省青年科技杰出贡献奖证书。",
+      "attention": "人才及科研转化荣誉不等同于新增产品获批、支付覆盖或临床结局证据。",
+      "commentary": "将奖项作为研发团队与产学研活动的跟踪线索；后续单独记录可核验的临床验证、注册和商业转化成果，不把荣誉计作产品准入。",
+      "severity": "normal",
+      "sourceIds": [
+        "SH-AWARD"
+      ],
+      "sortOrder": 0
+    },
+    {
+      "section": "competitors",
+      "title": "Guardant三季报：肿瘤检测量与收入增速存在差异",
+      "message": "Guardant11月5日披露三季度收入3.610亿美元，同比增长36%；肿瘤业务收入2.313亿美元、增长25%，肿瘤检测11.7万次、增长58%。GAAP净亏损1.244亿美元。",
+      "attention": "检测量、收入及盈利是不同口径，放量不等于同比例收入增长或已经盈利。",
+      "commentary": "先用同口径检测量和收入核算单样本收入，再拆分产品结构、毛利与回款周期；用现金回收验证增长质量，避免把美国增速直接套入国内。",
+      "severity": "normal",
+      "sourceIds": [
+        "GH-Q3"
+      ],
+      "sortOrder": 0
+    },
+    {
+      "section": "competitors",
+      "title": "Natera肿瘤检测处理量同比增长60.9%",
+      "message": "Natera11月5日公布三季度全公司收入7.940亿美元、增长34.1%；处理肿瘤检测约33.95万次、增长60.9%，GAAP净亏损5990万美元。",
+      "attention": "肿瘤处理量不等于MRD报告量；全公司收入还包含女性健康和器官健康业务。",
+      "commentary": "先分开肿瘤与其他业务，再补齐MRD实际报告量、复测频次和回款周期；结合临床服务成本评估可持续性，不用全公司收入估算MRD规模。",
+      "severity": "normal",
+      "sourceIds": [
+        "NTRA-Q3"
+      ],
+      "sortOrder": 1
+    },
+    {
+      "section": "regulation",
+      "title": "FDA加速批准头颈鳞癌新治疗",
+      "message": "FDA11月5日加速批准Rybrevant Faspro，用于铂类化疗和抗PD-(L)1治疗后进展的成人复发或转移头颈鳞癌；不适用于HPV相关口咽鳞癌。",
+      "attention": "加速批准仍需后续验证临床获益，适用人群边界应按批准原文核对。",
+      "commentary": "世和可跟踪分型与治疗路径变化；本次为药品批准，不能推导为NGS、MRD或伴随诊断获批。",
+      "severity": "important",
+      "sourceIds": [
+        "FDA-HNSCC"
+      ],
+      "sortOrder": 0
+    },
+    {
+      "section": "science",
+      "title": "LLM生成SQL用于肿瘤临床试验资格初筛",
+      "message": "JNCI Cancer Spectrum11月10日论文以24个合成病例评估AI辅助试验匹配；240个病例—试验组合与医生共识一致率95.8%，敏感度83.3%。",
+      "attention": "验证限于合成病例，未纳入化验结果与合并症，不能替代完整入组审查。",
+      "commentary": "先用去标识历史病例做回顾验证，同时记录漏匹配率、医生复核耗时和数据库映射失败；保留人工复核，验证流程收益后再扩大试用。",
+      "severity": "normal",
+      "sourceIds": [
+        "JNCI-AI"
+      ],
+      "sortOrder": 0
+    },
+    {
+      "section": "partners",
+      "title": "Illumina开放超灵敏MRD双链测序早期访问",
+      "message": "Illumina11月9日宣布研究用MRD工作流早期访问；代表性研究在10ng输入下可重复检测2.5ppm ctDNA，试剂预计2027年一季度发货。",
+      "attention": "这是公司报告的RUO研究性能，不能等同于临床敏感度或获批诊断效能。",
+      "commentary": "评估时分别核对低输入量检出率、特异性与跨批稳定性，并将失败补测和分析工时计入总成本；研究平台的性能不能代替临床报告验证。",
+      "severity": "normal",
+      "sourceIds": [
+        "ILMN-MRD"
+      ],
+      "sortOrder": 0
+    },
+    {
+      "section": "partners",
+      "title": "PacBio三季报披露长读长装机与成本压力",
+      "message": "PacBio三季度营收4060万美元，上年3840万美元；Vega装机35台，GAAP毛利率33%，上年41%。公司称内存及Vega制造转型成本构成压力。",
+      "attention": "公告发布于美东11月4日16:05，换算北京时间11月5日05:05；装机扩张与毛利承压并存。",
+      "commentary": "世和评估长读长业务时宜验证每有效样本成本、供货及运行稳定性；RUO平台不等于临床许可。",
+      "severity": "normal",
+      "sourceIds": [
+        "PACB-Q3"
+      ],
+      "sortOrder": 1
+    },
+    {
+      "section": "company",
+      "title": "世和基因IPO审核口径仍需跟踪",
+      "message": "华盛通11月5日转述北陆药业董秘问答称，参股公司世和基因IPO审核仍正常推进。",
+      "attention": "这是股东公司对问询的媒体转述，未附交易所恢复审核或上市委审议文件，不能解读为恢复、过会或上市确定。",
+      "commentary": "优先跟踪交易所正式审核文件及财报更新；业务规划应把媒体问答与已生效的审核结论分开。",
+      "severity": "important",
+      "sourceIds": [
+        "SH-IPO-REPLY"
+      ],
+      "sortOrder": 1
+    },
+    {
+      "section": "competitors",
+      "title": "Guardant发布PRECISION研究传播动态",
+      "message": "Guardant11月10日发布PRECISION研究消息：在拟行根治意图切除的结直肠寡转移患者中，结合术前液体CGP和术后MRD，分出两年无复发生存率约78%、40%和9%的风险组。",
+      "attention": "论文已于10月28日在线发表；本期收录的是11月10日公司传播事件。研究为前瞻性观察，风险分层尚不能证明治疗决策获益。",
+      "commentary": "世和可关注术前分子分型与术后MRD组合的产品路径，但要把预后分层、疗效预测和支付证据分别验证。",
+      "severity": "normal",
+      "sourceIds": [
+        "GH-PRECISION-261110"
+      ],
+      "sortOrder": 5
+    },
+    {
+      "section": "regulation",
+      "title": "FDA批准pimicotinib用于症状性腱鞘巨细胞瘤",
+      "message": "FDA11月10日批准pimicotinib（Pimjetmi）用于成人症状性腱鞘巨细胞瘤，适用于手术切除可能加重功能受限或导致严重并发症者；MANEUVER试验ORR为56%，安慰剂为3.2%。",
+      "attention": "该批准针对药物治疗，原文未要求生物标志物或伴随诊断；不能外推为NGS、MRD检测许可或医保支付。",
+      "commentary": "可作为肿瘤药物监管节奏及Project Orbis跨国审评样本；世和需区分治疗适应证、检测准入和支付证据。",
+      "severity": "normal",
+      "sourceIds": [
+        "FDA-PIMICOTINIB"
+      ],
+      "sortOrder": 1
+    },
+    {
+      "section": "science",
+      "title": "Nature研究追踪AML发病前克隆演化",
+      "message": "Nature11月11日研究连续血样中的AML发病前克隆：最初纳入47名后发AML女性与47名对照、各249份样本，排除后分析为46名对照；TETRIS-seq可检测低至0.1% VAF，约80%病例显示多年演化。",
+      "attention": "真实队列但靶向面板可能漏检罕见驱动，约20%病例无明显克隆扩张，不能直接当作普通人群预测模型。",
+      "commentary": "提示NGS纵向监测应结合克隆动力学而非单点阳性；转化前需验证更大人群风险阈值和假阳性管理。",
+      "severity": "normal",
+      "sourceIds": [
+        "NATURE-AML-EVO"
+      ],
+      "sortOrder": 1
+    },
+    {
+      "section": "partners",
+      "title": "Clear Labs与Pillar扩展血液肿瘤NGS自动化",
+      "message": "11月10日宣布将RUO oncoReveal Myeloid v2与Essential MPN Panel接入Clear Dx，自动化建库和测序设置，预计2027年初提供。",
+      "attention": "面板、平台和工作流均标注RUO，尚非诊断程序；自动化收益仍需实测灵敏度、变异检出和本地验证。",
+      "commentary": "这提供实验室内自动化路径。以现有手工流程为对照，先测每批周转、返工率和每有效样本总成本；软件与本地验证工时也应计入，不能只比较仪器运行时间。",
+      "severity": "normal",
+      "sourceIds": [
+        "PILLAR-CLEAR-20261110"
+      ],
+      "sortOrder": 2
+    }
+  ],
+  "sources": [
+    {
+      "key": "SH-AWARD",
+      "title": "全省科学技术奖励大会丨邵阳：在癌症精准检测无人区闯出中国路",
+      "publisher": "新华日报·交汇点新闻",
+      "publishedAt": "2026-11-06T20:51:00+08:00",
+      "accessedAt": "2026-11-12T00:08:00+08:00",
+      "url": "https://www.xhby.net/content/s6aedcd68e4b0a9e349484a0a.html",
+      "sourceType": "media",
+      "verified": true
+    },
+    {
+      "key": "GH-Q3",
+      "title": "Guardant Health Reports Third Quarter 2026 Financial Results and Increases 2026 Revenue Guidance",
+      "publisher": "Guardant Health",
+      "publishedAt": "2026-11-05",
+      "accessedAt": "2026-11-12T00:04:00+08:00",
+      "url": "https://investors.guardanthealth.com/press-releases/press-releases/2026/Guardant-Health-Reports-Third-Quarter-2026-Financial-Results-and-Increases-2026-Revenue-Guidance/default.aspx",
+      "sourceType": "official",
+      "verified": true
+    },
+    {
+      "key": "NTRA-Q3",
+      "title": "Natera Reports Third Quarter 2026 Financial Results",
+      "publisher": "Natera",
+      "publishedAt": "2026-11-05",
+      "accessedAt": "2026-11-12T00:08:00+08:00",
+      "url": "https://investor.natera.com/news/news-details/2026/Natera-Reports-Third-Quarter-2026-Financial-Results/default.aspx",
+      "sourceType": "official",
+      "verified": true
+    },
+    {
+      "key": "FDA-HNSCC",
+      "title": "FDA grants accelerated approval to amivantamab and hyaluronidase-lpuj for recurrent or metastatic head and neck squamous cell carcinoma",
+      "publisher": "FDA",
+      "publishedAt": "2026-11-05",
+      "accessedAt": "2026-11-12T00:08:00+08:00",
+      "url": "https://www.fda.gov/drugs/cancer-approvals/fda-grants-accelerated-approval-amivantamab-and-hyaluronidase-lpuj-recurrent-or-metastatic-head-and",
+      "sourceType": "official",
+      "verified": true
+    },
+    {
+      "key": "JNCI-AI",
+      "title": "Quantifying cancer clinical trial eligibility using artificial Intelligence-Based matching",
+      "publisher": "JNCI Cancer Spectrum / Oxford University Press",
+      "publishedAt": "2026-11-10",
+      "accessedAt": "2026-11-12T00:08:00+08:00",
+      "url": "https://academic.oup.com/jncics/advance-article/doi/10.1093/jncics/pkag120/9027854",
+      "sourceType": "paper",
+      "verified": true
+    },
+    {
+      "key": "ILMN-MRD",
+      "title": "Illumina advances MRD research portfolio with ultrasensitive duplex sequencing technology",
+      "publisher": "Illumina",
+      "publishedAt": "2026-11-09",
+      "accessedAt": "2026-11-12T00:08:00+08:00",
+      "url": "https://www.illumina.com/company/news-center/press-releases/press-release-details.html?newsid=29361",
+      "sourceType": "official",
+      "verified": true
+    },
+    {
+      "key": "PACB-Q3",
+      "title": "PacBio Announces Third Quarter 2026 Financial Results",
+      "publisher": "PacBio",
+      "publishedAt": "2026-11-04T16:05:00-05:00",
+      "accessedAt": "2026-11-12T00:08:00+08:00",
+      "url": "https://investor.pacificbiosciences.com/news-releases/news-release-details/pacbio-announces-third-quarter-2026-financial-results",
+      "sourceType": "official",
+      "verified": true
+    },
+    {
+      "key": "SH-IPO-REPLY",
+      "title": "北陆药业：参股公司世和基因IPO审核仍正常推进",
+      "publisher": "华盛通",
+      "publishedAt": "2026-11-05T08:53:00+08:00",
+      "url": "https://www.hstong.com/news/detail/26110509145333177",
+      "sourceType": "media",
+      "verified": true,
+      "accessedAt": "2026-11-12T09:13:00+08:00"
+    },
+    {
+      "key": "GH-PRECISION-261110",
+      "title": "PRECISION Study Published in ESMO Open Highlights Utility of Guardant360 Liquid and Guardant Reveal",
+      "publisher": "Financial Times / Business Wire",
+      "publishedAt": "2026-11-10T21:05:00+00:00",
+      "url": "https://markets.ft.markitdigital.com/data/announce/detail?dockey=600-202611101605BIZWIRE_USPRX____20261109_BW113122-1",
+      "sourceType": "media",
+      "verified": true,
+      "accessedAt": "2026-11-12T09:13:00+08:00"
+    },
+    {
+      "key": "FDA-PIMICOTINIB",
+      "title": "FDA approves pimicotinib for symptomatic tenosynovial giant cell tumor",
+      "publisher": "FDA",
+      "publishedAt": "2026-11-10",
+      "url": "https://www.fda.gov/drugs/cancer-approvals/fda-approves-pimicotinib-symptomatic-tenosynovial-giant-cell-tumor",
+      "sourceType": "official",
+      "verified": true,
+      "accessedAt": "2026-11-12T09:13:00+08:00"
+    },
+    {
+      "key": "NATURE-AML-EVO",
+      "title": "Evolutionary dynamics in the years preceding acute myeloid leukaemia",
+      "publisher": "Nature",
+      "publishedAt": "2026-11-11",
+      "url": "https://www.nature.com/articles/s41586-026-11269-x",
+      "sourceType": "paper",
+      "verified": true,
+      "accessedAt": "2026-11-12T09:13:00+08:00"
+    },
+    {
+      "key": "PILLAR-CLEAR-20261110",
+      "title": "Clear Labs Expands Collaboration with Pillar Biosciences to Automate oncoReveal Myeloid v2 and Essential MPN Panels on the Clear Dx Platform",
+      "publisher": "Pillar Biosciences",
+      "publishedAt": "2026-11-10",
+      "url": "https://www.pillarbiosci.com/clear-labs-expands-collaboration-with-pillar-biosciences-to-automate-oncoreveal-myeloid-v2-and-essential-mpn-panels-on-the-clear-dx-platform.htm",
+      "sourceType": "official",
+      "verified": true,
+      "accessedAt": "2026-11-12T09:13:00+08:00"
+    }
+  ]
+}

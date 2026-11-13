@@ -1,0 +1,92 @@
+.livelihood-issue { max-width: 1040px; margin: 0 auto; color: #253a32; overflow-wrap: anywhere; }
+.livelihood-space-reading .livelihood-header { border-top: 0; padding: 0 0 12px; }
+.livelihood-space-reading .livelihood-header h1 { font-size: 23px; margin: 0; }
+.livelihood-space-reading .livelihood-header > p, .livelihood-space-reading .livelihood-metadata { display: none; }
+.livelihood-space-reading .livelihood-toolbar { margin-bottom: 12px; }
+.livelihood-issue * { min-width: 0; }
+.livelihood-issue-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin: 24px 0; }
+.livelihood-download { display: inline-flex; align-items: center; justify-content: center; gap: 7px; border: 1px solid #b4c9bd; background: #fff; color: #285641; border-radius: 6px; padding: 9px 12px; cursor: pointer; }
+.livelihood-issue-header { padding: 20px 0 24px; border-top: 3px solid #377258; }
+.livelihood-issue-header h2 { font-size: 30px; line-height: 1.4; margin: 14px 0; }
+.livelihood-issue-header > p:last-child { max-width: 850px; line-height: 1.9; }
+.livelihood-issue-subtitle { color: #627269; font-size: 17px; line-height: 1.7; }
+.livelihood-takeaways { background: #eff6f0; padding: 16px 20px; border-left: 3px solid #5c8b6d; }
+.livelihood-takeaways p { display: flex; align-items: flex-start; gap: 10px; margin: 9px 0; line-height: 1.8; font-size: 14px; }
+.livelihood-takeaways svg { flex: 0 0 auto; margin-top: 5px; color: #3e7757; }
+.livelihood-issue-nav { display: flex; flex-wrap: wrap; border-bottom: 1px solid #d4dfd7; margin-top: 28px; gap: 4px 18px; }
+.livelihood-issue-nav button { background: transparent; border: 0; border-bottom: 3px solid transparent; padding: 13px 4px; color: #63736a; cursor: pointer; font-weight: 600; }
+.livelihood-issue-nav button[aria-current] { color: #226344; border-bottom-color: #377258; }
+.livelihood-section, .livelihood-relation, .livelihood-facts, .livelihood-pathways, .livelihood-actions, .livelihood-checklist, .livelihood-watchlist, .livelihood-sources { padding: 28px 0; border-bottom: 1px solid #dce4de; }
+.livelihood-section-heading { margin-bottom: 20px; }
+.livelihood-section-heading h3, .livelihood-checklist h3, .livelihood-watchlist h3 { font-size: 21px; line-height: 1.55; margin: 8px 0; }
+.livelihood-section-heading p { line-height: 1.85; color: #64736a; }
+.livelihood-issue .markdown { font-size: 15px; line-height: 1.95; max-width: none; }
+.livelihood-issue .markdown h1 { font-size: 21px; line-height: 1.6; }
+.livelihood-issue .markdown h2 { font-size: 19px; line-height: 1.65; }
+.livelihood-issue .markdown h3 { font-size: 17px; }
+.livelihood-issue .markdown table { display: block; overflow-x: auto; max-width: 100%; }
+.livelihood-references { display: flex; flex-wrap: wrap; gap: 6px 10px; margin-top: 12px; font-size: 12px; }
+.livelihood-references a { display: inline-flex; align-items: center; gap: 3px; color: #426c9a; }
+.livelihood-select { display: grid; gap: 8px; width: min(100%, 520px); font-size: 13px; color: #53665b; margin: 18px 0; }
+.livelihood-select select { width: 100%; background: #fff; color: #253a32; padding: 10px 30px 10px 12px; border: 1px solid #b9cbbf; border-radius: 5px; font-size: 14px; }
+.livelihood-issue article h4 { font-size: 17px; margin: 12px 0; line-height: 1.65; }
+.livelihood-issue article p, .livelihood-issue article li, .livelihood-issue article dd { font-size: 14px; line-height: 1.85; }
+.livelihood-issue dl { margin: 16px 0; }
+.livelihood-issue dl > div { display: grid; grid-template-columns: 88px minmax(0, 1fr); gap: 12px; padding: 11px 0; border-bottom: 1px dashed #dce4de; }
+.livelihood-issue dt { color: #718074; font-size: 13px; padding-top: 3px; }
+.livelihood-issue dd { margin: 0; }
+.livelihood-issue dd ul { margin: 0; padding-left: 19px; }
+.livelihood-facts > article, .livelihood-sources > article { padding: 20px 0; border-top: 1px solid #e0e6e1; }
+.livelihood-facts article > div:first-child { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; font-size: 12px; color: #6a776e; }
+.livelihood-facts article > div:first-child > span { color: #426c9a; font-weight: 600; }
+.livelihood-issue details { font-size: 13px; line-height: 1.8; margin: 14px 0; }
+.livelihood-issue summary { cursor: pointer; color: #486957; }
+.livelihood-problem-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 28px; }
+.livelihood-problem-list > article { padding: 25px 0; border-bottom: 1px solid #dce4de; }
+.livelihood-problem-number { color: #a1753f; font-size: 24px; font-weight: 600; }
+.livelihood-problem-list h3 { font-size: 18px; line-height: 1.6; }
+.livelihood-mechanisms > article { padding: 28px 0; border-bottom: 1px solid #dce4de; }
+.livelihood-mechanisms h3 { font-size: 19px; }
+.livelihood-mechanisms ol { display: flex; flex-wrap: wrap; list-style: none; gap: 8px; padding: 0; margin: 20px 0; }
+.livelihood-mechanisms ol li { display: flex; align-items: center; gap: 8px; }
+.livelihood-mechanisms ol span { background: #eef3f7; border-left: 2px solid #7493aa; padding: 8px 12px; }
+.livelihood-pathways ol, .livelihood-actions ol { padding-left: 23px; }
+.livelihood-deadline { margin: 18px 0; padding: 12px 16px; background: #faf3e7; color: #71572e; }
+.livelihood-deadline span { display: flex; gap: 6px; align-items: center; font-size: 13px; font-weight: 600; }
+.livelihood-deadline p { margin-bottom: 2px; }
+.livelihood-caveat, .livelihood-missing { padding-left: 12px; border-left: 2px solid #bd9664; color: #75634d; line-height: 1.8; }
+.livelihood-actions > div:last-child > article { border-top: 1px solid #dce4de; padding: 24px 0; }
+.livelihood-checklist h3 { display: flex; align-items: center; gap: 8px; }
+.livelihood-checklist ul { padding-left: 22px; line-height: 1.9; font-size: 14px; }
+.livelihood-watchlist > article { padding: 15px 0; }
+.livelihood-watchlist small, .livelihood-sources small { color: #6b7a70; line-height: 1.85; }
+.livelihood-source-search { display: flex; align-items: center; gap: 8px; border: 1px solid #bfd0c4; border-radius: 5px; padding: 8px 12px; max-width: 540px; margin-bottom: 22px; }
+.livelihood-source-search input { width: 100%; background: transparent; border: 0; padding: 4px; outline-offset: 4px; }
+.livelihood-help { padding: 24px 0; border-bottom: 1px solid #dce4de; }
+.livelihood-help h3 { font-size: 20px; line-height: 1.6; }
+.livelihood-help > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.livelihood-help article { border-top: 2px solid #a4beb0; padding-top: 6px; }
+.livelihood-help article > a { display: inline-flex; align-items: center; gap: 7px; color: #336b55; font-size: 14px; }
+.livelihood-help article > .livelihood-help-phone { display: flex; width: fit-content; font-size: 24px; font-weight: 600; padding: 8px 0; }
+.livelihood-pathway-contact { border-left: 3px solid #8ba8ba; background: #eef3f6; padding: 15px; margin: 18px 0; font-size: 14px; line-height: 1.85; }
+.livelihood-pathway-contact > div { display: grid; gap: 10px; margin-top: 10px; }
+.livelihood-pathway-contact > div > span { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 8px 14px; }
+.livelihood-pathway-contact a { display: inline-flex; align-items: center; gap: 5px; color: #35638a; }
+.livelihood-pathway-contact small { font-size: 14px; }
+.livelihood-sources article > a { display: inline-flex; align-items: center; gap: 7px; color: #39648a; font-size: 16px; line-height: 1.6; }
+.livelihood-sources article > a svg { flex-shrink: 0; }
+.livelihood-issue-footer { display: flex; align-items: flex-start; gap: 12px; padding: 26px 0; line-height: 1.9; }
+.livelihood-issue-footer > svg { flex-shrink: 0; margin-top: 5px; color: #477a5c; }
+.livelihood-issue-footer p { color: #6a786e; font-size: 13px; }
+@media (max-width: 640px) {
+  .livelihood-issue-header h2 { font-size: 24px; }
+  .livelihood-issue-subtitle { font-size: 15px; }
+  .livelihood-issue-nav { gap: 2px 12px; }
+  .livelihood-issue-nav button { font-size: 13px; padding: 12px 1px; }
+  .livelihood-takeaways { padding: 10px 13px; }
+  .livelihood-problem-list { grid-template-columns: minmax(0, 1fr); }
+  .livelihood-help > div { grid-template-columns: minmax(0, 1fr); }
+  .livelihood-issue dl > div { grid-template-columns: minmax(0, 1fr); gap: 3px; }
+  .livelihood-section-heading h3 { font-size: 19px; }
+  .livelihood-issue .markdown { font-size: 14px; }
+}

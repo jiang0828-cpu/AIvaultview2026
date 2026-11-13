@@ -7,6 +7,13 @@ export type WorldEvidenceReview = NonNullable<WorldReport['evidenceReview']>;
 export const evidenceKindNames = { data: '数据', fact: '已核实事实', statement: '公开表态', allegation: '未证实主张' };
 export const evidenceLevelNames = { supported: '证据支持', bounded: '仅支持有限判断', insufficient: '证据不足', conditional: '条件推演' };
 
+export function worldSourceDate(source: WorldReport['sources'][number]) {
+  if (source.datePrecision === 'accessed') return `查阅：${source.published}`;
+  const value = source.datePrecision === 'year' ? source.published.slice(0, 4)
+    : source.datePrecision === 'month' ? source.published.slice(0, 7) : source.published;
+  return `发布：${value}`;
+}
+
 export function worldEvidenceCalculation(calculation: WorldEvidenceReview['calculations'][number], review: WorldEvidenceReview) {
   const left = review.records.find((record) => record.id === calculation.left)!;
   const right = review.records.find((record) => record.id === calculation.right)!;
@@ -60,14 +67,16 @@ export function worldIssueData(issue: Content | undefined) {
 }
 export function exportWorldMarkdown(report: WorldReport, documents: Content[]) {
   const sections = [`# 观天下｜第${report.number}期 ${report.title}`, report.subtitle, `资料截止：${report.asOf}`, report.thesis, report.boundary,
+    ...(report.takeaways ? ['## 本期要点', ...report.takeaways.map((item) => `### ${item.title}\n\n${item.detail} [${item.sourceIds.join(', ')}]`)] : []),
     ...(report.evidenceReview ? worldEvidenceMarkdown(report.evidenceReview) : []),
     ...(report.timeline ? ['## 事件时间线', ...report.timeline.map((event) => `- ${event.date}｜${timelineStatusNames[event.status]}｜${event.title}：${event.detail} [${event.sourceIds.join(', ')}]`)] : []),
     '## 数据快照', ...report.metrics.map((metric) => `- ${metric.label}：${metric.value}${metric.unit}；${metric.period}；${kindNames[metric.kind]}；${metric.note} [${metric.sourceIds.join(', ')}]`),
     '## 图表数据', ...report.charts.map((chart) => `### ${chart.title}\n\n${chart.subtitle}\n\n${chart.rows.map((row) => `- ${row.label}：${row.value}${chart.unit} (${kindNames[row.kind]})`).join('\n')}\n\n${chart.note} [${chart.sourceIds.join(', ')}]`),
     ...documents.map((document) => document.description), '## 传导机制（编辑分析）',
     ...report.channels.map((channel) => `### ${channel.title}\n\n${channel.stages.map((stage) => `${stage.label}：${stage.detail}`).join(' → ')}\n\n${channel.feedback}\n\n${channel.caveat}`),
+    ...(report.responses ? ['## 应对措施', ...report.responses.map((response) => `### ${response.title}｜${response.actor}\n\n目标：${response.objective}\n\n触发场景：${response.trigger}\n\n执行：\n${response.actions.map((action) => `- ${action}`).join('\n')}\n\n局限：${response.limitation}\n\n验收指标：${response.metric}\n\n来源：[${response.sourceIds.join(', ')}]`)] : []),
     '## 条件情景（非概率预测）', ...report.scenarios.map((scenario) => `### ${scenario.name}\n\n${scenario.premise}\n\n触发条件：\n\n${scenario.conditions.map((condition) => `- ${condition}`).join('\n')}\n\n${report.scenarioAudience?.business ?? '企业'}：${scenario.business}\n\n${report.scenarioAudience?.household ?? '家庭'}：${scenario.household}\n\n证伪条件：${scenario.invalidation}`),
     '## 观察清单', ...report.watchlist.map((item) => `### ${item.dimension}：${item.indicator}\n\n频率：${item.frequency}\n\n观察：${item.signal}\n\n替代解释：${item.alternative}`),
-    '## 来源与支持范围', ...report.sources.map((source) => `- [${source.id}｜${source.publisher}：${source.title}](${source.url})\n  发布：${source.published}；统计期：${source.period}\n  支持范围：${source.scope}`)];
+    '## 来源与支持范围', ...report.sources.map((source) => `- [${source.id}｜${source.publisher}：${source.title}](${source.url})\n  ${worldSourceDate(source)}；统计期：${source.period}\n  支持范围：${source.scope}`)];
   return sections.join('\n\n');
 }

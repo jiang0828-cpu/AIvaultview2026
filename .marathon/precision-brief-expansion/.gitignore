@@ -1,0 +1,12 @@
+.tmp/
+.marathon/
+research/raw/
+node_modules/
+__pycache__/
+*.bam
+*.bai
+*.cram
+*.crai
+*.fastq.gz
+*.fq.gz
+*.vcf.gz

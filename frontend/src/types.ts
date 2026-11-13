@@ -1,4 +1,10 @@
-export type Role = "visitor" | "admin";
+export type Role = "visitor" | "share" | "admin";
+export interface SessionUser {
+  id: number;
+  username: string;
+  role: Role;
+  mustChangePassword: boolean;
+}
 export type ContentType =
   "folder" | "video" | "ppt" | "mindmap" | "longimage" | "pdf" | "text";
 export type SceneKey =
@@ -16,6 +22,8 @@ export interface Content {
   id: number;
   title: string;
   type: ContentType;
+  isProject?: boolean;
+  navigationOnly?: boolean;
   scene: SceneKey;
   topics: string[] | null;
   description: string;
@@ -24,6 +32,7 @@ export interface Content {
   hlsUrl: string | null;
   pdfUrl: string | null;
   imagesJson: string[] | null;
+  assetsJson?: string[] | null;
   sortOrder: number;
   parentId: number | null;
   createdAt: string;

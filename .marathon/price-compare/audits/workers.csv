@@ -1,0 +1,4 @@
+id,started,ended,agent,model,effort,class,status,first_pass,fix_lines,critical,major,minutes,input,cached,output,thread,report,note,backend
+W-python,2026-11-12T09:18,,native,,,build,running,,,,,,,,,,,,
+W-node,2026-11-12T09:18,,native,,,build,running,,,,,,,,,,,,
+W-frontend,2026-11-12T09:18,,native,,,build,running,,,,,,,,,,,,

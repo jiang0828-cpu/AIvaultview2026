@@ -1,9 +1,9 @@
-# 藏览 · 江湖行者
+# 观澜 · 江湖行者
 
-身份为行走江湖、持续求知并愿意分享所得的游侠。品牌保留“藏览 / VaultView”，六场景、项目、内容类型和操作名称保留直接含义。
+身份为行走江湖、持续求知并愿意分享所得的游侠。品牌保留“观澜 / VaultView”，六场景、项目、内容类型和操作名称保留直接含义。
 
 - 墨色 `#252d2c`：侧栏与正文主色。
-- 朱红 `#a33f34`：藏字印章、主要行动与座右铭。
+- 朱红 `#a33f34`：藏字印章、主要行动与座右铭。中文品牌为“观澜”，英文保留“VaultView”，印章保留“藏”。
 - 青绿 `#38675d`：索引、辅助强调与内容关联。
 - 冷白 `#f6f7f5`：阅读底色。标题使用本地宋体字体回退，正文使用系统无衬线字体；不加载远程字体。
 - 山水题图：以原图 3:1 比例完整显示，持剑行旅者置于右侧，宽屏左侧留白承载标题；窄桌面与手机在题图下方排布文字，避免裁切画面或压住人物。
@@ -24,4 +24,4 @@
 
 生成提示词：
 
-> Use-case: stylized-concept. Create one refined horizontal 3:1 Chinese ink wash landscape painting as a wide website masthead for 藏览, a personal knowledge/research/project library with a wandering wuxia swordsman identity. Atmospheric yet crisp enough to see real details: layered pale mineral-green mountain ridges, a sinuous river, fine ink-drawn pines on rocky bank, a SINGLE small lone traveler in simple pale cloak and bamboo hat carrying a sheathed sword, on the lower-right stone path gazing across mountains. Calm learned traveler, no combat, no fantasy magic. High-end contemporary literati painting with spare expressive black ink brushwork, cool off-white rice-paper base (#f5f6f3), small cinnabar detail on traveler, restrained jade pigments, charcoal outlines. Composition: left 55 percent is mostly very light unobstructed paper and distant faint mountain washes, all detailed mountains and traveler on right 45 percent, traveler not cropped at bottom. This left negative space is intentional for HTML black title text overlay. No written words, no calligraphy, no signatures, no logos, no border, no UI, no text of any kind, no gradients or glowing orbs. Elegant visible paper grain, not yellow or beige.
+> Use-case: stylized-concept. Create one refined horizontal 3:1 Chinese ink wash landscape painting as a wide website masthead for 观澜, a personal knowledge/research/project library with a wandering wuxia swordsman identity. Atmospheric yet crisp enough to see real details: layered pale mineral-green mountain ridges, a sinuous river, fine ink-drawn pines on rocky bank, a SINGLE small lone traveler in simple pale cloak and bamboo hat carrying a sheathed sword, on the lower-right stone path gazing across mountains. Calm learned traveler, no combat, no fantasy magic. High-end contemporary literati painting with spare expressive black ink brushwork, cool off-white rice-paper base (#f5f6f3), small cinnabar detail on traveler, restrained jade pigments, charcoal outlines. Composition: left 55 percent is mostly very light unobstructed paper and distant faint mountain washes, all detailed mountains and traveler on right 45 percent, traveler not cropped at bottom. This left negative space is intentional for HTML black title text overlay. No written words, no calligraphy, no signatures, no logos, no border, no UI, no text of any kind, no gradients or glowing orbs. Elegant visible paper grain, not yellow or beige.

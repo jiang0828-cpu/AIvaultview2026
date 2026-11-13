@@ -1,5 +1,6 @@
 import { flatten, type Content } from "./types.js";
 import { isWorldProject, worldIssues } from './worldModel.js';
+import { isLivelihoodProject, livelihoodIssues } from './livelihoodModel.js';
 
 export function isCastleProject(content: Content) {
   return (
@@ -10,10 +11,7 @@ export function isCastleProject(content: Content) {
 }
 
 export function isProject(content: Content) {
-  return (
-    content.type === "folder" &&
-    (content.title.startsWith("项目") || isCastleProject(content) || isWorldProject(content))
-  );
+  return content.isProject === true;
 }
 
 export function projectFolder(project: Content, id: number | null) {
@@ -30,6 +28,8 @@ export function folderNavigationPath(projects: Content[], folder: Content) {
   if (owner.id === folder.id) return `/home?project=${owner.id}`;
   if (isWorldProject(owner) && worldIssues(owner).some((issue) => issue.id === folder.id))
     return `/home?project=${owner.id}&issue=${folder.id}`;
+  if (isLivelihoodProject(owner) && livelihoodIssues(owner).some((issue) => issue.id === folder.id))
+    return `/home?project=${owner.id}&lifeView=issues&lifeIssue=${folder.id}&lifeSection=situation`;
   return `/home?project=${owner.id}&folder=${folder.id}`;
 }
 

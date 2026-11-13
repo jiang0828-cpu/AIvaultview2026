@@ -1,0 +1,11 @@
+Source: EUR-Lex, consolidated Regulation (EU) 2024/1689, version 2026-07-27
+URL: https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng
+Verified: 2026-11-11, web browsing tool open/search extraction
+Amending instrument: https://eur-lex.europa.eu/eli/reg/2026/1744/oj
+
+Article 111(4), exact excerpt:
+Providers of AI systems, including general-purpose AI systems, generating synthetic audio, image, video or text content, that have been placed on the market before 2 August 2026 shall take the necessary steps in order to comply with Article 50(2) by 2 December 2026.
+
+Research scope note (editorial paraphrase): Article 50 distinguishes provider duties concerning machine-readable marking from deployer disclosure of deep fakes and relevant public-interest text. Different exceptions and conditions apply. The quoted transition is for the specified earlier systems and Article 50(2); it is not a postponement of every transparency duty.
+
+Archive limitation: direct Node fetch of EUR-Lex returned HTTP 202 with an empty body. This is a verified excerpt, not a full HTML/PDF original or a claim that all provisions have been archived.

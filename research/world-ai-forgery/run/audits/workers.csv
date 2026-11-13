@@ -1,0 +1,5 @@
+id,started,ended,agent,model,effort,class,status,first_pass,fix_lines,critical,major,minutes,input,cached,output,thread,report,note,backend
+issue003-research,2026-11-11T14:23,2026-11-11T14:52,collaboration,inherit,inherit,research,done,,,,,,,,,,../notes.md,,
+world003-ops,2026-11-11T14:42,2026-11-11T15:07,collaboration,inherit,inherit,ops,done,n,0,0,0,,,,,,audits/round-1/evidence/EVIDENCE.md,freeze-evidence-pack,
+G1-opus,2026-11-11T15:07,2026-11-11T15:23,claude,claude-opus-5,xhigh,gate,done,,,0,0,,,,,,audits/round-1/opus.md,sha=074b6fe96d7f3928e6035735600b783a33564460,
+G1-astra,2026-11-11T15:07,2026-11-11T15:16,collaboration,gpt-6-astra,high,gate,done,,,0,0,,,,,,audits/round-1/astra.md,sha=074b6fe96d7f3928e6035735600b783a33564460,

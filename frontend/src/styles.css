@@ -1726,6 +1726,19 @@ small {
   border-color: color-mix(in srgb, var(--project-accent) 32%, #dce6de);
   background: linear-gradient(110deg, var(--project-soft), #fff 64%);
 }
+.project-plans-card {
+  grid-column: span 2;
+  border-color: #d7c5b2;
+  background: linear-gradient(110deg, #fbf6ef, #fff 64%);
+}
+.project-plans-card .project-content-type {
+  color: #a66f43;
+  background: #f7eee4;
+}
+.project-plan-hint {
+  margin-left: auto;
+  color: #a66f43;
+}
 .project-content-index {
   padding-top: 3px;
   color: #a1aaa1;
@@ -3461,6 +3474,9 @@ td:first-child {
     grid-template-columns: 1fr;
   }
   .project-content-card.featured {
+    grid-column: auto;
+  }
+  .project-plans-card {
     grid-column: auto;
   }
   .project-content-main > span:not(.project-content-meta) {

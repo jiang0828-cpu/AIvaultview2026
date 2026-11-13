@@ -13,6 +13,7 @@ model Content {
   id Int @id @default(autoincrement())
   title String
   type String
+  isProject Boolean @default(false)
   scene String @default("other")
   topics Json?
   description String @default("")
@@ -21,15 +22,169 @@ model Content {
   hlsUrl String?
   pdfUrl String?
   imagesJson Json?
+  assetsJson Json?
   sortOrder Int @default(0)
   parentId Int?
   parent Content? @relation("ContentTree", fields: [parentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   children Content[] @relation("ContentTree")
   writers LiteraryWriter[]
+  grants ProjectAccess[]
+  tripPlans TripPlan[]
+  healthWorkspaces HealthWorkspace[]
+  researchStudies ResearchStudy[]
+  precisionBriefRuns PrecisionBriefRun[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@index([parentId, sortOrder])
   @@index([scene, sortOrder])
+}
+
+model PrecisionBriefRun {
+  id Int @id @default(autoincrement())
+  projectId Int
+  runKey String
+  issueDate String
+  windowStart DateTime
+  windowEnd DateTime
+  firstIssue Boolean @default(false)
+  status String @default("queued")
+  summary String @default("")
+  publishedAt DateTime?
+  errorMessage String @default("")
+  isCurrent Boolean @default(false)
+  validation Json
+  tasks PrecisionBriefTask[]
+  items PrecisionBriefItem[]
+  sources PrecisionBriefSource[]
+  project Content @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([projectId, runKey])
+  @@index([projectId, createdAt])
+  @@index([projectId, isCurrent])
+}
+
+model PrecisionBriefTask {
+  id Int @id @default(autoincrement())
+  runId Int
+  kind String
+  status String @default("queued")
+  rawReport String @default("")
+  coverage String @default("")
+  startedAt DateTime?
+  completedAt DateTime?
+  errorMessage String @default("")
+  run PrecisionBriefRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  @@unique([runId, kind])
+}
+
+model PrecisionBriefItem {
+  id Int @id @default(autoincrement())
+  runId Int
+  section String
+  title String
+  message String
+  attention String
+  commentary String
+  severity String @default("normal")
+  sourceIds Json
+  sortOrder Int @default(0)
+  run PrecisionBriefRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  @@index([runId, section, sortOrder])
+}
+
+model PrecisionBriefSource {
+  id Int @id @default(autoincrement())
+  runId Int
+  key String
+  title String
+  publisher String
+  publishedAt String
+  accessedAt DateTime
+  url String
+  sourceType String
+  verified Boolean @default(false)
+  run PrecisionBriefRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  @@unique([runId, key])
+}
+
+model ResearchStudy {
+  id Int @id @default(autoincrement())
+  projectId Int
+  title String
+  researchObject String @default("")
+  goal String @default("")
+  status String @default("draft")
+  project Content @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tasks ResearchTask[]
+  synthesis ResearchSynthesis?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([projectId, updatedAt])
+}
+
+model ResearchTask {
+  id Int @id @default(autoincrement())
+  studyId Int
+  kind String
+  title String
+  prompt String
+  inputMaterials String @default("")
+  status String @default("draft")
+  report String @default("")
+  sources Json
+  conclusions Json
+  limitations String @default("")
+  openQuestions String @default("")
+  asOf String @default("")
+  assignedTo String @default("")
+  notes String @default("")
+  revision Int @default(1)
+  startedAt DateTime?
+  completedAt DateTime?
+  study ResearchStudy @relation(fields: [studyId], references: [id], onDelete: Cascade)
+  versions ResearchTaskVersion[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([studyId, kind])
+  @@index([studyId, status])
+}
+
+model ResearchTaskVersion {
+  id Int @id @default(autoincrement())
+  taskId Int
+  version Int
+  snapshot Json
+  createdAt DateTime @default(now())
+  task ResearchTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  @@unique([taskId, version])
+}
+
+model ResearchSynthesis {
+  id Int @id @default(autoincrement())
+  studyId Int @unique
+  status String @default("draft")
+  executiveSummary String @default("")
+  marketOpportunity String @default("")
+  targetUsers String @default("")
+  feasibility String @default("")
+  competition String @default("")
+  risks String @default("")
+  recommendation String @default("")
+  openQuestions Json
+  sourceTaskIds Json
+  study ResearchStudy @relation(fields: [studyId], references: [id], onDelete: Cascade)
+  versions ResearchSynthesisVersion[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+model ResearchSynthesisVersion {
+  id Int @id @default(autoincrement())
+  synthesisId Int
+  snapshot Json
+  createdAt DateTime @default(now())
+  synthesis ResearchSynthesis @relation(fields: [synthesisId], references: [id], onDelete: Cascade)
+  @@index([synthesisId, createdAt])
 }
 model LiteraryWriter {
   id String @id
@@ -46,6 +201,74 @@ model AccessLog {
   userAgent String?
   contentId Int?
   action String
+  userId Int?
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
   createdAt DateTime @default(now())
   @@index([createdAt])
+}
+model User {
+  id Int @id @default(autoincrement())
+  username String @unique
+  passwordHash String
+  role String @default("visitor")
+  enabled Boolean @default(true)
+  mustChangePassword Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  sessions AuthSession[]
+  grants ProjectAccess[]
+  logs AccessLog[]
+  tripPlans TripPlan[]
+  healthWorkspaces HealthWorkspace[]
+}
+model AuthSession {
+  id String @id
+  userId Int
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  @@index([userId])
+}
+model ProjectAccess {
+  userId Int
+  projectId Int
+  canEditResearch Boolean @default(false)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Content @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  @@id([userId, projectId])
+  @@index([projectId])
+}
+
+model TripPlan {
+  id Int @id @default(autoincrement())
+  userId Int
+  projectId Int
+  title String
+  destination String
+  startDate String
+  endDate String
+  status String @default("planned")
+  transport String @default("")
+  companions String @default("")
+  budget Int?
+  actualSpent Int?
+  itinerary Json
+  notes String @default("")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Content @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  @@index([userId, projectId, startDate])
+}
+
+model HealthWorkspace {
+  id Int @id @default(autoincrement())
+  userId Int
+  projectId Int
+  data Json
+  version Int @default(1)
+  updatedAt DateTime @updatedAt
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Content @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  @@unique([userId, projectId])
 }

@@ -12,7 +12,8 @@ export async function seedLiterature(db: PrismaClient) {
     project = project
       ? hasProjectCycle(project.topics) ? project
         : await tx.content.update({ where: { id: project.id }, data: { topics: data.topics } })
-      : await tx.content.create({ data: { ...data, parentId: scene.id } });
+      : await tx.content.create({ data: { ...data, isProject: true, parentId: scene.id } });
+    if (!project.isProject) project = await tx.content.update({ where: { id: project.id }, data: { isProject: true } });
     for (const child of children || []) {
       const existing = await tx.content.findFirst({ where: { parentId: project.id, title: child.title } });
       if (!existing) await tx.content.create({ data: { ...child, children: undefined, parentId: project.id } });

@@ -1,0 +1,29 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash|apply_patch|Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node --import tsx scripts/validate-precision-brief.mjs --hook",
+            "timeout": 30,
+            "statusMessage": "Checking precision brief output"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node --import tsx scripts/validate-precision-brief.mjs --stop",
+            "timeout": 30,
+            "statusMessage": "Checking precision brief completeness"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,160 @@
+{
+  "sources": [
+    {
+      "id": "TRANSFORMER17",
+      "status": "saved",
+      "bytes": 44230,
+      "bytesMatch": true,
+      "shaMatch": true
+    },
+    {
+      "id": "DIFFUSION20",
+      "status": "saved",
+      "bytes": 9133,
+      "bytesMatch": true,
+      "shaMatch": true
+    },
+    {
+      "id": "CAC22",
+      "status": "saved",
+      "bytes": 29675,
+      "bytesMatch": true,
+      "shaMatch": true
+    },
+    {
+      "id": "NIST24",
+      "status": "saved",
+      "bytes": 83407,
+      "bytesMatch": true,
+      "shaMatch": true
+    },
+    {
+      "id": "FTC24",
+      "status": "saved",
+      "bytes": 4409356,
+      "bytesMatch": true,
+      "shaMatch": true
+    },
+    {
+      "id": "FTCVOICE",
+      "status": "saved",
+      "bytes": 501708,
+      "bytesMatch": true,
+      "shaMatch": true
+    },
+    {
+      "id": "FBI24",
+      "status": "saved",
+      "bytes": 10577,
+      "bytesMatch": true,
+      "shaMatch": true
+    },
+    {
+      "id": "C2PA25",
+      "status": "saved",
+      "bytes": 780226,
+      "bytesMatch": true,
+      "shaMatch": true
+    },
+    {
+      "id": "CAC25",
+      "status": "saved",
+      "bytes": 23354,
+      "bytesMatch": true,
+      "shaMatch": true
+    },
+    {
+      "id": "EU24",
+      "status": "web-extract",
+      "bytes": 1136,
+      "bytesMatch": true,
+      "shaMatch": true
+    },
+    {
+      "id": "SYNTHID",
+      "status": "saved",
+      "bytes": 144858,
+      "bytesMatch": true,
+      "shaMatch": true
+    },
+    {
+      "id": "FTC25",
+      "status": "saved",
+      "bytes": 1000206,
+      "bytesMatch": true,
+      "shaMatch": true
+    },
+    {
+      "id": "NASA12",
+      "status": "saved",
+      "bytes": 311114,
+      "bytesMatch": true,
+      "shaMatch": true
+    }
+  ],
+  "productIdentity": [
+    {
+      "file": "backend/prisma/world-003-data.ts",
+      "same": true,
+      "sha256": "0239a4bd819066af0539fa223a1b39c7888763e7cfe140701d876ed752043c8e"
+    },
+    {
+      "file": "backend/prisma/world-003.ts",
+      "same": true,
+      "sha256": "3a0c60303533026cdf69d280854a11a6ccd9dff689b55e011061886a69b1a164"
+    },
+    {
+      "file": "backend/prisma/seed-world.ts",
+      "same": true,
+      "sha256": "0550a7200f8120fbb952d8a4eb7319146cda167294326c3852d87cf41d170ffd"
+    },
+    {
+      "file": "backend/src/worldSchema.ts",
+      "same": true,
+      "sha256": "59d02f4e838b8f327049dd5d397ca2c0006367b7237d4d80f485e93007b7236a"
+    },
+    {
+      "file": "frontend/src/WorldSpace.tsx",
+      "same": true,
+      "sha256": "63fd966497db52aee912e662bf1fd373fec453bad2ca3bd400e156d6b8516d7e"
+    },
+    {
+      "file": "frontend/src/worldModel.ts",
+      "same": true,
+      "sha256": "8589373c92bf72b2cec8334ac43a8a055184d63425379414fc430d3bdb11867a"
+    },
+    {
+      "file": "frontend/src/world.css",
+      "same": true,
+      "sha256": "ecbb6afb6d5ec809090e19f0a89e214ce28ec0c76e65153db5f7fb1d9fe93b00"
+    },
+    {
+      "file": "backend/test/world.test.ts",
+      "same": true,
+      "sha256": "27dabe11cf470797b9b10409a5a3932b75cd2c8f29d86ea2534a266a1ea38f84"
+    },
+    {
+      "file": "frontend/test/world.test.ts",
+      "same": true,
+      "sha256": "9a996fca71889af9c96623e09e1f68dd4a7b9561bc899b522d3f4de64a4cfa94"
+    }
+  ],
+  "finalLogs": [
+    {
+      "name": "tests",
+      "exists": true
+    },
+    {
+      "name": "typecheck",
+      "exists": true
+    },
+    {
+      "name": "lint",
+      "exists": true
+    },
+    {
+      "name": "build",
+      "exists": true
+    }
+  ]
+}

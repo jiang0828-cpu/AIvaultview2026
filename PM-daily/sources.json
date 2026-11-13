@@ -1,0 +1,44 @@
+{
+  "version": 2,
+  "updatedAt": "2026-11-12",
+  "policy": "官方原文优先；官方最新列表直达与搜索并行；主体及子公司关系须有证据；来源需在发布时再次核验；检索计划不等于采集完成",
+  "researchPolicy": {
+    "companyAliases": ["世和基因", "南京世和基因生物技术股份有限公司", "南京世和医疗器械有限公司"],
+    "entityEvidence": [
+      { "name": "世和基因", "relationship": "公司官网使用的品牌简称", "url": "https://zh.geneseeq.com/qiyejianjie.html", "verifiedAt": "2026-11-12" },
+      { "name": "南京世和基因生物技术股份有限公司", "relationship": "公司官网列明的母公司法定全称", "url": "https://zh.geneseeq.com/qiyejianjie.html", "verifiedAt": "2026-11-12" },
+      { "name": "南京世和医疗器械有限公司", "relationship": "世和基因旗下子公司；仅用于相关动态检索，不推定其他合作或当前持股比例", "url": "https://zh.geneseeq.com/qiyejianjie.html", "verifiedAt": "2026-11-12" }
+    ],
+    "companyRequiredSourceIds": ["shengene", "shengene-news", "shengene-profile", "nanjing-amr", "nanjing-government", "jiangbei-government"],
+    "companyEventTerms": ["公示", "拟授奖", "市长质量奖", "提名奖", "质量", "专利", "注册", "IPO"]
+  },
+  "sources": [
+    { "id": "shengene", "name": "世和基因官网", "url": "https://zh.geneseeq.com/", "type": "company" },
+    { "id": "shengene-news", "name": "世和动态栏目", "url": "https://zh.geneseeq.com/ic231800.html", "type": "company" },
+    { "id": "shengene-profile", "name": "世和基因公司简介与主体关系", "url": "https://zh.geneseeq.com/qiyejianjie.html", "type": "company" },
+    { "id": "nanjing-amr", "name": "南京市市场监督管理局（首页通知公告及质量强市）", "url": "https://amr.nanjing.gov.cn/", "type": "regulator" },
+    { "id": "nanjing-government", "name": "南京市人民政府（最新公示与企业荣誉）", "url": "https://www.nanjing.gov.cn/", "type": "government" },
+    { "id": "jiangbei-government", "name": "南京江北新区（最新公示与企业动态）", "url": "https://njna.nanjing.gov.cn/", "type": "government" },
+    { "id": "natera", "name": "Natera News", "url": "https://www.natera.com/company/news/", "type": "company" },
+    { "id": "fda-ivd", "name": "FDA In Vitro Diagnostics", "url": "https://www.fda.gov/medical-devices/in-vitro-diagnostics", "type": "regulator" },
+    { "id": "nmpa", "name": "国家药监局", "url": "https://www.nmpa.gov.cn/", "type": "regulator" },
+    { "id": "clinicaltrials", "name": "ClinicalTrials.gov", "url": "https://clinicaltrials.gov/", "type": "registry" },
+    { "id": "pubmed", "name": "PubMed", "url": "https://pubmed.ncbi.nlm.nih.gov/", "type": "paper" },
+    { "id": "nature-cancer", "name": "Nature Cancer", "url": "https://www.nature.com/natcancer/", "type": "paper" },
+    { "id": "nejm", "name": "NEJM", "url": "https://www.nejm.org/", "type": "paper" },
+    { "id": "guardant", "name": "Guardant Health News", "url": "https://investors.guardanthealth.com/press-releases/2026/", "type": "company" },
+    { "id": "grail", "name": "GRAIL News", "url": "https://grail.com/press-releases/", "type": "company" },
+    { "id": "bgi", "name": "华大基因", "url": "https://www.bgi.com/", "type": "company" },
+    { "id": "burning-rock", "name": "燃石医学", "url": "https://ir.brbiotech.com/", "type": "company" },
+    { "id": "geneplus", "name": "吉因加（GenePlus）", "url": "https://www.geneplus.cn/", "type": "company" },
+    { "id": "illumina", "name": "Illumina Press Releases", "url": "https://www.illumina.com/company/news-center/press-releases.html", "type": "company" },
+    { "id": "pacbio", "name": "PacBio Press Releases", "url": "https://www.pacb.com/news/press-releases/", "type": "company" },
+    { "id": "mgi", "name": "华大智造", "url": "https://www.mgi-tech.com/", "type": "company" },
+    { "id": "roche", "name": "Roche Media Releases", "url": "https://www.roche.com/media/releases", "type": "company" },
+    { "id": "cde", "name": "药审中心", "url": "https://www.cde.org.cn/", "type": "regulator" },
+    { "id": "nhsa", "name": "国家医保局", "url": "https://www.nhsa.gov.cn/", "type": "payer" },
+    { "id": "mohrss", "name": "人力资源和社会保障部", "url": "https://www.mohrss.gov.cn/", "type": "regulator" },
+    { "id": "endpoints", "name": "Endpoints News", "url": "https://endpts.com/", "type": "media" },
+    { "id": "fierce-biotech", "name": "Fierce Biotech", "url": "https://www.fiercebiotech.com/", "type": "media" }
+  ]
+}

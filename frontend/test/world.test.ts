@@ -1,19 +1,21 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { isWorldProject, worldIssues, worldIssueData, exportWorldMarkdown, worldClaimRecords, worldEvidenceCalculation, type WorldEvidenceReview } from '../src/worldModel';
+import { isWorldProject, worldIssues, worldIssueData, exportWorldMarkdown, worldClaimRecords, worldEvidenceCalculation, worldSourceDate, type WorldEvidenceReview } from '../src/worldModel';
 import { isProject } from '../src/projectNavigation';
 import { filterProjects, readProjectFilters } from '../src/projectFilters';
 import { worldReport } from '../../backend/prisma/world-data';
 import { worldDataDocument } from '../../backend/prisma/world';
 import { worldReport002 } from '../../backend/prisma/world-002-data';
 import { worldDataDocument002 } from '../../backend/prisma/world-002';
+import { worldReport003 } from '../../backend/prisma/world-003-data';
+import { worldChapters003, worldDataDocument003 } from '../../backend/prisma/world-003';
 import type { Content } from '../src/types';
 
 function node(id: number, extra: Partial<Content> = {}): Content {
   return { id, title: 'Folder', type: 'folder', scene: 'system', topics: [], description: '', parentId: null, sortOrder: 0, children: [], coverUrl: null, fileUrl: null, hlsUrl: null, pdfUrl: null, imagesJson: null, createdAt: '2026-11-10T00:00:00Z', updatedAt: '2026-11-10T00:00:00Z', ...extra };
 }
 test('world is a searchable system project without promoting ordinary folders', () => {
-  const project = node(1, { title: '观天下', description: '<!-- WORLD_PROJECT -->' });
+  const project = node(1, { title: '观天下', description: '<!-- WORLD_PROJECT -->', isProject: true });
   assert.ok(isWorldProject(project)); assert.ok(isProject(project));
   assert.equal(isWorldProject(node(2, { title: '观天下' })), false);
   assert.equal(isWorldProject({ ...project, scene: 'work' }), false);
@@ -70,4 +72,38 @@ test('evidence export preserves computed inputs, origin grouping and falsificati
   for (const text of ['## 证据与论证', '60 ÷ (40)', '50.0 %', '输入：本期数量 [now]', '媒体转述｜未证实主张', '仅支持有限判断', '反证或替代解释：样本覆盖可能变化。', '验证条件：核查覆盖范围是否一致。', '源头组：原始统计A']) assert.ok(markdown.includes(text), text);
   assert.ok(markdown.indexOf('## 证据与论证') < markdown.indexOf('## 条件情景'));
   assert.doesNotMatch(exportWorldMarkdown({ ...worldReport, evidenceReview: undefined }, []), /## 证据与论证/);
+});
+
+test('response layer exports responsible actors, actionable steps, limits and evaluation before scenarios', () => {
+  const response = { id: 'verify', title: '独立通道核验', actor: '财务负责人', objective: '阻断冒充付款',
+    trigger: '陌生收款账户或紧急变更', actions: ['回拨已存联系人', '第二人核对账户后授权'],
+    limitation: '不能单凭视频和声音确认身份', metric: '记录核验覆盖率和误拒率', sourceIds: ['NBS26'] };
+  const markdown = exportWorldMarkdown({ ...worldReport, responses: [response] }, []);
+  for (const text of ['## 应对措施', response.title, response.actor, response.trigger, ...response.actions, response.limitation, response.metric])
+    assert.ok(markdown.includes(text), text);
+  assert.ok(markdown.indexOf('## 应对措施') < markdown.indexOf('## 条件情景'));
+  assert.doesNotMatch(exportWorldMarkdown(worldReport, []), /## 应对措施/);
+});
+
+test('third issue preserves six responses, full chapters and source precision in the downloadable report', () => {
+  const issue = node(30, { description: '<!-- WORLD_ISSUE -->', children: [node(31, { ...worldDataDocument003, type: 'text', scene: 'system' })] });
+  assert.deepEqual(worldIssueData(issue), worldReport003);
+  const documents = worldChapters003.map((chapter, index) => node(32 + index, { ...chapter, type: 'text', scene: 'system' }));
+  const markdown = exportWorldMarkdown(worldReport003, documents);
+  assert.equal(worldReport003.responses?.length, 6);
+  for (const response of worldReport003.responses!) {
+    for (const value of [response.title, response.actor, response.trigger, ...response.actions, response.metric, response.limitation])
+      assert.ok(markdown.includes(value), value);
+  }
+  for (const document of documents) assert.ok(markdown.includes(document.description));
+  for (const takeaway of worldReport003.takeaways!) assert.ok(markdown.includes(takeaway.detail));
+  const transmissionAt = markdown.lastIndexOf('## 传导机制');
+  const responsesAt = markdown.lastIndexOf('## 应对措施');
+  const scenariosAt = markdown.lastIndexOf('## 条件情景');
+  assert.ok(transmissionAt >= 0 && transmissionAt < responsesAt);
+  assert.ok(responsesAt < scenariosAt);
+  const source = worldReport003.sources[0];
+  assert.equal(worldSourceDate({ ...source, published: '2020-01-01', datePrecision: 'year' }), '发布：2020');
+  assert.equal(worldSourceDate({ ...source, published: '2025-05-01', datePrecision: 'month' }), '发布：2025-05');
+  assert.equal(worldSourceDate({ ...source, published: '2026-11-11', datePrecision: 'accessed' }), '查阅：2026-11-11');
 });

@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily VaultView backup
+
+[Timer]
+OnCalendar=*-*-* 04:15:00
+RandomizedDelaySec=900
+Persistent=true
+
+[Install]
+WantedBy=timers.target

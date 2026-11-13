@@ -1,0 +1,14 @@
+{
+  "artifact": "074b6fe96d7f3928e6035735600b783a33564460",
+  "recordedAt": "2026-11-11T15:05:00+08:00",
+  "operator": "world003-ops",
+  "environment": { "os": "Windows", "node": "24.19.0", "npm": "11.17.0" },
+  "checks": [
+    { "command": "npm test", "exitCode": 0, "exitCapturedImmediately": true, "log": ".scratch/tests-final.log", "backend": { "passed": 45, "failed": 0, "skipped": 0, "cancelled": 0 }, "frontend": { "passed": 34, "failed": 0, "skipped": 0, "cancelled": 0 } },
+    { "command": "npm run typecheck", "exitCode": 0, "exitCapturedImmediately": true, "log": ".scratch/typecheck-final.log" },
+    { "command": "npm run lint", "exitCode": 0, "exitCapturedImmediately": true, "log": ".scratch/lint-final.log" },
+    { "command": "npm run build", "exitCode": 0, "exitCapturedImmediately": true, "log": ".scratch/build-final.log", "warning": "Vite reports existing chunks over 500 kB; build completed." }
+  ],
+  "sourceIntegrity": { "saved": 12, "webExtract": 1, "allBytesAndSha256MatchManifest": true, "detail": ".scratch/integrity.json" },
+  "liveProductIdentity": { "filesCompared": 9, "allMatchCandidate": true, "detail": ".scratch/integrity.json" }
+}

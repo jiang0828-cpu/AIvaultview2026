@@ -44,6 +44,9 @@ import {
   Tags,
 } from "lucide-react";
 import { api, ApiError } from "./api";
+import { TripPlans, isTravelProject } from "./TripPlans";
+import { Accounts, PasswordChange } from "./Accounts";
+import type { SessionUser } from "./types";
 import { ProjectCycleTag } from "./ProjectCycleTag";
 import {
   filterProjects,
@@ -54,9 +57,21 @@ import {
   readProjectFilters,
 } from "./projectFilters";
 import { LiteratureSpace, isLiteratureProject } from "./LiteratureSpace";
-import { WorldSpace } from './WorldSpace';
-import { isWorldProject } from './worldModel';
+import { WorldSpace } from "./WorldSpace";
+import { isWorldProject } from "./worldModel";
+import { LivelihoodSpace } from "./LivelihoodSpace";
+import { isLivelihoodProject } from "./livelihoodModel";
+import { ResearchSpace } from "./ResearchSpace";
+import { isResearchProject } from "./researchModel";
+import { PrecisionBriefSpace } from "./PrecisionBriefSpace";
+import { isPrecisionBriefProject } from "./precisionBriefModel";
 import { MrnaResearchSpace, isMrnaProject } from "./MrnaResearchSpace";
+import { CompareSpace } from "./CompareSpace";
+import { isCompareProject } from "./compareModel";
+import { HealthSpace } from "./HealthSpace";
+import { isHealthProject } from "./healthModel";
+import { EnglishSpace } from "./EnglishSpace";
+import { isEnglishProject } from "./englishModel";
 import {
   isCastleProject,
   isProject,
@@ -85,18 +100,20 @@ import {
 } from "./types";
 
 export function App() {
-  const [role, setRole] = useState<Role | null>(null);
+  const [user, setUser] = useState<SessionUser | null>(null);
+  const role = user?.role;
   const [checking, setChecking] = useState(true);
   const [authError, setAuthError] = useState("");
   const [items, setItems] = useState<Content[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const contentRequest = useRef(0);
   const navigate = useNavigate();
   const check = async () => {
     setChecking(true);
     setAuthError("");
     try {
-      setRole((await api<{ role: Role }>("/auth/me")).role);
+      setUser((await api<{ user: SessionUser }>("/auth/me")).user);
     } catch (error) {
       if (!(error instanceof ApiError && error.status === 401))
         setAuthError("暂时无法连接资料库");
@@ -105,32 +122,49 @@ export function App() {
     }
   };
   const reload = async () => {
+    const ticket = ++contentRequest.current;
     setLoading(true);
     setError("");
     try {
-      setItems(await api<Content[]>("/contents"));
+      const next = await api<Content[]>("/contents");
+      if (ticket === contentRequest.current) setItems(next);
     } catch (error) {
-      setError(error instanceof Error ? error.message : "加载失败");
+      if (ticket === contentRequest.current) {
+        setItems([]);
+        setError(error instanceof Error ? error.message : "加载失败");
+      }
     } finally {
-      setLoading(false);
+      if (ticket === contentRequest.current) setLoading(false);
     }
   };
   useEffect(() => {
     void check();
     const expired = () => {
-      setRole(null);
+      ++contentRequest.current;
+      setUser(null);
       setItems([]);
     };
     window.addEventListener("session-expired", expired);
     return () => window.removeEventListener("session-expired", expired);
   }, []);
   useEffect(() => {
-    if (role) void reload();
-  }, [role]);
+    if (!user || user.mustChangePassword) return;
+    void reload();
+    const refresh = () => {
+      if (document.visibilityState === "visible") void reload();
+    };
+    window.addEventListener("focus", refresh);
+    const timer = window.setInterval(refresh, 30000);
+    return () => {
+      window.removeEventListener("focus", refresh);
+      window.clearInterval(timer);
+    };
+  }, [user]);
   async function logout() {
     try {
       await api("/auth/logout", { method: "POST", body: "{}" });
-      setRole(null);
+      ++contentRequest.current;
+      setUser(null);
       setItems([]);
       navigate("/login");
     } catch (error) {
@@ -138,11 +172,12 @@ export function App() {
     }
   }
   function updateProject(updated: Content) {
-    const replace = (rows: Content[]): Content[] => rows.map((item) => ({
-      ...item,
-      ...(item.id === updated.id ? updated : {}),
-      ...(item.children ? { children: replace(item.children) } : {}),
-    }));
+    const replace = (rows: Content[]): Content[] =>
+      rows.map((item) => ({
+        ...item,
+        ...(item.id === updated.id ? updated : {}),
+        ...(item.children ? { children: replace(item.children) } : {}),
+      }));
     setItems((current) => replace(current));
   }
   if (checking)
@@ -163,22 +198,44 @@ export function App() {
         </button>
       </div>
     );
+  if (user?.mustChangePassword)
+    return (
+      <PasswordChange
+        forced
+        onChanged={() => {
+          setUser(null);
+          setItems([]);
+          navigate("/login");
+        }}
+      />
+    );
   return (
     <Routes>
       <Route
         path="/login"
         element={
-          role ? <Navigate to="/home" replace /> : <Login onLogin={setRole} />
+          role ? (
+            <Navigate to="/home" replace />
+          ) : (
+            <Login
+              onLogin={(next) => {
+                ++contentRequest.current;
+                setItems([]);
+                setUser(next);
+              }}
+            />
+          )
         }
       />
       <Route
         path="/*"
         element={
-          !role ? (
+          !user ? (
             <Navigate to="/login" replace />
           ) : (
             <Shell
-              role={role}
+              role={user.role}
+              user={user}
               items={items}
               loading={loading}
               error={error}
@@ -193,8 +250,8 @@ export function App() {
   );
 }
 
-function Login({ onLogin }: { onLogin: (role: Role) => void }) {
-  const [role, setRole] = useState<Role>("visitor");
+function Login({ onLogin }: { onLogin: (user: SessionUser) => void }) {
+  const [username, setUsername] = useState("user");
   const [password, setPassword] = useState("");
   const [visible, setVisible] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -212,11 +269,11 @@ function Login({ onLogin }: { onLogin: (role: Role) => void }) {
     setBusy(true);
     setError("");
     try {
-      const session = await api<{ role: Role }>("/auth/login", {
+      const session = await api<{ user: SessionUser }>("/auth/login", {
         method: "POST",
-        body: JSON.stringify({ password, role }),
+        body: JSON.stringify({ username, password }),
       });
-      onLogin(session.role);
+      onLogin(session.user);
     } catch (error) {
       setError(error instanceof Error ? error.message : "登录失败");
       if (error instanceof ApiError && error.retryAfter) {
@@ -240,7 +297,7 @@ function Login({ onLogin }: { onLogin: (role: Role) => void }) {
           <LockKeyhole size={30} />
         </div>
         <p className="eyebrow">江湖行者 · VAULTVIEW</p>
-        <h1>藏览</h1>
+        <h1>观澜</h1>
         <p className="login-subtitle">
           行走江湖，藏有所思，
           <br />
@@ -248,41 +305,18 @@ function Login({ onLogin }: { onLogin: (role: Role) => void }) {
         </p>
         <PersonalMotto />
         <form onSubmit={submit}>
+          <label htmlFor="username">用户名</label>
           <input
-            type="text"
-            autoComplete="username"
+            id="username"
             name="username"
-            value={role}
-            readOnly
-            hidden
+            autoComplete="username"
+            value={username}
+            onChange={(event) => setUsername(event.target.value)}
+            required
+            maxLength={64}
+            className="account-input"
           />
-          <div className="segmented" aria-label="登录身份">
-            <button
-              type="button"
-              aria-pressed={role === "visitor"}
-              className={role === "visitor" ? "selected" : ""}
-              onClick={() => {
-                setRole("visitor");
-                setError("");
-              }}
-            >
-              访问资料库
-            </button>
-            <button
-              type="button"
-              aria-pressed={role === "admin"}
-              className={role === "admin" ? "selected" : ""}
-              onClick={() => {
-                setRole("admin");
-                setError("");
-              }}
-            >
-              管理员
-            </button>
-          </div>
-          <label htmlFor="password">
-            {role === "admin" ? "管理员密码" : "访问密码"}
-          </label>
+          <label htmlFor="password">密码</label>
           <div className="password-input">
             <LockKeyhole size={17} />
             <input
@@ -314,7 +348,7 @@ function Login({ onLogin }: { onLogin: (role: Role) => void }) {
               ? `${remaining} 秒后重试`
               : busy
                 ? "正在验证…"
-                : "打开藏览"}
+                : "打开观澜"}
             <ArrowRight size={18} />
           </button>
           <p className="login-footnote">
@@ -331,6 +365,7 @@ function Login({ onLogin }: { onLogin: (role: Role) => void }) {
 
 type ShellProps = {
   role: Role;
+  user: SessionUser;
   items: Content[];
   loading: boolean;
   error: string;
@@ -345,10 +380,12 @@ const projectSummaries: Record<string, string> = {
     "围绕路线、车次、客流、成本和盈亏口径，建立一份可复核的中国高铁运行研究。",
   "项目02｜mRNA 肿瘤药物研究及开发进展":
     "从基础机制、递送技术到药物管线和诊疗路径，梳理 mRNA 肿瘤药物的研究进展。",
-  "项目03｜南京周边游｜高铁三小时圈":
+  "滋味生活｜游｜南京高铁三小时圈":
     "以南京为出发点，按季节、时间周期、热门度和人文/自然构成，组织近郊到远途的旅行目的地。",
-  "项目04｜AI 使用技能及技巧分享｜系列课程":
+  "AI应用 | AI 使用技能及技巧分享｜系列课程":
     "把 AI 使用方法组织成思维导图、课程文档、课件、长图和动画视频五种展示形态。",
+  "AI应用 | 第二期：少花 Token，多干活｜AI 工作效率训练营":
+    "从省额度、沉淀做法到 Git、工具选择和交付评审，用七天实战建立可复用的 AI 工作流。",
 };
 
 const projectDateFormat = new Intl.DateTimeFormat("zh-CN", {
@@ -424,15 +461,20 @@ function SpaceOverview({
         />
         <div>
           <p className="eyebrow">行者手记 · VAULTVIEW</p>
-          <h1 id="space-overview-title">藏览<span className="hero-title-note">一名游侠的见闻与作品</span></h1>
+          <h1 id="space-overview-title">
+            观澜<span className="hero-title-note">一名游侠的见闻与作品</span>
+          </h1>
           <p className="overview-lead">
-            藏一路所学，览天地万象。<br />
+            藏一路所学，览天地万象。
+            <br />
             记下研究、行旅与实践，与同路人分享所得。
           </p>
           <PersonalMotto />
           <span className="motto-origin">处世自勉 · 化用《孟子·尽心上》</span>
         </div>
-        <span className="hero-seal" aria-hidden="true">行<br />远</span>
+        <span className="hero-seal" aria-hidden="true">
+          行<br />远
+        </span>
       </div>
       <div className="overview-stats" aria-label="空间概览统计">
         <div>
@@ -623,7 +665,9 @@ function SpaceOverview({
                 <span className="project-icon">
                   <FolderOpen size={18} />
                 </span>
-                <span className="scene-label" data-scene={project.scene}>{scene?.label || "内容项目"}</span>
+                <span className="scene-label" data-scene={project.scene}>
+                  {scene?.label || "内容项目"}
+                </span>
                 <span className="project-count">
                   {projectStats(project).folders > 0 &&
                     `${projectStats(project).folders} 个板块 · `}
@@ -657,7 +701,11 @@ function SpaceOverview({
                     <span>项目标签</span>
                     {topics.length ? (
                       <span className="topic-pills">
-                        <ProjectCycleTag project={project} editable={role === "admin"} onSaved={onProjectSaved} />
+                        <ProjectCycleTag
+                          project={project}
+                          editable={role === "admin"}
+                          onSaved={onProjectSaved}
+                        />
                         <TopicPills topics={topics.slice(1)} />
                       </span>
                     ) : (
@@ -697,6 +745,7 @@ function ProjectOverview({
   onBack,
   role,
   onProjectSaved,
+  onOpenPlans,
 }: {
   project: Content;
   folder?: Content | null;
@@ -704,6 +753,7 @@ function ProjectOverview({
   onBack: () => void;
   role: Role;
   onProjectSaved: (project: Content) => void;
+  onOpenPlans: () => void;
 }) {
   const current = folder || project;
   const children = current.children || [];
@@ -714,7 +764,9 @@ function ProjectOverview({
     ? folder.topics
     : project.topics?.length
       ? project.topics
-    : Array.from(new Set(flatten([current]).flatMap((item) => item.topics || [])));
+      : Array.from(
+          new Set(flatten([current]).flatMap((item) => item.topics || [])),
+        );
   const sceneLabel = sceneLabels[project.scene] || "内容项目";
   const summary =
     (folder
@@ -751,8 +803,16 @@ function ProjectOverview({
           </h1>
           <p>{summary}</p>
           <div className="project-topic-row">
-            {!folder && isProject(project) && <ProjectCycleTag project={project} editable={role === "admin"} onSaved={onProjectSaved} />}
-            <TopicPills topics={!folder && isProject(project) ? topics.slice(1) : topics} />
+            {!folder && isProject(project) && (
+              <ProjectCycleTag
+                project={project}
+                editable={role === "admin"}
+                onSaved={onProjectSaved}
+              />
+            )}
+            <TopicPills
+              topics={!folder && isProject(project) ? topics.slice(1) : topics}
+            />
           </div>
         </div>
         <div className="project-overview-emblem" aria-hidden="true">
@@ -781,7 +841,15 @@ function ProjectOverview({
       <div className="project-overview-heading">
         <div>
           <p className="eyebrow">PROJECT NAVIGATION</p>
-          <h2>{folder ? (folder.title === "专业" ? "专业成长工作台" : "板块资料") : castle ? "生活板块" : "项目导览"}</h2>
+          <h2>
+            {folder
+              ? folder.title === "专业"
+                ? "专业成长工作台"
+                : "板块资料"
+              : castle
+                ? "生活板块"
+                : "项目导览"}
+          </h2>
         </div>
       </div>
       {folder?.title === "专业" && (
@@ -791,6 +859,50 @@ function ProjectOverview({
         />
       )}
       <div className="project-content-grid">
+        {isCompareProject(project) && !folder && (
+          <button
+            className="project-content-card project-plans-card"
+            type="button"
+            onClick={() => {
+              window.location.href = `/compare?project=${project.id}`;
+            }}
+          >
+            <span className="project-content-index">00</span>
+            <span className="project-content-type plans">
+              <Search size={17} />
+            </span>
+            <span className="project-content-main">
+              <strong>开始比价</strong>
+              <span>输入商品需求，比较不同平台的到手价与服务</span>
+              <span className="project-content-meta">
+                <Search size={12} /> 比价工作台{" "}
+                <span className="project-plan-hint">点击进入</span>
+              </span>
+            </span>
+            <ArrowRight size={17} className="project-content-arrow" />
+          </button>
+        )}
+        {isTravelProject(project) && !folder && (
+          <button
+            className="project-content-card project-plans-card"
+            type="button"
+            onClick={onOpenPlans}
+          >
+            <span className="project-content-index">00</span>
+            <span className="project-content-type plans">
+              <CalendarDays size={17} />
+            </span>
+            <span className="project-content-main">
+              <strong>我的安排</strong>
+              <span>记录每一次出行计划，查看图文行程</span>
+              <span className="project-content-meta">
+                <CalendarDays size={12} /> 行程管理
+                <span className="project-plan-hint">点击进入</span>
+              </span>
+            </span>
+            <ArrowRight size={17} className="project-content-arrow" />
+          </button>
+        )}
         {children.map((content, index) => {
           const SectionIcon =
             castle && !folder ? sectionIcons[index] || FolderOpen : null;
@@ -816,7 +928,7 @@ function ProjectOverview({
                   {(
                     content.description
                       .split("\n")
-                      .find((line) => line.trim()) || typeNames[content.type]
+                      .find((line) => line.trim() && !line.trim().startsWith("<!--")) || typeNames[content.type]
                   ).replace(/^#{1,6}\s*/, "")}
                 </span>
                 <span className="project-content-meta">
@@ -978,7 +1090,7 @@ function ContentNetwork({
         </svg>
         <div className="network-hub">
           <Network size={22} />
-          <strong>藏览空间</strong>
+          <strong>观澜空间</strong>
           <span>项目 · 场景 · 主题</span>
         </div>
         {rows.map(({ project, documents, topics }, index) => {
@@ -1018,7 +1130,7 @@ function ContentNetwork({
       </div>
       <div className="network-footnote">
         <span>
-          <Link2 size={14} /> 中心线表示项目归属于藏览空间
+          <Link2 size={14} /> 中心线表示项目归属于观澜空间
         </span>
         <span>
           <Tags size={14} /> 项目线表示共享场景或 topics
@@ -1028,7 +1140,16 @@ function ContentNetwork({
   );
 }
 
-function Shell({ role, items, loading, error, reload, logout, onProjectSaved }: ShellProps) {
+function Shell({
+  role,
+  user,
+  items,
+  loading,
+  error,
+  reload,
+  logout,
+  onProjectSaved,
+}: ShellProps) {
   const [params, setParams] = useSearchParams();
   const location = useLocation();
   const navigate = useNavigate();
@@ -1036,27 +1157,33 @@ function Shell({ role, items, loading, error, reload, logout, onProjectSaved }: 
   const [search, setSearch] = useState("");
   const all = flatten(items);
   const leaves = all.filter((item) => item.type !== "folder");
-  const projects = items
-    .flatMap((scene) => scene.children || [])
+  const projects = all
     .filter(isProject)
     .sort((a, b) => b.sortOrder - a.sortOrder);
   const projectId = Number(params.get("project")) || null;
   const project = projects.find((item) => item.id === projectId) || null;
   const folderId = Number(params.get("folder")) || null;
-  const folder = project ? projectFolder(project, folderId)
-    : all.find((item) => item.id === folderId && item.type === "folder") || null;
+  const folder = project
+    ? projectFolder(project, folderId)
+    : all.find((item) => item.id === folderId && item.type === "folder") ||
+      null;
   const parentFolder =
     project && folder && folder.parentId !== project.id
       ? projectFolder(project, folder.parentId)
       : null;
   const isNetwork = location.pathname === "/network";
+  const isCompare = location.pathname === "/compare";
+  const isUsers = location.pathname === "/admin/users";
+  const isAccount = location.pathname === "/account";
   const overview =
     !params.get("id") &&
     !project &&
     !folder &&
     !search &&
     !isNetwork &&
-    location.pathname !== "/admin";
+    !isCompare &&
+    !location.pathname.startsWith("/admin") &&
+    !isAccount;
   const selectedId = Number(params.get("id")) || null;
   const selected = all.find(
     (item) => item.id === selectedId && item.type !== "folder",
@@ -1112,12 +1239,39 @@ function Shell({ role, items, loading, error, reload, logout, onProjectSaved }: 
         (content) => content.type !== "folder",
       )
     : [];
+  const travelProject = isTravelProject(project)
+    ? project
+    : isTravelProject(activeProject)
+      ? activeProject
+      : null;
+  const plansView = Boolean(
+    travelProject && project && params.get("view") === "plans",
+  );
+  const travelTabs = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const nav = travelTabs.current;
+    if (!nav) return;
+    const reveal = () => {
+      const selectedTab = nav.querySelector<HTMLElement>(".selected");
+      if (!selectedTab) return;
+      const tabRect = selectedTab.getBoundingClientRect();
+      const navRect = nav.getBoundingClientRect();
+      if (tabRect.right > navRect.right)
+        nav.scrollLeft += tabRect.right - navRect.right;
+      else if (tabRect.left < navRect.left)
+        nav.scrollLeft -= navRect.left - tabRect.left;
+    };
+    const observer = new ResizeObserver(reveal);
+    observer.observe(nav);
+    reveal();
+    return () => observer.disconnect();
+  }, [selectedId, plansView, projectId, travelProject?.id]);
   const currentIndex = leaves.findIndex((item) => item.id === selectedId);
   return (
     <div className="app-shell">
       <aside className={`sidebar ${mobileMenu ? "mobile-open" : ""}`}>
         <div className="sidebar-brand">
-          <Link to="/home" aria-label="藏览首页">
+          <Link to="/home" aria-label="观澜首页">
             <Brand />
           </Link>
           <button
@@ -1130,7 +1284,9 @@ function Shell({ role, items, loading, error, reload, logout, onProjectSaved }: 
           </button>
         </div>
         <div className="workspace-label">
-          <span className="workspace-avatar"><Compass size={19} /></span>
+          <span className="workspace-avatar">
+            <Compass size={19} />
+          </span>
           <div>
             <strong>江湖行者</strong>
             <small>以所学修身，以所得助人</small>
@@ -1145,22 +1301,46 @@ function Shell({ role, items, loading, error, reload, logout, onProjectSaved }: 
           >
             <Library size={18} /> 空间概览 <span>{projects.length}</span>
           </Link>
-          <Link
-            className={`nav-link ${isNetwork ? "active" : ""}`}
-            to="/network"
-            onClick={() => setMobileMenu(false)}
+          <details
+            className={`sidebar-tools ${isNetwork || isAdmin || isUsers ? "has-active" : ""}`}
           >
-            <Network size={18} /> 关系网 <span>{projects.length}</span>
-          </Link>
-          {role === "admin" && (
-            <Link
-              className={`nav-link ${isAdmin ? "active" : ""}`}
-              to="/admin"
-              onClick={() => setMobileMenu(false)}
-            >
-              <Settings2 size={18} /> 内容管理
-            </Link>
-          )}
+            <summary>
+              <Settings2 size={17} aria-hidden="true" />
+              <span>更多功能</span>
+              <ChevronRight
+                size={15}
+                className="sidebar-tools-chevron"
+                aria-hidden="true"
+              />
+            </summary>
+            <div className="sidebar-tools-links">
+              <Link
+                className={`nav-link ${isNetwork ? "active" : ""}`}
+                to="/network"
+                onClick={() => setMobileMenu(false)}
+              >
+                <Network size={18} /> 关系网 <span>{projects.length}</span>
+              </Link>
+              {role === "admin" && (
+                <Link
+                  className={`nav-link ${isAdmin ? "active" : ""}`}
+                  to="/admin"
+                  onClick={() => setMobileMenu(false)}
+                >
+                  <Settings2 size={18} /> 内容管理
+                </Link>
+              )}
+              {role === "admin" && (
+                <Link
+                  className={`nav-link ${isUsers ? "active" : ""}`}
+                  to="/admin/users"
+                  onClick={() => setMobileMenu(false)}
+                >
+                  <ShieldCheck size={18} /> 用户与授权
+                </Link>
+              )}
+            </div>
+          </details>
         </nav>
         <div className="tree-heading">
           资料目录{" "}
@@ -1172,7 +1352,12 @@ function Shell({ role, items, loading, error, reload, logout, onProjectSaved }: 
             selected={
               isAdmin || overview
                 ? null
-                : selectedId || Number(params.get("doc")) || folder?.id || Number(params.get("issue")) || project?.id || null
+                : selectedId ||
+                  Number(params.get("doc")) ||
+                  folder?.id ||
+                  Number(params.get("issue")) ||
+                  project?.id ||
+                  null
             }
             onSelect={choose}
             onOpenFolder={openProject}
@@ -1187,12 +1372,20 @@ function Shell({ role, items, loading, error, reload, logout, onProjectSaved }: 
         </div>
         <div className="sidebar-bottom">
           <span className="session-avatar">
-            {role === "admin" ? "管" : "访"}
+            {role === "admin" ? "管" : role === "share" ? "享" : "访"}
           </span>
           <div>
-            <strong>{role === "admin" ? "管理员" : "访客"}</strong>
-            <small>已通过访问验证</small>
+            <strong title={user.username}>{user.username}</strong>
+            <small>{role === "admin" ? "管理员" : role === "share" ? "分享浏览" : "访问者"}</small>
           </div>
+          {role !== 'share' && <Link
+            to="/account"
+            className="icon-button"
+            title="修改密码"
+            aria-label="修改密码"
+          >
+            <LockKeyhole size={17} />
+          </Link>}
           <button
             className="icon-button"
             title="退出登录"
@@ -1212,7 +1405,7 @@ function Shell({ role, items, loading, error, reload, logout, onProjectSaved }: 
       )}
       <div className="main-shell">
         <header className="topbar">
-          <strong className="mobile-only mobile-brand">藏览</strong>
+          <strong className="mobile-only mobile-brand">观澜</strong>
           <button
             className="icon-button mobile-only"
             title="打开导航"
@@ -1222,30 +1415,39 @@ function Shell({ role, items, loading, error, reload, logout, onProjectSaved }: 
             <Menu size={21} />
           </button>
           <div className="breadcrumbs">
-            <span>藏览空间</span>
+            <span>观澜空间</span>
             <ChevronRight size={14} />
             <strong>
-              {isNetwork
-                ? "关系网"
-                : isAdmin
-                  ? "内容管理"
-                  : folder
-                    ? project ? `${project.title} / ${folder.title}` : folder.title
-                    : activeProject
-                      ? `${activeProject.title.replace(/^项目\d+｜/, "")}${parent?.type === "folder" ? ` / ${parent.title}` : ""}`
-                      : project?.title ||
-                        scenes.find((scene) => scene.key === selected?.scene)
-                          ?.label ||
-                        parent?.title ||
-                        "空间概览"}
+              {isUsers
+                ? "用户与授权"
+                : isAccount
+                  ? "修改密码"
+                  : isNetwork
+                    ? "关系网"
+                    : isCompare
+                      ? "消费比价"
+                      : isAdmin
+                        ? "内容管理"
+                        : folder
+                          ? project
+                            ? `${project.title} / ${folder.title}`
+                            : folder.title
+                          : activeProject
+                            ? `${activeProject.title.replace(/^项目\d+｜/, "")}${parent?.type === "folder" ? ` / ${parent.title}` : ""}`
+                            : project?.title ||
+                              scenes.find(
+                                (scene) => scene.key === selected?.scene,
+                              )?.label ||
+                              parent?.title ||
+                              "空间概览"}
             </strong>
           </div>
           <div className="topbar-right">
             <span className="private-note">
-              <LockKeyhole size={13} /> 密码访问保护
+              <LockKeyhole size={13} /> 项目授权访问
             </span>
             <span className="tiny-avatar">
-              {role === "admin" ? "管" : "访"}
+              {role === "admin" ? "管" : role === "share" ? "享" : "访"}
             </span>
           </div>
         </header>
@@ -1257,14 +1459,121 @@ function Shell({ role, items, loading, error, reload, logout, onProjectSaved }: 
               重新加载
             </button>
           )}
-          {!isAdmin && !isNetwork && project &&
-            (Boolean(folder) || isMrnaProject(project) || isLiteratureProject(project) || isWorldProject(project)) && (
+          {travelProject &&
+            !isAdmin &&
+            !isUsers &&
+            !isAccount &&
+            !isNetwork &&
+            !search && (
+              <nav
+                ref={travelTabs}
+                className="project-content-tabs travel-project-tabs"
+                aria-label="周边游项目切换"
+              >
+                <button
+                  className={project && !plansView ? "selected" : ""}
+                  aria-current={project && !plansView ? "page" : undefined}
+                  onClick={() => openProject(travelProject)}
+                >
+                  <Library size={16} /> 项目概览
+                </button>
+                <button
+                  className={plansView ? "selected" : ""}
+                  aria-current={plansView ? "page" : undefined}
+                  onClick={() => {
+                    setSearch("");
+                    navigate(`/home?project=${travelProject.id}&view=plans`);
+                  }}
+                >
+                  <CalendarDays size={16} /> 我的安排
+                </button>
+                {flatten(travelProject.children || [])
+                  .filter((content) => content.type !== "folder")
+                  .map((content) => (
+                    <button
+                      key={content.id}
+                      className={content.id === selectedId ? "selected" : ""}
+                      aria-current={
+                        content.id === selectedId ? "page" : undefined
+                      }
+                      onClick={() => choose(content.id)}
+                    >
+                      <TypeIcon type={content.type} size={16} />
+                      {content.title.split("｜")[0].replace(/^\d+\s*/, "")}
+                    </button>
+                  ))}
+              </nav>
+            )}
+          {!isAdmin &&
+            !isNetwork &&
+            !isCompare &&
+            project &&
+            (Boolean(folder) ||
+              isHealthProject(project) ||
+              isMrnaProject(project) ||
+              isLiteratureProject(project) ||
+              isWorldProject(project) ||
+              isLivelihoodProject(project) ||
+              isResearchProject(project) ||
+              isPrecisionBriefProject(project) ||
+              isCompareProject(project)) && (
               <div className="project-cycle-toolbar">
-                <ProjectCycleTag project={project} editable={role === "admin"} onSaved={onProjectSaved} />
+                <ProjectCycleTag
+                  project={project}
+                  editable={role === "admin"}
+                  onSaved={onProjectSaved}
+                />
                 <TopicPills topics={project.topics?.slice(1) || []} />
               </div>
             )}
-          {isNetwork ? (
+          {isUsers ? (
+            role === "admin" ? (
+              <Accounts currentUser={user} />
+            ) : (
+              <Navigate to="/home" replace />
+            )
+          ) : isAccount ? (
+            role === 'share' ? <Navigate to="/home" replace /> : <PasswordChange
+              onChanged={() =>
+                window.dispatchEvent(new Event("session-expired"))
+              }
+            />
+          ) : !loading &&
+            !error &&
+            ((projectId && !project) ||
+              (selectedId && !selected) ||
+              (folderId && !folder)) ? (
+            <section className="empty-state">
+              <LockKeyhole size={28} />
+              <h2>项目不存在或暂未授权</h2>
+              <Link to="/home" className="button">
+                返回空间概览
+              </Link>
+            </section>
+          ) : !loading && !error && (role === "visitor" || role === "share") && !projects.length ? (
+            <section className="empty-state">
+              <Library size={28} />
+              <h2>暂无获授权的项目</h2>
+              <p>请联系管理员为你的账号分配项目。</p>
+            </section>
+          ) : isCompare ? (
+            project && isCompareProject(project) ? (
+              <CompareSpace
+                key={`${project.id}-${params.get("run") || "workbench"}`}
+                project={project}
+                workbench
+                onOpenDocument={choose}
+              />
+            ) : (
+              <section className="empty-state">
+                <LockKeyhole size={28} />
+                <h2>比价项目不存在或暂未授权</h2>
+                <Link to="/home" className="button">
+                  返回空间概览
+                </Link>
+              </section>
+            )
+          ) : isNetwork ? (
             <ContentNetwork projects={projects} onOpen={openProject} />
           ) : isAdmin ? (
             role === "admin" ? (
@@ -1272,8 +1581,64 @@ function Shell({ role, items, loading, error, reload, logout, onProjectSaved }: 
             ) : (
               <Navigate to="/home" replace />
             )
+          ) : plansView && travelProject ? (
+            <TripPlans
+              key={`${user.id}-${travelProject.id}`}
+              projectId={travelProject.id}
+            />
+          ) : project && isCastleProject(project) && folder && isEnglishProject(folder) && parentFolder?.title === "通识" ? (
+            <EnglishSpace
+              key={`${user.id}-${folder.id}`}
+              project={folder}
+              userId={user.id}
+              onBack={() => openProject(parentFolder)}
+              onCastle={() => openProject(project)}
+            />
+          ) : project && !folder && isHealthProject(project) ? (
+            <HealthSpace
+              key={`${user.id}-${project.id}`}
+              project={project}
+              onBack={() => navigate("/home")}
+            />
+          ) : project && !folder && isCompareProject(project) ? (
+            <CompareSpace
+              key={project.id}
+              project={project}
+              workbench={false}
+              onOpenDocument={choose}
+            />
+          ) : project && !folder && isPrecisionBriefProject(project) ? (
+            <PrecisionBriefSpace
+              key={project.id}
+              project={project}
+              onBack={() => navigate("/home")}
+            />
+          ) : project && !folder && isResearchProject(project) ? (
+            <ResearchSpace
+              key={project.id}
+              project={project}
+              onBack={() => navigate("/home")}
+            />
           ) : project && !folder && isWorldProject(project) ? (
-            <WorldSpace key={project.id} project={project} onBack={() => navigate('/home')} />
+            <WorldSpace
+              key={project.id}
+              project={project}
+              livelihood={projects.find(
+                (item) => !item.navigationOnly && isLivelihoodProject(item),
+              )}
+              onOpen={openProject}
+              onBack={() => navigate("/home")}
+            />
+          ) : project && !folder && isLivelihoodProject(project) ? (
+            <LivelihoodSpace
+              key={project.id}
+              project={project}
+              world={projects.find(
+                (item) => !item.navigationOnly && isWorldProject(item),
+              )}
+              onOpen={openProject}
+              onBack={() => navigate("/home")}
+            />
           ) : project && !folder && isMrnaProject(project) ? (
             <MrnaResearchSpace
               key={project.id}
@@ -1302,6 +1667,11 @@ function Shell({ role, items, loading, error, reload, logout, onProjectSaved }: 
                   ? openProject(content)
                   : choose(content.id)
               }
+              onOpenPlans={() =>
+                navigate(
+                  `/home?project=${project?.id ?? folder?.id}&view=plans`,
+                )
+              }
             />
           ) : overview ? (
             loading ? (
@@ -1321,7 +1691,7 @@ function Shell({ role, items, loading, error, reload, logout, onProjectSaved }: 
                 <div>
                   <p className="eyebrow">CONTENT SPACE</p>
                   <h1>
-                    藏览空间<span>{leaves.length} 份内容</span>
+                    观澜空间<span>{leaves.length} 份内容</span>
                   </h1>
                   <p className="muted">收藏、整理，也让好内容被看见。</p>
                 </div>
@@ -1345,56 +1715,68 @@ function Shell({ role, items, loading, error, reload, logout, onProjectSaved }: 
                   )}
                 </label>
               </div>
-              <div className="collection-tabs">
-                <nav className="project-content-tabs" aria-label="项目资料切换">
-                  <button
-                    onClick={() => {
-                      setSearch("");
-                      navigate(
-                        activeProject
-                          ? `/home?project=${activeProject.id}`
-                          : "/home",
-                      );
-                    }}
+              {!isTravelProject(activeProject) && (
+                <div className="collection-tabs">
+                  <nav
+                    className="project-content-tabs"
+                    aria-label="项目资料切换"
                   >
-                    <Library size={16} />{" "}
-                    {activeProject ? "项目概览" : "空间概览"}
-                  </button>
-                  {!search &&
-                    projectContents.map((content) => (
-                      <button
-                        key={content.id}
-                        className={content.id === selectedId ? "selected" : ""}
-                        aria-current={
-                          content.id === selectedId ? "page" : undefined
-                        }
-                        title={content.title}
-                        onClick={() => choose(content.id)}
-                      >
-                        <TypeIcon type={content.type} size={16} />
-                        {content.title.split("｜")[0].replace(/^\d+\s*/, "") ||
-                          typeNames[content.type]}
-                      </button>
-                    ))}
-                </nav>
-                {!activeProject && (
-                  <span>
-                    {leaves.filter((item) => item.type === "video").length} 视频
-                    <span className="dot">·</span>
-                    {
-                      leaves.filter(
-                        (item) =>
-                          item.type === "ppt" ||
-                          item.type === "mindmap" ||
-                          item.type === "longimage" ||
-                          item.type === "pdf",
-                      ).length
-                    }{" "}
-                    文档<span className="dot">·</span>
-                    {leaves.filter((item) => item.type === "text").length} 文章
-                  </span>
-                )}
-              </div>
+                    <button
+                      onClick={() => {
+                        setSearch("");
+                        navigate(
+                          activeProject
+                            ? `/home?project=${activeProject.id}`
+                            : "/home",
+                        );
+                      }}
+                    >
+                      <Library size={16} />{" "}
+                      {activeProject ? "项目概览" : "空间概览"}
+                    </button>
+                    {!search &&
+                      projectContents.map((content) => (
+                        <button
+                          key={content.id}
+                          className={
+                            content.id === selectedId ? "selected" : ""
+                          }
+                          aria-current={
+                            content.id === selectedId ? "page" : undefined
+                          }
+                          title={content.title}
+                          onClick={() => choose(content.id)}
+                        >
+                          <TypeIcon type={content.type} size={16} />
+                          {content.title
+                            .split("｜")[0]
+                            .replace(/^\d+\s*/, "") || typeNames[content.type]}
+                        </button>
+                      ))}
+                  </nav>
+                  {!activeProject && (
+                    <span>
+                      {leaves.filter((item) => item.type === "video").length}{" "}
+                      视频
+                      <span className="dot">·</span>
+                      {
+                        leaves.filter(
+                          (item) =>
+                            item.type === "ppt" ||
+                            item.type === "mindmap" ||
+                            item.type === "longimage" ||
+                            item.type === "pdf",
+                        ).length
+                      }{" "}
+                      文档<span className="dot">·</span>
+                      {
+                        leaves.filter((item) => item.type === "text").length
+                      }{" "}
+                      文章
+                    </span>
+                  )}
+                </div>
+              )}
               {loading ? (
                 <div className="empty">正在加载收藏…</div>
               ) : search ? (
@@ -1524,7 +1906,7 @@ function Shell({ role, items, loading, error, reload, logout, onProjectSaved }: 
           )}
         </main>
         <footer className="app-footer">
-          <span>藏览 / VaultView</span>
+          <span>观澜 / VaultView</span>
           <span>一程山水，一程求索。</span>
         </footer>
       </div>
@@ -1673,6 +2055,7 @@ function ContentEditor({
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const [type, setType] = useState<ContentType>(content?.type || "text");
+  const [projectRoot, setProjectRoot] = useState(content?.isProject === true);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   useEffect(() => {
@@ -1706,10 +2089,15 @@ function ContentEditor({
     const data = {
       title: value("title"),
       type,
+      isProject: type === "folder" && projectRoot,
       scene: value("scene") || "other",
-      topics: (type === "folder" && (value("title").startsWith("项目") || value("title") === "爱的城堡")
-        ? [value("projectCycle") || "阶段性", value("topics") || "project, research"]
-        : [value("topics") || "other"])
+      topics: (type === "folder" && projectRoot
+        ? [
+            value("projectCycle") || "阶段性",
+            value("topics") || "project, research",
+          ]
+        : [value("topics") || "other"]
+      )
         .flatMap((topic) => topic.split(/[\n,，]+/))
         .map((topic) => topic.trim())
         .filter(Boolean)
@@ -1721,6 +2109,10 @@ function ContentEditor({
       fileUrl: value("fileUrl") || null,
       hlsUrl: value("hlsUrl") || null,
       pdfUrl: value("pdfUrl") || null,
+      assetsJson: value("assetsJson")
+        .split(/\r?\n/)
+        .map((url) => url.trim())
+        .filter(Boolean),
       imagesJson: value("imagesJson")
         .split(/\r?\n/)
         .map((url) => url.trim())
@@ -1814,19 +2206,38 @@ function ContentEditor({
               </select>
             </label>
           </div>
+          {type === "folder" && (
+            <label className="account-check">
+              <input
+                type="checkbox"
+                checked={projectRoot}
+                onChange={(event) => setProjectRoot(event.target.checked)}
+              />
+              作为独立项目（可单独授权）
+            </label>
+          )}
           <label>
-            {type === "folder" && (content?.title.startsWith("项目") || content?.title === "爱的城堡" || !content)
+            {type === "folder" && projectRoot
               ? "项目标签（周期 + 2 个主题）"
-              : "Topics 标签（1–3 个）"}
-            {type === "folder" && (content?.title.startsWith("项目") || content?.title === "爱的城堡" || !content) ? (
+              : "Topics 标签（1–2 个）"}
+            {type === "folder" && projectRoot ? (
               <div className="project-topic-editor">
-                <select name="projectCycle" defaultValue={content?.topics?.[0] || "阶段性"}>
-                  {projectCycles.map((cycle) => <option value={cycle} key={cycle}>{cycle}</option>)}
+                <select
+                  name="projectCycle"
+                  defaultValue={content?.topics?.[0] || "阶段性"}
+                >
+                  {projectCycles.map((cycle) => (
+                    <option value={cycle} key={cycle}>
+                      {cycle}
+                    </option>
+                  ))}
                 </select>
                 <input
                   name="topics"
                   required
-                  defaultValue={content?.topics?.slice(1).join(", ") || "project, research"}
+                  defaultValue={
+                    content?.topics?.slice(1).join(", ") || "project, research"
+                  }
                   placeholder="例如：AI, business"
                 />
               </div>
@@ -1848,6 +2259,15 @@ function ContentEditor({
               max={100000}
               step={1}
               defaultValue={content?.sortOrder || 0}
+            />
+          </label>
+          <label>
+            附加本地资源（每行一个）
+            <textarea
+              name="assetsJson"
+              rows={3}
+              defaultValue={content?.assetsJson?.join("\n") || ""}
+              placeholder="/media/projects/…/data.json"
             />
           </label>
           <label>

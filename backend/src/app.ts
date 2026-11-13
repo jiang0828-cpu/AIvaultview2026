@@ -5,16 +5,20 @@ import express, {
 } from "express";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
-import jwt from "jsonwebtoken";
-import bcrypt from "bcryptjs";
-import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 import { resolve } from "node:path";
 import { Prisma, type PrismaClient, type Content } from "@prisma/client";
 import { z } from "zod";
 import { projectRoot, type AppConfig } from "./config.js";
 import { projectCycles, hasProjectCycle } from "./projectTags.js";
+import { authentication } from './auth.js';
+import { fail, HttpError, wrap, idOf } from './http.js';
+import { readableContents, requireContent, validateProjectTree, canReadMedia, canonicalPath } from './permissions.js';
+import { registerResearch } from './research.js';
+import { registerPrecisionBrief } from './precisionBrief.js';
+import { researchProjectMarker } from './researchSchema.js';
+import { registerCompare } from './compare.js';
+import { registerHealth } from './health.js';
 
-type Role = "visitor" | "admin";
 export const sceneKeys = [
   "system",
   "tools",
@@ -25,28 +29,11 @@ export const sceneKeys = [
 ] as const;
 export type SceneKey = (typeof sceneKeys)[number];
 export const projectCycleKeys = projectCycles;
-class HttpError extends Error {
-  constructor(
-    public status: number,
-    public code: string,
-    message: string,
-  ) {
-    super(message);
-  }
-}
-const fail = (status: number, code: string, message: string): never => {
-  throw new HttpError(status, code, message);
-};
-const wrap =
-  (handler: (req: Request, res: Response) => Promise<unknown>) =>
-  (req: Request, res: Response, next: NextFunction) => {
-    void handler(req, res).catch(next);
-  };
 const mediaUrl = z
   .string()
   .max(2048)
   .refine((value) => {
-    if (/^\/media\/[\w/.-]+$/.test(value) && !value.split("/").includes(".."))
+    if (canonicalPath(value))
       return true;
     try {
       const url = new URL(value);
@@ -64,6 +51,7 @@ const mediaUrl = z
 const contentSchema = z
   .object({
     title: z.string().trim().min(1).max(160),
+    isProject: z.boolean().default(false),
     type: z.enum([
       "folder",
       "video",
@@ -95,14 +83,15 @@ const contentSchema = z
     hlsUrl: mediaUrl,
     pdfUrl: mediaUrl,
     imagesJson: z.array(mediaUrl.unwrap().unwrap()).max(300).default([]),
+    assetsJson: z.array(z.string().refine(value => canonicalPath(value) !== null, '附加资源须为 /media/ 本地路径')).max(300).default([]),
     sortOrder: z.number().int().min(-100000).max(100000).default(0),
     parentId: z.number().int().positive().nullable().default(null),
   })
   .strict()
   .superRefine((data, ctx) => {
-    const isProject =
-      data.type === "folder" &&
-      (data.title.startsWith("项目") || data.title === "爱的城堡");
+    const isProject = data.isProject;
+    if (isProject && data.type !== 'folder')
+      ctx.addIssue({ code: 'custom', path: ['isProject'], message: '项目必须是目录' });
     if (!isProject && data.topics.length > 2)
       ctx.addIssue({
         code: "custom",
@@ -144,9 +133,41 @@ const contentSchema = z
         message: "请填写 PDF 地址",
       });
   });
-const idOf = (value: unknown) =>
-  z.coerce.number().int().positive().parse(value);
-const digest = (value: string) => createHash("sha256").update(value).digest();
+
+const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "日期格式应为 YYYY-MM-DD").refine(value => {
+  const date = new Date(`${value}T00:00:00Z`);
+  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
+}, "日期无效");
+const tripPlanStatus = z.enum(["planned", "ongoing", "completed", "cancelled"]);
+const tripPlanItem = z.object({
+  date: isoDate,
+  title: z.string().trim().min(1).max(120),
+  detail: z.string().trim().max(2000).default(""),
+}).strict();
+const tripPlanInput = z.object({
+  title: z.string().trim().min(1, "请填写安排名称").max(120),
+  destination: z.string().trim().min(1, "请填写目的地").max(200),
+  startDate: isoDate,
+  endDate: isoDate,
+  status: tripPlanStatus.default("planned"),
+  transport: z.string().trim().max(200).default(""),
+  companions: z.string().trim().max(200).default(""),
+  budget: z.number().int().min(0).max(1000000000).nullable().default(null),
+  actualSpent: z.number().int().min(0).max(1000000000).nullable().default(null),
+  itinerary: z.array(tripPlanItem).max(90).default([]),
+  notes: z.string().trim().max(10000).default(""),
+}).strict().superRefine((value, ctx) => {
+  if (value.endDate < value.startDate)
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["endDate"], message: "结束日期不能早于开始日期" });
+  value.itinerary.forEach((item, index) => {
+    if (item.date < value.startDate || item.date > value.endDate)
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["itinerary", index, "date"], message: "行程日期必须在出行日期内" });
+  });
+});
+
+function tripPlanView(row: { id: number; projectId: number; title: string; destination: string; startDate: string; endDate: string; status: string; transport: string; companions: string; budget: number | null; actualSpent: number | null; itinerary: unknown; notes: string; createdAt: Date; updatedAt: Date }) {
+  return { ...row, itinerary: Array.isArray(row.itinerary) ? row.itinerary : [] };
+}
 type TreeNode = Content & { children: TreeNode[] };
 export function buildTree(rows: Content[]): TreeNode[] {
   const nodes = new Map(
@@ -163,59 +184,21 @@ export function buildTree(rows: Content[]): TreeNode[] {
 
 export function createApp(db: PrismaClient, config: AppConfig) {
   const app = express();
+  app.set('trust proxy', config.trustProxy || false);
   app.disable("x-powered-by");
   app.use(
     helmet({
       contentSecurityPolicy: { directives: { "frame-ancestors": ["'self'"] } },
     }),
   );
+  app.use('/api/research', express.json({ limit: '3mb' }));
   app.use(express.json({ limit: "150kb" }), cookieParser());
   app.use(["/api", "/media"], (_req, res, next) => {
     res.set("Cache-Control", "no-store");
     next();
   });
-  const cookieOptions = {
-    httpOnly: true,
-    secure: config.production,
-    sameSite: "strict" as const,
-    path: "/",
-  };
-  const passwordFor = (role: Role) =>
-    role === "admin" ? config.adminPassword : config.sitePassword;
-  const versionFor = (role: Role) =>
-    createHmac("sha256", config.secret)
-      .update(`${role}:${passwordFor(role)}`)
-      .digest("hex");
-  const authorize = (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const payload = jwt.verify(
-        req.cookies.yaocang_session || "",
-        config.secret,
-        { algorithms: ["HS256"], issuer: "yaocang", audience: "yaocang-web" },
-      );
-      if (
-        typeof payload === "string" ||
-        !["visitor", "admin"].includes(payload.role) ||
-        payload.version !== versionFor(payload.role)
-      )
-        throw new Error("Invalid session");
-      res.locals.role = payload.role;
-      next();
-    } catch {
-      res
-        .status(401)
-        .json({ error: { code: "UNAUTHORIZED", message: "请先输入访问密码" } });
-    }
-  };
-  const admin = (_req: Request, res: Response, next: NextFunction) => {
-    if (res.locals.role !== "admin") {
-      res
-        .status(403)
-        .json({ error: { code: "FORBIDDEN", message: "需要管理员权限" } });
-      return;
-    }
-    next();
-  };
+  const auth = authentication(db, config);
+  const { authorize, admin, passwordReady } = auth;
   app.use((req, _res, next) => {
     if (!["GET", "HEAD", "OPTIONS"].includes(req.method)) {
       if (
@@ -228,100 +211,75 @@ export function createApp(db: PrismaClient, config: AppConfig) {
     }
     next();
   });
-  const attempts = new Map<string, { count: number; expires: number }>();
-  app.post(
-    "/api/auth/login",
-    wrap(async (req, res) => {
-      const { password, role } = z
-        .object({
-          password: z.string().min(1).max(256),
-          role: z.enum(["visitor", "admin"]).default("visitor"),
-        })
-        .strict()
-        .parse(req.body);
-      const ip = req.ip || "unknown";
-      const now = Date.now();
-      for (const [key, value] of attempts)
-        if (value.expires <= now) attempts.delete(key);
-      const previous = attempts.get(ip);
-      if (previous && previous.count >= 5) {
-        const seconds = Math.ceil((previous.expires - now) / 1000);
-        res.set("Retry-After", String(seconds));
-        res.status(429).json({
-          error: {
-            code: "LOCKED",
-            message: "尝试次数过多，请稍后再试",
-            retryAfter: seconds,
-          },
-        });
-        return;
-      }
-      const hashed = role === "admin" ? config.adminHashed : config.siteHashed;
-      const valid = hashed
-        ? await bcrypt.compare(password, passwordFor(role))
-        : timingSafeEqual(digest(password), digest(passwordFor(role)));
-      if (!valid) {
-        if (attempts.size >= 10000 && !attempts.has(ip))
-          fail(429, "BUSY", "请稍后再试");
-        attempts.set(ip, {
-          count: (previous?.count || 0) + 1,
-          expires: previous?.expires || now + 15 * 60 * 1000,
-        });
-        fail(401, "INVALID_PASSWORD", "密码不正确");
-      }
-      attempts.delete(ip);
-      const token = jwt.sign(
-        { role, version: versionFor(role) },
-        config.secret,
-        {
-          algorithm: "HS256",
-          expiresIn: "30d",
-          issuer: "yaocang",
-          audience: "yaocang-web",
-        },
-      );
-      res.cookie("yaocang_session", token, {
-        ...cookieOptions,
-        maxAge: 30 * 86400000,
-      });
-      await db.accessLog.create({
-        data: {
-          ip,
-          userAgent: req.get("user-agent")?.slice(0, 512),
-          action: "login",
-        },
-      });
-      res.json({ role });
-    }),
-  );
+  auth.register(app);
   app.get("/api/health", (_req, res) => res.json({ status: "ok" }));
-  app.use("/api", authorize, (_req, res, next) => {
+  app.use("/api", authorize, passwordReady, (_req, res, next) => {
     res.set("Cache-Control", "no-store");
     next();
   });
-  app.get("/api/auth/me", (_req, res) => res.json({ role: res.locals.role }));
+  app.use("/api", (req, res, next) => {
+    if (res.locals.role === "share" && !["GET", "HEAD", "OPTIONS"].includes(req.method) && req.path !== "/log")
+      return next(new HttpError(403, "READ_ONLY_SHARE", "分享浏览账号仅可浏览资料"));
+    next();
+  });
+  auth.registerAdmin(app);
+  registerResearch(app, db);
+  registerPrecisionBrief(app, db);
+  registerCompare(app, db, config);
+  registerHealth(app, db);
+  app.get("/api/trip-plans", wrap(async (req, res) => {
+    const projectId = idOf(req.query.projectId);
+    const project = await requireContent(db, res.locals.user, projectId);
+    if (!project.isProject) return fail(400, "NOT_PROJECT", "安排必须归属于项目");
+    const rows = await db.tripPlan.findMany({
+      where: { userId: res.locals.user.id, projectId },
+      orderBy: [{ startDate: "asc" }, { updatedAt: "desc" }],
+    });
+    res.json(rows.map(tripPlanView));
+  }));
+  app.post("/api/trip-plans", wrap(async (req, res) => {
+    const { projectId, ...input } = z.object({ projectId: z.number().int().positive() }).passthrough().parse(req.body);
+    const project = await requireContent(db, res.locals.user, projectId);
+    if (!project.isProject) return fail(400, "NOT_PROJECT", "安排必须归属于项目");
+    const data = tripPlanInput.parse(input);
+    const row = await db.tripPlan.create({ data: { ...data, projectId, userId: res.locals.user.id } });
+    res.status(201).json(tripPlanView(row));
+  }));
+  app.put("/api/trip-plans/:id", wrap(async (req, res) => {
+    const id = idOf(req.params.id);
+    const current = await db.tripPlan.findFirst({ where: { id, userId: res.locals.user.id } });
+    if (!current) return fail(404, "NOT_FOUND", "安排不存在或无权访问");
+    const project = await requireContent(db, res.locals.user, current.projectId);
+    if (!project.isProject) return fail(400, "NOT_PROJECT", "安排必须归属于项目");
+    const data = tripPlanInput.parse(req.body);
+    const row = await db.tripPlan.update({ where: { id }, data });
+    res.json(tripPlanView(row));
+  }));
+  app.delete("/api/trip-plans/:id", wrap(async (req, res) => {
+    const id = idOf(req.params.id);
+    const current = await db.tripPlan.findFirst({ where: { id, userId: res.locals.user.id } });
+    if (!current) return fail(404, "NOT_FOUND", "安排不存在或无权访问");
+    await requireContent(db, res.locals.user, current.projectId);
+    await db.tripPlan.delete({ where: { id } });
+    res.status(204).end();
+  }));
   app.get(
     "/api/literature/:projectId/writers",
     wrap(async (req, res) => {
       const projectId = idOf(req.params.projectId);
-      const project = await db.content.findUnique({ where: { id: projectId } });
+      const project = await requireContent(db, res.locals.user, projectId);
       if (!project?.description.includes("<!-- LITERATURE_PROJECT -->"))
         fail(404, "NOT_FOUND", "文学项目不存在");
       const rows = await db.literaryWriter.findMany({ where: { projectId }, orderBy: { id: "asc" } });
       res.json(rows.map((row) => row.data));
     }),
   );
-  app.post("/api/auth/logout", (_req, res) => {
-    res.clearCookie("yaocang_session", cookieOptions).json({ ok: true });
-  });
   app.get(
     "/api/contents",
     wrap(async (_req, res) =>
       res.json(
         buildTree(
-          await db.content.findMany({
-            orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
-          }),
+          await readableContents(db, res.locals.user),
         ),
       ),
     ),
@@ -329,10 +287,7 @@ export function createApp(db: PrismaClient, config: AppConfig) {
   app.get(
     "/api/contents/:id",
     wrap(async (req, res) => {
-      const row = await db.content.findUnique({
-        where: { id: idOf(req.params.id) },
-      });
-      if (!row) fail(404, "NOT_FOUND", "资料不存在");
+      const row = await requireContent(db, res.locals.user, idOf(req.params.id));
       res.json(row);
     }),
   );
@@ -367,6 +322,7 @@ export function createApp(db: PrismaClient, config: AppConfig) {
         if (data.parentId && (!parent || parent.type !== "folder"))
           fail(400, "INVALID_PARENT", "父级必须是已存在的目录");
         await validateParent(tx, data.parentId);
+        await validateProjectTree(tx, data);
         return tx.content.create({
           data: parent ? { ...data, scene: parent.scene } : data,
         });
@@ -389,6 +345,13 @@ export function createApp(db: PrismaClient, config: AppConfig) {
         if (data.parentId && (!parent || parent.type !== "folder"))
           fail(400, "INVALID_PARENT", "父级必须是已存在的目录");
         await validateParent(tx, data.parentId, id);
+        await validateProjectTree(tx, data, id);
+        if (current.isProject && (!data.isProject || data.type !== 'folder' || (parent?.scene ?? data.scene) !== 'work' || !data.description.includes(researchProjectMarker)) && await tx.researchStudy.count({ where: { projectId: id } }))
+          fail(409, 'HAS_RESEARCH', '项目中仍有调研记录，不能移除研究入口或取消项目身份');
+        if (current.isProject && !data.isProject && await tx.tripPlan.count({ where: { projectId: id } }))
+          fail(409, "HAS_TRIP_PLANS", "项目中仍有出行安排，不能取消项目身份");
+        if (current.isProject && !data.isProject)
+          await tx.projectAccess.deleteMany({ where: { projectId: id } });
         if (
           data.type !== "folder" &&
           (await tx.content.count({ where: { parentId: id } }))
@@ -411,8 +374,7 @@ export function createApp(db: PrismaClient, config: AppConfig) {
       const row = await db.$transaction(async (tx) => {
         const current = await tx.content.findUnique({ where: { id } });
         if (!current) return fail(404, "NOT_FOUND", "项目不存在");
-        if (current.type !== "folder" ||
-          !(current.title.startsWith("项目") || (current.title === "爱的城堡" && current.scene === "life")))
+        if (!current.isProject)
           return fail(400, "NOT_PROJECT", "只能修改项目的周期标签");
         if (!hasProjectCycle(current.topics))
           return fail(400, "INVALID_PROJECT_TOPICS", "请先在内容管理中设置项目周期和两个主题标签");
@@ -434,6 +396,10 @@ export function createApp(db: PrismaClient, config: AppConfig) {
           fail(409, "HAS_CHILDREN", "请先移动或删除目录中的内容");
         if (await tx.literaryWriter.count({ where: { projectId: id } }))
           fail(409, "HAS_WRITERS", "请先归档或移除项目的人物档案");
+        if (await tx.tripPlan.count({ where: { projectId: id } }))
+          fail(409, "HAS_TRIP_PLANS", "项目中仍有出行安排，不能删除项目");
+        if (await tx.researchStudy.count({ where: { projectId: id } }))
+          fail(409, 'HAS_RESEARCH', '项目中仍有调研记录，请保留项目及其历史版本');
         await tx.content.delete({ where: { id } });
       });
       res.status(204).end();
@@ -457,11 +423,11 @@ export function createApp(db: PrismaClient, config: AppConfig) {
         })
         .strict()
         .parse(req.body);
-      if (!(await db.content.findUnique({ where: { id: data.contentId } })))
-        fail(404, "NOT_FOUND", "资料不存在");
+      await requireContent(db, res.locals.user, data.contentId);
       await db.accessLog.create({
         data: {
           ...data,
+          userId: res.locals.user.id,
           ip: req.ip || "unknown",
           userAgent: req.get("user-agent")?.slice(0, 512),
         },
@@ -472,9 +438,13 @@ export function createApp(db: PrismaClient, config: AppConfig) {
   app.use(
     "/media",
     authorize,
-    (_req, res, next) => {
+    passwordReady,
+    (req, res, next) => {
       res.set("Cache-Control", "private, no-store");
-      next();
+      void canReadMedia(db, res.locals.user, req.path).then(allowed => {
+        if (!allowed) return next(new HttpError(404, 'NOT_FOUND', '资源不存在'));
+        next();
+      }, next);
     },
     express.static(resolve(projectRoot, "backend/media"), {
       dotfiles: "deny",
@@ -501,6 +471,12 @@ export function createApp(db: PrismaClient, config: AppConfig) {
         res
           .status(error.status)
           .json({ error: { code: error.code, message: error.message } });
+        return;
+      }
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002'
+      ) {
+        res.status(409).json({ error: { code: 'ALREADY_EXISTS', message: '用户名已存在' } });
         return;
       }
       if (

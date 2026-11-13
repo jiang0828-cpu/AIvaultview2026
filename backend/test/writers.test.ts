@@ -6,7 +6,8 @@ import { resolve, join } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { PrismaClient, type Prisma } from '@prisma/client';
 import request from 'supertest';
-import { projectRoot, type AppConfig } from '../src/config.js';
+import { projectRoot } from '../src/config.js';
+import { seedTestUsers, type TestConfig } from './helpers.js';
 import { createApp } from '../src/app.js';
 import { seedLiterature } from '../prisma/seed-literature.js';
 import { seedWriters } from '../prisma/seed-writers.js';
@@ -16,7 +17,7 @@ import { writerSchema } from '../prisma/writers/schema.js';
 let directory: string;
 let db: PrismaClient;
 let projectId: number;
-const config: AppConfig = { secret: 'writers-test-secret-at-least-32-characters', sitePassword: 'test-site', adminPassword: 'test-admin', siteHashed: false, adminHashed: false, production: false, origin: 'http://localhost:5173' };
+const config: TestConfig = { adminUsername: 'admin', secret: 'writers-test-secret-at-least-32-characters', sitePassword: 'test-site', adminPassword: 'test-admin', siteHashed: false, adminHashed: false, production: false, origin: 'http://localhost:5173' };
 before(async () => {
   directory = await mkdtemp(join(tmpdir(), 'writer-tests-'));
   const url = `file:${join(directory, 'test.db').replaceAll('\\', '/')}`;
@@ -25,6 +26,7 @@ before(async () => {
   });
   db = new PrismaClient({ datasources: { db: { url } } });
   projectId = await seedLiterature(db);
+  await seedTestUsers(db, config);
 });
 after(async () => { await db?.$disconnect(); if (directory) await rm(directory, { recursive: true, force: true }); });
 
@@ -55,7 +57,7 @@ test('writer API requires a session, scopes by project and returns complete prof
   const app = createApp(db, config);
   await request(app).get(`/api/literature/${projectId}/writers`).expect(401);
   const visitor = request.agent(app);
-  await visitor.post('/api/auth/login').send({ password: config.sitePassword }).expect(200);
+  await visitor.post('/api/auth/login').send({ username: 'visitor', password: config.sitePassword }).expect(200);
   const response = await visitor.get(`/api/literature/${projectId}/writers`).expect(200).expect('Cache-Control', 'no-store');
   assert.equal(response.body.length, 100);
   for (const profile of response.body) assert.ok(writerSchema.safeParse(profile).success);
@@ -68,10 +70,10 @@ test('writer API requires a session, scopes by project and returns complete prof
 test('admin cannot accidentally delete a populated writer collection', async () => {
   const app = createApp(db, config);
   const visitor = request.agent(app);
-  await visitor.post('/api/auth/login').send({ password: config.sitePassword }).expect(200);
+  await visitor.post('/api/auth/login').send({ username: 'visitor', password: config.sitePassword }).expect(200);
   await visitor.delete(`/api/contents/${projectId}`).send({}).expect(403);
   const admin = request.agent(app);
-  await admin.post('/api/auth/login').send({ role: 'admin', password: config.adminPassword }).expect(200);
+  await admin.post('/api/auth/login').send({ username: 'admin', password: config.adminPassword }).expect(200);
   await db.content.deleteMany({ where: { parentId: projectId } });
   const blocked = await admin.delete(`/api/contents/${projectId}`).send({}).expect(409);
   assert.equal(blocked.body.error.code, 'HAS_WRITERS');

@@ -3,9 +3,13 @@ import { PrismaClient } from "@prisma/client";
 import { caseProjects, type CaseNode } from "./cases.js";
 import { seedLiterature } from "./seed-literature.js";
 import { seedWorld } from "./seed-world.js";
+import { seedLivelihood } from "./seed-livelihood.js";
+import { seedResearch } from "./seed-research.js";
 import { seedWriters } from "./seed-writers.js";
 import { seedCastle } from "./seed-castle.js";
 import { hasProjectCycle } from "../src/projectTags.js";
+import { seedCompare } from "./compare.js";
+import { seedHealth } from "./health.js";
 const db = new PrismaClient();
 const scenes = [
   ["system", "系统管理"],
@@ -15,17 +19,25 @@ const scenes = [
   ["hobbies", "兴趣爱好"],
   ["other", "其他模块"],
 ] as const;
-async function ensureCaseNode(node: CaseNode, parentId: number) {
+async function ensureCaseNode(
+  node: CaseNode,
+  parentId: number,
+  isProject = false,
+) {
   const existing = await db.content.findFirst({
     where: { title: node.title, parentId, scene: node.scene },
   });
   const data = {
     title: node.title,
+    isProject,
     type: node.type,
     scene: node.scene,
-    topics: node.type === "folder" && existing && hasProjectCycle(existing.topics)
-      ? existing.topics : node.topics,
+    topics:
+      node.type === "folder" && existing && hasProjectCycle(existing.topics)
+        ? existing.topics
+        : node.topics,
     imagesJson: node.imagesJson,
+    assetsJson: existing?.assetsJson ?? node.assetsJson,
     coverUrl: node.coverUrl,
     fileUrl: node.fileUrl,
     description: node.description || "",
@@ -41,7 +53,7 @@ async function ensureCaseNode(node: CaseNode, parentId: number) {
 async function consolidateAiCourse() {
   const project = await db.content.findFirst({
     where: {
-      title: "项目04｜AI 使用技能及技巧分享｜系列课程",
+      title: "AI应用 | AI 使用技能及技巧分享｜系列课程",
       type: "folder",
     },
   });
@@ -90,14 +102,14 @@ try {
         children: {
           create: [
             {
-              title: "欢迎来到藏览",
+              title: "欢迎来到观澜",
               type: "text",
               scene: "other",
               topics: ["other"],
               sortOrder: 0,
               coverUrl: "/media/demo/cover.png",
               description:
-                "# 为值得留下的内容，留一个位置\n\n有些内容，值得反复打开。一次分享、一套笔记，或是某个恰好启发你的瞬间。\n\n藏览是这些资料的共同归处，也是一扇可以对外展示的内容窗口。\n\n## 从这里开始\n\n- **观看**：打开视频，回到分享现场。\n- **翻阅**：一页一页，梳理思路。\n- **阅读**：把注意力留给内容本身。\n\n> 收藏的意义，不是拥有更多，而是在需要时，找得到。\n\n这是一份本地示例资料，可由管理员替换。",
+                "# 为值得留下的内容，留一个位置\n\n有些内容，值得反复打开。一次分享、一套笔记，或是某个恰好启发你的瞬间。\n\n观澜是这些资料的共同归处，也是一扇可以对外展示的内容窗口。\n\n## 从这里开始\n\n- **观看**：打开视频，回到分享现场。\n- **翻阅**：一页一页，梳理思路。\n- **阅读**：把注意力留给内容本身。\n\n> 收藏的意义，不是拥有更多，而是在需要时，找得到。\n\n这是一份本地示例资料，可由管理员替换。",
             },
             {
               title: "资料库导览",
@@ -202,7 +214,7 @@ try {
       });
   }
   const demoTopics: Array<[string, string[]]> = [
-    ["欢迎来到藏览", ["system"]],
+    ["欢迎来到观澜", ["system"]],
     ["资料库导览", ["tools", "business"]],
     ["构建你的知识收藏", ["AI", "tools"]],
     ["整理工作手册", ["tools"]],
@@ -229,12 +241,16 @@ try {
     });
   for (const project of caseProjects) {
     const sceneRoot = roots.get(project.scene);
-    if (sceneRoot) await ensureCaseNode(project, sceneRoot.id);
+    if (sceneRoot) await ensureCaseNode(project, sceneRoot.id, true);
   }
   await consolidateAiCourse();
   await seedWriters(db, await seedLiterature(db));
   await seedCastle(db);
   await seedWorld(db);
+  await seedLivelihood(db);
+  await seedResearch(db);
+  await seedCompare(db);
+  await seedHealth(db);
   console.log("Six scene modules are ready.");
 } finally {
   await db.$disconnect();

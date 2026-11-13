@@ -1,4 +1,5 @@
-import { mrnaDocuments } from './mrna-generated.js';
+import { mrnaDocuments } from "./mrna-generated.js";
+import { secondTrainingProject } from "./ai-training-second.js";
 
 export type CaseNode = {
   title: string;
@@ -6,6 +7,7 @@ export type CaseNode = {
   scene: "system" | "tools" | "life" | "work" | "hobbies" | "other";
   topics?: string[];
   imagesJson?: string[];
+  assetsJson?: string[];
   coverUrl?: string;
   fileUrl?: string;
   sortOrder: number;
@@ -1138,7 +1140,7 @@ ${bt}肿瘤/正常组织取样 → DNA/RNA 测序 → 体细胞突变识别 → 
   ),
 
   folder(
-    "项目03｜南京周边游｜高铁三小时圈",
+    "滋味生活｜游｜南京高铁三小时圈",
     travelScene,
     30,
     [
@@ -1563,7 +1565,7 @@ ${JSON.stringify({ updatedAt: "2026-11-10", cities: travelCityAtlas })}`,
   ),
 
   folder(
-    "项目04｜AI 使用技能及技巧分享｜系列课程",
+    "AI应用 | AI 使用技能及技巧分享｜系列课程",
     aiScene,
     40,
     [
@@ -2013,10 +2015,21 @@ ${bt}${bt}${bt}
     ],
     ["长期性", "AI", "learning"],
   ),
+
+  secondTrainingProject,
 ];
 
 // Keep the historical seed for a conservative, template-only local update.
-export const legacyMrnaProject = structuredClone(caseProjects.find(p => /mRNA/.test(p.title))!);
-const currentMrna = caseProjects.find(p => /mRNA/.test(p.title))!;
-currentMrna.description = '截至2026-11-10的mRNA肿瘤药物研究：最新临床、技术、注册台账与精准检测BD。';
-currentMrna.children = mrnaDocuments.map(d => ({...d,type:'text',scene:'work',topics:['health','research']}));
+export const legacyMrnaProject = structuredClone(
+  caseProjects.find((p) => /mRNA/.test(p.title))!,
+);
+const currentMrna = caseProjects.find((p) => /mRNA/.test(p.title))!;
+currentMrna.assetsJson = ["/media/projects/mrna/research-data.json"];
+currentMrna.description =
+  "截至2026-11-10的mRNA肿瘤药物研究：最新临床、技术、注册台账与精准检测BD。";
+currentMrna.children = mrnaDocuments.map((d) => ({
+  ...d,
+  type: "text",
+  scene: "work",
+  topics: ["health", "research"],
+}));

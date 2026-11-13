@@ -1,0 +1,11 @@
+id,started,ended,agent,model,effort,class,status,first_pass,fix_lines,critical,major,minutes,input,cached,output,thread,report,note,backend
+research,2026-11-11T20:32,2026-11-11T20:49,collaboration,gpt-6.1-sol,high,research,done,,,,,,,,,,../notes.md,19-official-sources,
+flexible_work_research,2026-11-11T20:41,2026-11-11T20:41,,,,,done,,,,,,,,,,,19-primary-sources,
+flexible_work_ops,2026-11-11T20:41,2026-11-11T21:10,codex,gpt-6.1-sol,high,ops,done,,,,,,,,,,.tmp/reports/flexible-work-ops.full.md,frozen-evidence-95tests,
+flexible_work_content,2026-11-11T20:49,2026-11-11T20:49,codex,gpt-6.1-sol,high,build,done,,,,,,,,,,,14-sources-4-essays-schema-pass,
+G1-opus,2026-11-11T21:10,2026-11-11T21:25,claude,claude-opus-5,xhigh,gate,failed,,,,,,,,,,,HTTP402-Insufficient-Balance-before-audit-no-report,
+G1-astra,2026-11-11T21:10,2026-11-11T21:25,codex,gpt-6-astra,high,gate,done,,,0,2,,,,,,audits/round-1/astra.md,75-USE-no,
+flexible_work_ops_r2,2026-11-11T21:49,2026-11-11T21:54,codex,gpt-6.1-sol,high,ops,done,,,,,,,,,,.tmp/reports/flexible-work-ops-r2.full.md,88-files-frozen-96tests-source-lint0-bare-lint1-audit-only,
+G2-astra,2026-11-11T21:54,2026-11-11T22:09,codex,gpt-6-astra,high,gate,done,,,0,0,,,,,,audits/round-2/astra.md,85.5-USE-yes-single-slot-N3-GFM-minor,
+flexible_work_ops_r3,2026-11-11T22:06,2026-11-11T22:16,codex,gpt-6.1-sol,high,ops,done,,,,,,,,,,.tmp/reports/flexible-work-ops-r3.full.md,68-files-frozen-97tests-all-checks0-export-GFM1table,
+G3-astra,2026-11-11T22:16,2026-11-11T22:28,codex,gpt-6-astra,high,gate,done,,,0,0,,,,,,audits/round-3/astra.md,87.25-USE-yes-independent-FULL-N3-fixed-single-slot,

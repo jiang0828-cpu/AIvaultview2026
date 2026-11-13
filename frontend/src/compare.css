@@ -1,0 +1,61 @@
+.compare-space { --ink: #273630; max-width: 1240px; margin: 0 auto; padding: 4px 0 40px; }
+.compare-space, .compare-space * { min-width: 0; }
+.compare-space fieldset { margin: 14px 0 0; border: 0; padding: 0; }
+.compare-space fieldset legend { color: var(--muted); font-size: .86rem; padding-bottom: 8px; }
+.compare-notice { background: #edf5f0; border-left: 3px solid #5d9278; padding: 10px 12px; color: #245e4f; line-height: 1.6; }
+.compare-document { margin-top: 20px; }
+.compare-disclosure { color: var(--muted); font-size: .84rem; line-height: 1.6; margin: 12px 0; }
+.compare-platform-shortcuts { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 14px 0; }
+.compare-platform-shortcuts a, .compare-product-link { display: inline-flex; align-items: center; gap: 4px; color: #245e4f; font-size: .86rem; text-decoration: underline; text-underline-offset: 3px; }
+.compare-provider-section { margin: 20px 0; padding: 12px 0; border-block: 1px solid var(--line); }
+.compare-provider-section summary { cursor: pointer; font-size: .88rem; }
+.compare-provider-section .compare-provider-list { margin-top: 12px; }
+.compare-unit-price { margin: 8px 0; color: #245e4f; }
+.compare-unit-price small { display: block; margin-top: 4px; color: var(--muted); }
+.compare-history > div:first-child { overflow-wrap: anywhere; }
+.compare-hero { display: flex; justify-content: space-between; gap: 24px; align-items: flex-start; margin-bottom: 22px; }
+.compare-hero h1 { margin: 4px 0 8px; font-size: 28px; overflow-wrap: anywhere; }
+.compare-hero p { margin: 0; color: var(--muted); max-width: 660px; line-height: 1.65; }
+.compare-panel { background: var(--surface, #fff); border: 1px solid var(--line, #e4e8e3); border-radius: 8px; padding: 18px; margin-bottom: 16px; }
+.compare-form { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.compare-form .wide { grid-column: span 2; }
+.compare-form label { display: grid; gap: 6px; color: var(--muted); font-size: .86rem; }
+.compare-form input, .compare-form select, .compare-form textarea { width: 100%; border: 1px solid var(--line); border-radius: 6px; padding: 9px 10px; background: #fff; color: var(--ink); font: inherit; }
+.compare-form textarea { min-height: 74px; resize: vertical; }
+.compare-checks { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+.compare-checks label { display: inline-flex; align-items: center; gap: 5px; }
+.compare-actions { display: flex; gap: 9px; align-items: center; flex-wrap: wrap; margin-top: 14px; }
+.compare-actions .button { display: inline-flex; align-items: center; gap: 6px; }
+.compare-chip-row { display: flex; flex-wrap: wrap; gap: 7px; margin: 10px 0 0; }
+.compare-chip { border: 1px solid #cbd9d0; background: #f2f8f3; color: #245e4f; border-radius: 999px; padding: 4px 9px; font-size: .8rem; }
+.compare-tabs { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 16px; border-bottom: 1px solid var(--line); }
+.compare-tabs button { border: 0; border-bottom: 2px solid transparent; padding: 9px 12px; background: transparent; color: var(--muted); white-space: nowrap; cursor: pointer; }
+.compare-tabs button.active { color: #245e4f; border-bottom-color: #245e4f; font-weight: 650; }
+.compare-result-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.compare-result-head h2, .compare-panel h2 { font-size: 1.05rem; margin: 0; }
+.compare-offer-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.compare-offer { border: 1px solid var(--line); border-radius: 7px; padding: 14px; min-width: 0; }
+.compare-offer.rank-1 { border-color: #8db5a1; box-shadow: 0 2px 8px rgba(36,94,79,.08); }
+.compare-offer-top { display: flex; justify-content: space-between; gap: 8px; color: var(--muted); font-size: .82rem; }
+.compare-offer h3 { font-size: .96rem; line-height: 1.45; margin: 9px 0 10px; }
+.compare-price { font-size: 1.2rem; font-weight: 720; color: #1f5c48; }
+.compare-meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; margin-top: 12px; }
+.compare-meta span { background: #f7f9f7; border-radius: 5px; padding: 7px; font-size: .78rem; color: var(--muted); }
+.compare-meta strong { display: block; color: var(--ink); font-size: .9rem; margin-top: 2px; }
+.compare-reasons { padding-left: 18px; margin: 11px 0 0; color: #355c4b; font-size: .82rem; line-height: 1.6; }
+.compare-risks { color: #856c37; }
+.compare-table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 7px; }
+.compare-table { border-collapse: collapse; width: 100%; min-width: 1050px; font-size: .82rem; }
+.compare-table th, .compare-table td { border-bottom: 1px solid var(--line); padding: 9px 10px; text-align: left; vertical-align: top; white-space: nowrap; }
+.compare-table th { background: #f6f8f6; color: var(--muted); font-weight: 600; }
+.compare-empty { color: var(--muted); padding: 20px 0; }
+.compare-provider-list, .compare-doc-list, .compare-history-list { display: grid; gap: 8px; }
+.compare-provider, .compare-doc, .compare-history { display: flex; justify-content: space-between; gap: 12px; align-items: center; border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; }
+.compare-provider small, .compare-history small { color: var(--muted); }
+.compare-status-ok { color: #2d7259; } .compare-status-off { color: #866f39; }
+.compare-doc button { text-align: left; border: 0; background: none; cursor: pointer; color: #245e4f; font: inherit; }
+.compare-doc span { color: var(--muted); font-size: .82rem; }
+.compare-import-grid { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 12px; }
+.compare-import-grid textarea { min-height: 150px; }
+@media (max-width: 840px) { .compare-form { grid-template-columns: repeat(2, minmax(0, 1fr)); } .compare-offer-grid { grid-template-columns: 1fr; } .compare-hero { display: block; } }
+@media (max-width: 560px) { .compare-space { padding-top: 0; } .compare-hero h1 { font-size: 24px; } .compare-panel { padding: 14px; } .compare-form, .compare-import-grid { grid-template-columns: 1fr; } .compare-form .wide { grid-column: auto; } .compare-actions .button { flex: 1 1 auto; justify-content: center; } .compare-history, .compare-provider { align-items: flex-start; flex-wrap: wrap; } }

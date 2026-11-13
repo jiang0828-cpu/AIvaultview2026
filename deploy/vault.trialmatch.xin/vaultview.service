@@ -1,0 +1,29 @@
+[Unit]
+Description=VaultView API
+After=network.target
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=vaultview
+Group=vaultview
+WorkingDirectory=/opt/vaultview/current/backend
+EnvironmentFile=/etc/vaultview/vaultview.env
+# Use a separately provisioned Linux Node executable, not root's private nvm path.
+ExecStart=/opt/vaultview/runtime/node /opt/vaultview/current/backend/dist/src/server.js
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+UMask=0027
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/vaultview
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=vaultview
+
+[Install]
+WantedBy=multi-user.target

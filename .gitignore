@@ -19,3 +19,10 @@ __pycache__/
 *.fastq.gz
 *.fq.gz
 *.vcf.gz
+PM-daily/runtime/
+PM-daily/published/
+python/.venv/
+python/data/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
