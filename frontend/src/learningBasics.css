@@ -1,0 +1,25 @@
+.learning-basics { max-width: 1120px; margin: 0 auto; }
+.learning-basics-heading { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; margin: 24px 0 16px; }
+.learning-basics-heading h1 { display: flex; align-items: center; gap: 10px; margin: 8px 0 12px; font-size: 30px; }
+.learning-basics-heading p { line-height: 1.8; }
+.learning-basics-visibility { padding: 12px 0; color: #566d67; border-top: 1px solid #d6e0db; border-bottom: 1px solid #d6e0db; line-height: 1.8; }
+.learning-basics article, .learning-reference article { min-width: 0; overflow-wrap: anywhere; }
+.learning-basics article table, .learning-reference article table { display: block; max-width: 100%; overflow-x: auto; }
+.learning-basics-editor { display: flex; flex-direction: column; gap: 10px; margin-top: 24px; font-weight: 600; }
+.learning-basics-editor textarea, .learning-reference-copy { width: 100%; min-width: 0; box-sizing: border-box; resize: vertical; padding: 14px; line-height: 1.7; font-size: 16px; border: 1px solid #a7bcb0; border-radius: 6px; background: white; color: #263f39; }
+.learning-basics-actions, .learning-basics-sections, .learning-reference-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin: 18px 0; }
+.learning-basics-sections { padding-top: 20px; border-top: 1px solid #d6e0db; }
+.learning-basics .button, .learning-reference .button, .learning-reference .back-link { min-height: 44px; }
+.learning-reference { padding: 18px 0; margin-bottom: 24px; border-top: 2px solid #6c9580; border-bottom: 1px solid #d6e0db; }
+.learning-reference-heading { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.learning-reference-heading strong { font-size: 16px; }
+.learning-reference-heading .back-link { margin-left: auto; }
+.learning-reference > p { color: #566d67; line-height: 1.8; margin: 10px 0; }
+.learning-reference-actions { margin: 8px 0 0; }
+.learning-reference-actions > span { font-size: 12px; color: #63766d; }
+.learning-reference-copy { margin-top: 12px; }
+@media (max-width: 600px) {
+  .learning-basics-heading h1 { font-size: 26px; }
+  .learning-reference-heading .back-link { margin-left: 0; }
+  .learning-reference-actions > span { flex-basis: 100%; }
+}

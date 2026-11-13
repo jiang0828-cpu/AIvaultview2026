@@ -2,11 +2,13 @@ import { flatten, type Content } from "./types.js";
 import { isWorldProject, worldIssues } from './worldModel.js';
 import { isLivelihoodProject, livelihoodIssues } from './livelihoodModel.js';
 
+export const castleProjectTitle = "日常生活 | 学 | 德智体美用";
+
 export function isCastleProject(content: Content) {
   return (
     content.type === "folder" &&
     content.scene === "life" &&
-    content.title === "爱的城堡"
+    [castleProjectTitle, "爱的城堡"].includes(content.title)
   );
 }
 

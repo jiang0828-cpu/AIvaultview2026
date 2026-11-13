@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import { fileURLToPath } from "node:url";
 import { resolve, dirname } from "node:path";
 import { existsSync } from "node:fs";
+import { castleProjectTitle } from "./castleProjectName.js";
 let root = dirname(fileURLToPath(import.meta.url));
 while (!existsSync(resolve(root, ".env.example")) && dirname(root) !== root)
   root = dirname(root);
@@ -39,7 +40,7 @@ export function getConfig(): AppConfig {
     shareUsername: process.env.SHARE_USERNAME || "user",
     sharePassword: process.env.SHARE_PASSWORD_HASH || process.env.SHARE_PASSWORD || "123456",
     shareHashed: Boolean(process.env.SHARE_PASSWORD_HASH),
-    shareProjectSelectors: (process.env.SHARE_PROJECTS || "爱的城堡")
+    shareProjectSelectors: (process.env.SHARE_PROJECTS || castleProjectTitle)
       .split(",").map(value => value.trim()).filter(Boolean),
     production: process.env.NODE_ENV === "production",
     origin: process.env.FRONTEND_ORIGIN || "http://localhost:5173",

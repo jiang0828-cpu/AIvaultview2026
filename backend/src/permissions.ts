@@ -141,6 +141,19 @@ export async function canReadMedia(db: PrismaClient, user: User, requestPath: st
   const projectIds = visible.filter(row => row.isProject).map(row => row.id);
   for (const writer of await db.literaryWriter.findMany({ where: { projectId: { in: projectIds } } }))
     references(writer.data, '/media/', index);
+  return mediaReferencesAllow(index, path);
+}
+
+export async function canReadContentMedia(content: Content, requestPath: string) {
+  const path = canonicalPath(`/media${requestPath}`);
+  if (!path || !await confinedFile(path)) return false;
+  const index = new Set<string>();
+  for (const value of [content.coverUrl, content.fileUrl, content.hlsUrl, content.pdfUrl, content.imagesJson, content.assetsJson, content.description])
+    references(value, '/media/', index);
+  return mediaReferencesAllow(index, path);
+}
+
+async function mediaReferencesAllow(index: Set<string>, path: string) {
   // Expand only explicit dependencies, never directory prefixes. The visited set bounds cyclic manifests.
   const visited = new Set<string>();
   for (const asset of index) {

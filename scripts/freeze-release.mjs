@@ -21,7 +21,7 @@ async function copy(source, destination) {
     await copyFile(source, destination);
   }
 }
-for (const name of ['package.json', 'package-lock.json', '.env.example', 'eslint.config.mjs', 'frontend', 'backend', 'shared', 'python', 'scripts', 'deploy', 'research/world-evidence'])
+for (const name of ['package.json', 'package-lock.json', '.env.example', '.gitignore', 'README.md', 'docs', 'eslint.config.mjs', 'frontend', 'backend', 'shared', 'python', 'scripts', 'deploy', 'research/world-evidence'])
   await copy(resolve(name), join(target, name));
 await symlink(resolve('node_modules'), join(target, 'node_modules'), 'junction');
 const db = new PrismaClient();

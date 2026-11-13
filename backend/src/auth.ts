@@ -2,10 +2,11 @@ import type { Express, Request, Response, NextFunction } from 'express';
 import type { PrismaClient, User } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { randomUUID } from 'node:crypto';
+import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import type { AppConfig } from './config.js';
 import { fail, HttpError, idOf, wrap } from './http.js';
+import { castleProjectTitle, castleProjectTitles } from './castleProjectName.js';
 
 const usernameSchema = z.string().trim().toLowerCase().min(3).max(64)
   .regex(/^[a-z0-9][a-z0-9._-]*$/, '用户名使用 3–64 位字母、数字、点、下划线或短横线');
@@ -15,6 +16,11 @@ const passwordSchema = z.string().min(12, '密码至少 12 个字符')
 const roleSchema = z.enum(['admin', 'visitor', 'share']);
 const sharePasswordSchema = z.string().min(6, '分享密码至少 6 个字符')
   .refine(value => Buffer.byteLength(value, 'utf8') <= 72, '分享密码不能超过 72 个 UTF-8 字节');
+export type ShareTarget =
+  | { kind: 'trip'; projectId: number; tripId: number }
+  | { kind: 'project'; contentId: number; ownerId: number }
+  | { kind: 'page'; pageId: string; ownerId: number; contentId?: number }
+  | { kind: 'content'; contentId: number };
 export const publicUser = (user: User) => ({
   id: user.id, username: user.username, role: user.role,
   mustChangePassword: user.mustChangePassword,
@@ -23,6 +29,7 @@ const managedUser = (user: User) => ({ ...publicUser(user), enabled: user.enable
   createdAt: user.createdAt, updatedAt: user.updatedAt });
 
 export async function bootstrapAdmin(db: PrismaClient, config: AppConfig) {
+  if (await db.config.findUnique({ where: { key: 'accounts.initialized' } })) return;
   await db.$transaction(async tx => {
     if (await tx.config.findUnique({ where: { key: 'accounts.initialized' } })) return;
     if (await tx.user.count() === 0) {
@@ -46,6 +53,8 @@ export async function bootstrapShare(db: PrismaClient, config: AppConfig) {
     await bcrypt.hash(sharePasswordSchema.parse(configuredPassword), 12);
   if (config.shareHashed && !/^\$2[aby]\$\d{2}\$[./A-Za-z0-9]{53}$/.test(passwordHash))
     throw new Error('SHARE_PASSWORD_HASH must be a bcrypt hash.');
+  const existing = await db.user.findUnique({ where: { username }, select: { id: true, role: true } });
+  if (existing?.role === 'share' && await db.config.findUnique({ where: { key: `accounts.share.initialized.${existing.id}` } })) return;
   await db.$transaction(async tx => {
     let user = await tx.user.findUnique({ where: { username } });
     if (!user) user = await tx.user.create({ data: { username, passwordHash, role: 'share', mustChangePassword: false } });
@@ -56,9 +65,10 @@ export async function bootstrapShare(db: PrismaClient, config: AppConfig) {
       await tx.config.create({ data: { key, value: '1' } });
       return;
     }
-    const selectors = config.shareProjectSelectors || ['爱的城堡'];
+    const selectors = config.shareProjectSelectors || [castleProjectTitle];
     const numericIds = selectors.filter(value => /^\d+$/.test(value)).map(Number);
     const names = selectors.filter(value => !/^\d+$/.test(value));
+    if (names.some(name => castleProjectTitles.includes(name))) names.push(...castleProjectTitles);
     const projects = await tx.content.findMany({ where: { isProject: true, OR: [
       ...(numericIds.length ? [{ id: { in: numericIds } }] : []),
       ...(names.length ? [{ title: { in: names } }] : []),
@@ -68,6 +78,72 @@ export async function bootstrapShare(db: PrismaClient, config: AppConfig) {
       await tx.config.create({ data: { key, value: '1' } });
     }
   }, { timeout: 15000 });
+}
+
+export function createShareToken(config: AppConfig, target: ShareTarget) {
+  return jwt.sign({ share: true, ...target }, config.secret, {
+    algorithm: 'HS256', expiresIn: '30d', issuer: 'yaocang-share', audience: 'yaocang-share-link',
+  });
+}
+
+export function readShareToken(config: AppConfig, token: string): ShareTarget {
+  const payload = jwt.verify(token, config.secret, {
+    algorithms: ['HS256'], issuer: 'yaocang-share', audience: 'yaocang-share-link',
+  });
+  if (typeof payload === 'string' || payload.share !== true) throw new Error('Invalid share token');
+  if (payload.kind === 'trip' && Number.isInteger(payload.projectId) && Number.isInteger(payload.tripId))
+    return { kind: 'trip', projectId: payload.projectId as number, tripId: payload.tripId as number };
+  if (payload.kind === 'content' && Number.isInteger(payload.contentId))
+    return { kind: 'content', contentId: payload.contentId as number };
+  if (payload.kind === 'project' && Number.isInteger(payload.contentId) && Number.isInteger(payload.ownerId))
+    return { kind: 'project', contentId: payload.contentId as number, ownerId: payload.ownerId as number };
+  if (payload.kind === 'page' && typeof payload.pageId === 'string' && /^[A-Za-z0-9_-]{16}$/.test(payload.pageId) && Number.isInteger(payload.ownerId))
+    return { kind: 'page', pageId: payload.pageId, ownerId: payload.ownerId as number,
+      ...(Number.isInteger(payload.contentId) ? { contentId: payload.contentId as number } : {}) };
+  throw new Error('Invalid share target');
+}
+
+export async function createShortShareToken(db: PrismaClient, config: AppConfig, target: ShareTarget) {
+  const code = randomBytes(12).toString('base64url');
+  await db.config.create({ data: { key: `share.link.${code}`, value: createShareToken(config, target) } });
+  return code;
+}
+
+export async function resolveShareToken(db: PrismaClient, config: AppConfig, value: string) {
+  let token = value;
+  if (/^[A-Za-z0-9_-]{16}$/.test(value)) {
+    const link = await db.config.findUnique({ where: { key: `share.link.${value}` } });
+    if (!link) throw new Error('Unknown share link');
+    token = link.value;
+  }
+  return { token, target: readShareToken(config, token) };
+}
+
+export async function sharePasswordMatches(db: PrismaClient, config: AppConfig, password: string) {
+  const user = await db.user.findUnique({ where: { username: usernameSchema.parse(config.shareUsername || 'user') } });
+  if (!user || user.role !== 'share' || !user.enabled || Buffer.byteLength(password, 'utf8') > 72) return false;
+  if (await bcrypt.compare(password, user.passwordHash)) return true;
+  // Numeric access codes can be pasted with surrounding spaces or entered with a full-width IME.
+  const numericCode = password.normalize('NFKC').trim();
+  return /^\d{6}$/.test(numericCode) && numericCode !== password && bcrypt.compare(numericCode, user.passwordHash);
+}
+
+export async function createShareGrant(db: PrismaClient, config: AppConfig, token: string) {
+  const user = await db.user.findUniqueOrThrow({ where: { username: config.shareUsername || 'user' } });
+  return jwt.sign({ token, fingerprint: createHash('sha256').update(user.passwordHash).digest('hex') }, config.secret, {
+    algorithm: 'HS256', expiresIn: '1d', issuer: 'yaocang-share-session', audience: 'yaocang-share-page',
+  });
+}
+
+export async function readShareGrant(db: PrismaClient, config: AppConfig, cookie: string): Promise<ShareTarget> {
+  const grant = jwt.verify(cookie, config.secret, {
+    algorithms: ['HS256'], issuer: 'yaocang-share-session', audience: 'yaocang-share-page',
+  });
+  if (typeof grant === 'string' || typeof grant.token !== 'string') throw new Error('Invalid share session');
+  const user = await db.user.findUnique({ where: { username: config.shareUsername || 'user' } });
+  if (!user?.enabled || user.role !== 'share' || grant.fingerprint !== createHash('sha256').update(user.passwordHash).digest('hex'))
+    throw new Error('Share access revoked');
+  return readShareToken(config, grant.token);
 }
 
 export function authentication(db: PrismaClient, config: AppConfig) {
@@ -137,7 +213,7 @@ export function authentication(db: PrismaClient, config: AppConfig) {
         await tx.accessLog.create({ data: { userId: user.id, ip: req.ip || 'unknown',
           userAgent: req.get('user-agent')?.slice(0, 512), action: 'login' } });
         return current;
-      });
+      }, { maxWait: 10000, timeout: 30000 });
       const token = jwt.sign({ sid }, config.secret, { subject: String(user.id), algorithm: 'HS256',
         expiresIn: '30d', issuer: 'yaocang', audience: 'yaocang-web' });
       res.cookie('yaocang_session', token, { ...cookieOptions, maxAge: 30 * 86400000 });

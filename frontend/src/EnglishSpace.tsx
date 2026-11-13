@@ -1,11 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { ArrowLeft, ArrowRight, BookOpen, ChevronLeft, ChevronRight, Volume2, Sparkles, Check, RotateCcw, House } from "lucide-react";
+import { ArrowLeft, ArrowRight, BookOpen, ChevronLeft, ChevronRight, Volume2, Sparkles, Check, RotateCcw, House, Square } from "lucide-react";
 import type { Content } from "./types";
 import { alphabet, englishDialogues, englishQuestion, englishScenes, type EnglishWord } from "./englishModel";
 import "./english.css";
 import { ContentBody } from "./components";
 import { api } from "./api";
+import { castleProjectTitle } from "./projectNavigation";
+import { englishAudioKey, readPracticeProgress, type PracticeProgress } from "./englishAudio";
+import { useEnglishAudio } from "./useEnglishAudio";
+import { EnglishPractice } from "./EnglishPractice";
 
 const views = ["字母卡", "场景词", "二选一", "小对话", "课程文档"] as const;
 type View = typeof views[number];
@@ -32,6 +36,28 @@ export function EnglishSpace({ project, userId, onBack, onCastle }: {
   const [dialogueIndex, setDialogueIndex] = useState(0);
   const [lineIndex, setLineIndex] = useState(0);
   const [notice, setNotice] = useState("");
+  const [practice, setPractice] = useState<PracticeProgress>(() => {
+    try { return readPracticeProgress(localStorage.getItem(`${storageKey}:practice`)); }
+    catch { return {}; }
+  });
+  const audio = useEnglishAudio(text => setPractice(items => {
+    const key = englishAudioKey(text);
+    return { ...items, [key]: { said: items[key]?.said ?? false, read: items[key]?.read ?? false, heard: true } };
+  }));
+  const { speak, stop } = audio;
+  function completePractice(text: string, step: "said" | "read") {
+    setPractice(items => {
+      const key = englishAudioKey(text);
+      const current = items[key];
+      if (!current?.heard || (step === "read" && !current.said)) return items;
+      return { ...items, [key]: { ...current, [step]: true } };
+    });
+  }
+  useEffect(() => {
+    try { localStorage.setItem(`${storageKey}:practice`, JSON.stringify(practice)); }
+    catch { setNotice("本次练习可以继续，浏览器暂时无法保存记录。"); }
+  }, [practice, storageKey]);
+  useEffect(() => { stop(); }, [view, sceneIndex, index, round, dialogueIndex, stop]);
   const [mastered, setMastered] = useState<string[]>(() => {
     try {
       const value: unknown = JSON.parse(localStorage.getItem(storageKey) || "[]");
@@ -43,7 +69,6 @@ export function EnglishSpace({ project, userId, onBack, onCastle }: {
     try { localStorage.setItem(storageKey, JSON.stringify(mastered)); }
     catch { setNotice("本次进度可以继续使用，浏览器暂时无法保存。"); }
   }, [mastered, storageKey]);
-  useEffect(() => () => { if ("speechSynthesis" in window) window.speechSynthesis.cancel(); }, []);
   useEffect(() => {
     if (view === "课程文档" && document) void api("/log", {
       method: "POST", body: JSON.stringify({ contentId: document.id, action: "view_text" }),
@@ -55,22 +80,8 @@ export function EnglishSpace({ project, userId, onBack, onCastle }: {
   const question = useMemo(() => englishQuestion(englishScenes[sceneIndex].words, round), [sceneIndex, round]);
   const dialogue = englishDialogues[dialogueIndex];
   const correct = selection === question.answer.en;
-  function speak(text: string) {
-    if (!("speechSynthesis" in window)) { setNotice("当前浏览器不支持发音，可以请大人带读，或换用支持语音的浏览器。"); return; }
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "en-US";
-    utterance.rate = 0.75;
-    const voice = window.speechSynthesis.getVoices().find(v => v.lang.startsWith("en"));
-    if (voice) utterance.voice = voice;
-    utterance.onerror = event => {
-      if (event.error !== "canceled" && event.error !== "interrupted") setNotice("暂时无法播放，请检查设备的英语语音和音量，或请大人带读。");
-    };
-    setNotice("");
-    window.speechSynthesis.speak(utterance);
-  }
   function changeView(next: View) {
-    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+    stop();
     const nextParams = new URLSearchParams(params);
     nextParams.set("englishView", next);
     setParams(nextParams);
@@ -84,7 +95,7 @@ export function EnglishSpace({ project, userId, onBack, onCastle }: {
   return <section className="english-space" aria-label="英语学习及实战">
     <nav className="english-breadcrumbs" aria-label="英语项目导航">
       <button onClick={onBack}><ArrowLeft size={16} /> 返回通识</button>
-      <button onClick={onCastle}><House size={16} /> 爱的城堡</button>
+      <button onClick={onCastle}><House size={16} /> {castleProjectTitle}</button>
     </nav>
     <header className="english-heading">
       <div><p>HELLO, LITTLE EXPLORER</p><h1>英语学习及实战</h1><span>从第一句 Hello 开始，今天也勇敢开口。</span></div>
@@ -92,11 +103,17 @@ export function EnglishSpace({ project, userId, onBack, onCastle }: {
     </header>
     <nav className="english-modes" aria-label="英语学习模式">{views.map((item, i) =>
       <button key={item} aria-pressed={view === item} onClick={() => changeView(item)}><span>{String(i + 1).padStart(2, "0")}</span>{item}</button>)}</nav>
+    {view !== "课程文档" && <div className="english-audio-toolbar">
+      <div role="group" aria-label="发音速度">{[[1, "正常"], [0.75, "慢速"]].map(([value, label]) => <button key={value} aria-pressed={audio.rate === value} onClick={() => { stop(); audio.setRate(Number(value)); }}>{label}</button>)}</div>
+      <span role="status">{audio.playing ? <><Volume2 size={16} /> 正在播放：<span lang="en">{audio.playing}</span></> : "准备好，听一听"}</span>
+      <button className="english-stop" disabled={!audio.playing} onClick={stop} title="停止播放"><Square size={16} />停止</button>
+    </div>}
     {notice && <p className="english-notice" role="status">{notice}</p>}
+    {audio.notice && <p className="english-notice" role="alert">{audio.notice}</p>}
     {(view === "场景词" || view === "二选一") && <div className="english-scenes" role="group" aria-label="词汇场景">
       {englishScenes.map((s, i) => <button key={s.id} aria-pressed={sceneIndex === i} onClick={() => {
         setSceneIndex(i); setIndex(0); setRound(0); setSelection(null);
-        if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+        stop();
       }}>{s.label}</button>)}
     </div>}
     {view === "字母卡" && <div className="english-alphabet" role="group" aria-label="26 个字母">
@@ -121,6 +138,7 @@ export function EnglishSpace({ project, userId, onBack, onCastle }: {
         {view === "字母卡" && <p>字母名称与单词首音不总相同；先认识它们，再慢慢学习拼读。</p>}
       </aside>
     </div>}
+    {(view === "字母卡" || view === "场景词") && <EnglishPractice text={word.en} translation={word.zh} progress={practice} onSpeak={speak} onComplete={completePractice} />}
     {view === "二选一" && <div className="english-quiz">
       <p className="english-label">第 {round + 1} 题 · {scene.label}</p><Illustration word={question.answer} />
       <h2>“{question.answer.zh}”用英语怎么说？</h2>
@@ -129,15 +147,17 @@ export function EnglishSpace({ project, userId, onBack, onCastle }: {
       <div className="english-feedback" role="status">{selection ? correct ? "答对了！再听一遍，大声说出来。" : "再想一想，你可以重新选择。" : "选一个答案试试。"}</div>
       <div className="english-quiz-actions"><button className="english-secondary" onClick={() => speak(question.answer.en)}><Volume2 size={18} /> {selection && !correct ? "听听提示" : "听一听"}</button>
         <button className="english-primary" disabled={!correct} onClick={() => { setRound(r => r + 1); setSelection(null); }}>下一题 <ArrowRight size={18} /></button></div>
+      {correct && <EnglishPractice text={question.answer.en} translation={question.answer.zh} progress={practice} onSpeak={speak} onComplete={completePractice} />}
     </div>}
     {view === "小对话" && <div className="english-dialogue">
       <div className="english-scenes" role="group" aria-label="对话场景">{englishDialogues.map((d, i) => <button key={d.title} aria-pressed={dialogueIndex === i} onClick={() => { setDialogueIndex(i); setLineIndex(0); }}>{d.title}</button>)}</div>
       <h2><span aria-hidden="true">{dialogue.picture}</span> {dialogue.title}</h2>
       <ol>{dialogue.lines.map(([who, en, zh], i) => <li key={en} className={lineIndex === i ? "active" : ""}>
-        <span className="english-speaker">{who}</span><div><strong>{en}</strong><p>{zh}</p></div>
+        <span className="english-speaker">{who}</span><div><strong lang="en">{en}</strong><p>{zh}</p></div>
         <button className="english-audio" aria-label={`听对话第 ${i + 1} 句`} title="听这一句" onClick={() => { setLineIndex(i); speak(en); }}><Volume2 size={22} /></button>
       </li>)}</ol>
       <button className="english-primary" onClick={() => { const next = (lineIndex + 1) % dialogue.lines.length; setLineIndex(next); speak(dialogue.lines[next][1]); }}>换你说下一句 <ArrowRight size={18} /></button>
+      <EnglishPractice text={dialogue.lines[lineIndex][1]} translation={dialogue.lines[lineIndex][2]} progress={practice} onSpeak={speak} onComplete={completePractice} />
     </div>}
     {view === "课程文档" && <>
       <nav className="english-documents" aria-label="英语课程文档">{documents.map(doc => <button key={doc.id} aria-current={document?.id === doc.id ? "page" : undefined} onClick={() => {
@@ -146,6 +166,6 @@ export function EnglishSpace({ project, userId, onBack, onCastle }: {
       {document ? <article className="english-document"><ContentBody key={document.id} content={document} /></article> : <p>暂无课程文档。</p>}
     </>}
     <footer className="english-footer"><span><Check size={16} /> 每一个愿意开口的瞬间，都值得记录。</span>
-      <button onClick={() => { if (window.confirm("清空本账号在此浏览器的英语练习进度？")) setMastered([]); }}><RotateCcw size={15} /> 重置练习进度</button></footer>
+      <button onClick={() => { if (window.confirm("清空本账号在此浏览器的英语练习进度？")) { stop(); setMastered([]); setPractice({}); } }}><RotateCcw size={15} /> 重置练习进度</button></footer>
   </section>;
 }

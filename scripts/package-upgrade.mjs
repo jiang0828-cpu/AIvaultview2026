@@ -5,6 +5,7 @@ import { createHash } from 'node:crypto';
 import { PrismaClient } from '@prisma/client';
 
 const baselineRoot = resolve('output/deploy/20261111T085831Z/staging/private');
+const baselineReleaseData = process.env.BASELINE_RELEASE_DATA;
 const sourceRoot = resolve(process.env.RELEASE_SOURCE_ROOT || '.');
 const snapshot = process.env.LOCAL_RELEASE_SNAPSHOT;
 if (!snapshot) throw new Error('Set LOCAL_RELEASE_SNAPSHOT to the verified local backup database.');
@@ -38,11 +39,16 @@ for (const name of ['apply-release-data.mjs', 'release-merge.mjs', 'verify-produ
 
 const url = file => `file:${resolve(file).replaceAll('\\', '/')}`;
 const local = new PrismaClient({ datasources: { db: { url: url(snapshot) } } });
-const baseline = new PrismaClient({ datasources: { db: { url: url(join(baselineRoot, 'data/vaultview.db')) } } });
+const previousRelease = baselineReleaseData
+  ? JSON.parse(await readFile(resolve(baselineReleaseData), 'utf8')) : null;
+if (previousRelease && (!Array.isArray(previousRelease.local?.content) || !Array.isArray(previousRelease.local?.literaryWriter)))
+  throw new Error('Previous release data is missing the required baseline tables.');
+const baseline = previousRelease ? null
+  : new PrismaClient({ datasources: { db: { url: url(join(baselineRoot, 'data/vaultview.db')) } } });
 const data = { version, baseline: {}, local: {} };
 try {
   for (const table of ['content', 'literaryWriter']) {
-    data.baseline[table] = await baseline[table].findMany();
+    data.baseline[table] = previousRelease ? previousRelease.local[table] : await baseline[table].findMany();
     data.local[table] = await local[table].findMany();
   }
   for (const table of ['researchStudy', 'researchTask', 'researchTaskVersion', 'researchSynthesis', 'researchSynthesisVersion',
@@ -54,7 +60,7 @@ try {
   // sessions, health workspaces or other users' private data enter the payload.
   data.local.tripPlan = (await local.tripPlan.findMany({ where: { user: { username: 'admin', role: 'admin' } },
     include: { user: { select: { username: true } } } })).map(({ userId: _userId, user, ...row }) => ({ ...row, ownerUsername: user.username }));
-} finally { await local.$disconnect(); await baseline.$disconnect(); }
+} finally { await local.$disconnect(); await baseline?.$disconnect(); }
 await writeFile(join(payload, 'data.json'), JSON.stringify(data));
 const media = [];
 async function mediaFiles(directory, prefix = '') {

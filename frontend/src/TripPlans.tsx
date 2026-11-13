@@ -124,6 +124,7 @@ export function TripPlans({ projectId }: { projectId: number }) {
           plan={activePlan}
           onBack={() => showGuide(null)}
           onEdit={() => setEditing(activePlan)}
+          projectId={projectId}
         />
       ) : (
         <>

@@ -1,40 +1,20 @@
+import { castleProjectTitle } from "../src/castleProjectName.js";
+import { learningBasics } from "./learning-basics.js";
+
 export const castleProject = {
-  title: "爱的城堡",
+  title: castleProjectTitle,
   description:
-    "从通识学习到专业成长，再到运动习惯，收藏每一次认真生活。",
+    "以基本信息为共同依据，安排通识学习、专业成长与运动习惯。",
   topics: ["长期性", "learning", "health"],
   sortOrder: 60,
   sections: [
+    { ...learningBasics, additionalSections: undefined },
     {
       title: "通识",
       summary: "从问题出发，积累阅读、思考与通识学习笔记。",
       topics: ["learning", "reading"],
-      documentTitle: "通识学习与阅读笔记",
-      description: `# 通识学习与阅读笔记
-
-## 学习主题与问题
-
-| 学习主题 | 想弄懂的问题 | 学习日期 |
-| --- | --- | --- |
-| | | |
-
-## 资料来源与阅读摘记
-
-| 资料名称 | 作者或机构 | 来源链接 | 页码或位置 | 阅读摘记 |
-| --- | --- | --- | --- | --- |
-| | | | | |
-
-## 个人理解
-
-| 我的理解 | 仍有疑问 | 需要核验的观点 |
-| --- | --- | --- |
-| | | |
-
-## 下一步
-
-| 下一步行动 | 计划日期 | 回顾记录 |
-| --- | --- | --- |
-| | | |`,
+      documentTitle: null,
+      description: "",
     },
     {
       title: "专业",

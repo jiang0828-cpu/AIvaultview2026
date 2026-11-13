@@ -18,7 +18,7 @@ export async function api<T>(
   });
   const body = response.status === 204 ? null : await response.json();
   if (!response.ok) {
-    if (response.status === 401 && path !== '/auth/login')
+    if (response.status === 401 && path !== '/auth/login' && !path.startsWith('/share-links/'))
       window.dispatchEvent(new Event("session-expired"));
     throw new ApiError(
       response.status,

@@ -12,6 +12,7 @@ import { createApp } from "../src/app.js";
 import { seedCastle } from "../prisma/seed-castle.js";
 import { castleProject } from "../prisma/castle.js";
 import { seedEnglish } from "../prisma/seed-english.js";
+import { ensureLearningBasics } from "../prisma/learning-basics.js";
 
 let directory: string;
 let db: PrismaClient;
@@ -54,9 +55,10 @@ test("castle seed creates current sections and English materials, preserves edit
       },
     },
   });
-  assert.equal(project.title, "爱的城堡");
+  assert.equal(project.title, "日常生活 | 学 | 德智体美用");
   assert.equal(project.parent?.title, "生活场景");
   assert.equal(project.scene, "life");
+  assert.deepEqual(project.children.map(item => item.title), ["基本信息", "通识", "专业", "运动"]);
   assert.deepEqual(
     project.children.map((item) => item.title),
     castleProject.sections.map((section) => section.title),
@@ -65,6 +67,7 @@ test("castle seed creates current sections and English materials, preserves edit
   assert.ok(professional);
   const general = project.children.find(item => item.title === "通识")!;
   assert.ok(general.children.some(item => item.title === "英语学习及实战"));
+  assert.equal(general.children.some(item => item.title === "通识学习与阅读笔记"), false);
   assert.deepEqual(
     professional.children.filter((item) => item.type === "folder").map((item) => item.title),
     ["成长计划", "阶段方案", "成果展示"],
@@ -76,7 +79,8 @@ test("castle seed creates current sections and English materials, preserves edit
   for (const [index, folder] of project.children.entries()) {
     assert.equal(folder.type, "folder");
     assert.equal(folder.sortOrder, index);
-    assert.equal(folder.children.length, folder.title === "专业" ? 7 : folder.title === "通识" ? 2 : 1);
+    assert.equal(folder.children.length, folder.title === "专业" ? 7 : 1);
+    if (!castleProject.sections[index].documentTitle) continue;
     assert.equal(folder.children[0].type, "text");
     assert.equal(
       folder.children[0].title,
@@ -109,14 +113,15 @@ test("castle seed creates current sections and English materials, preserves edit
       assert.ok(sectionFolders[2].children.some((item) => item.title.includes("评分量规")));
     }
   }
-  const edited = project.children[0].children[0];
+  const edited = professional.children[0];
   await db.content.update({
     where: { id: edited.id },
     data: { description: "User revision", sortOrder: 7 },
   });
   const count = await db.content.count();
-  await db.content.update({ where: { id }, data: { topics: ["临时性", "family", "life"] } });
+  await db.content.update({ where: { id }, data: { title: "爱的城堡", topics: ["临时性", "family", "life"] } });
   assert.equal(await seedCastle(db), id);
+  assert.equal((await db.content.findUniqueOrThrow({ where: { id } })).title, castleProject.title);
   assert.deepEqual((await db.content.findUniqueOrThrow({ where: { id } })).topics, ["临时性", "family", "life"]);
   assert.equal(await db.content.count(), count);
   const kept = await db.content.findUniqueOrThrow({ where: { id: edited.id } });
@@ -132,6 +137,25 @@ test("castle seed creates current sections and English materials, preserves edit
   });
   await seedCastle(db);
   assert.equal(await db.content.count(), count);
+});
+
+test("targeted basic-information initialization preserves edits and does not recreate or change learning content", async () => {
+  const project = await db.content.findFirstOrThrow({ where: { title: castleProject.title, isProject: true } });
+  const before = await db.content.findMany({ where: { parentId: project.id }, orderBy: { sortOrder: "asc" } });
+  const baseline = await db.$transaction(tx => ensureLearningBasics(tx, project.id));
+  const original = await db.content.findUniqueOrThrow({ where: { id: baseline.documentId } });
+  await db.content.update({ where: { id: original.id }, data: { title: "我的基本信息", description: "<!-- LEARNING_BASELINE_V1 -->\n本人已编辑，不覆盖。" } });
+  const count = await db.content.count();
+  assert.deepEqual(await db.$transaction(tx => ensureLearningBasics(tx, project.id)), baseline);
+  await seedCastle(db);
+  assert.equal(await db.content.count(), count);
+  const kept = await db.content.findUniqueOrThrow({ where: { id: original.id } });
+  assert.equal(kept.description, "<!-- LEARNING_BASELINE_V1 -->\n本人已编辑，不覆盖。");
+  for (const folder of before.filter(item => item.title !== "基本信息")) {
+    const after = await db.content.findUniqueOrThrow({ where: { id: folder.id } });
+    assert.equal(after.description, folder.description);
+    assert.equal(after.parentId, folder.parentId);
+  }
 });
 
 test("English seed preserves edited lessons and restores missing lessons without creating separate access grants", async () => {
@@ -175,10 +199,13 @@ test("castle tree is authenticated and administrators can edit templates and add
     (item: { title: string }) => item.title === "生活场景",
   );
   const project = scene.children.find(
-    (item: { title: string }) => item.title === "爱的城堡",
+    (item: { title: string }) => item.title === castleProject.title,
   );
   assert.equal(project.children.length, castleProject.sections.length);
-  const folder = project.children[0];
+  const folder = project.children.find((item: { title: string }) => item.title === "通识");
+  const baseline = project.children.find((item: { title: string }) => item.title === "基本信息").children[0];
+  await visitor.get(`/api/contents/${baseline.id}`).expect(200);
+  await visitor.put(`/api/contents/${baseline.id}`).send({ title: baseline.title, type: "text", description: "Denied" }).expect(403);
   const english = folder.children.find((item: { title: string }) => item.title === "英语学习及实战");
   assert.ok(english);
   await visitor.get(`/api/contents/${english.children[0].id}`).expect(200);
@@ -186,8 +213,9 @@ test("castle tree is authenticated and administrators can edit templates and add
   await db.projectAccess.delete({ where: { userId_projectId: { userId: visitorUser.id, projectId: project.id } } });
   await visitor.get(`/api/contents/${english.id}`).expect(404);
   await visitor.get(`/api/contents/${english.children[0].id}`).expect(404);
+  await visitor.get(`/api/contents/${baseline.id}`).expect(404);
   await db.projectAccess.create({ data: { userId: visitorUser.id, projectId: project.id } });
-  const template = folder.children[0];
+  const template = english.children[0];
   await visitor
     .post("/api/contents")
     .send({ title: "Denied", type: "text", parentId: folder.id })
@@ -202,13 +230,16 @@ test("castle tree is authenticated and administrators can edit templates and add
     .post("/api/auth/login")
     .send({ password: config.adminPassword, username: "admin" })
     .expect(200);
+  await admin.put(`/api/contents/${baseline.id}`).send({ title: baseline.title, type: "text", parentId: baseline.parentId,
+    topics: ["family", "planning"], description: "<!-- LEARNING_BASELINE_V1 -->\n# 已确认的基本信息\n仅安排周末。" }).expect(200);
+  assert.match((await visitor.get(`/api/contents/${baseline.id}`).expect(200)).body.description, /仅安排周末/);
   await admin
     .put(`/api/contents/${template.id}`)
     .send({
       title: template.title,
       type: "text",
       description: "# Updated plan",
-      parentId: folder.id,
+      parentId: english.id,
       topics: ["family", "planning"],
     })
     .expect(200);

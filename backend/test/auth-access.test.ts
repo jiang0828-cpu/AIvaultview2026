@@ -9,7 +9,7 @@ import request from 'supertest';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { createApp } from '../src/app.js';
-import { bootstrapAdmin, bootstrapShare } from '../src/auth.js';
+import { bootstrapAdmin, bootstrapShare, createShareToken, createShortShareToken } from '../src/auth.js';
 import { projectRoot } from '../src/config.js';
 import { seedTestUsers, type TestConfig } from './helpers.js';
 
@@ -122,6 +122,225 @@ test('share bootstrap creates a read-only account with only configured project g
   await agent.get('/api/auth/me').expect(401);
   const reset = await login('user', '654321');
   assert.equal((await reset.get('/api/auth/me').expect(200)).body.user.mustChangePassword, false);
+});
+
+test('share bootstrap resolves the legacy castle selector after the project is renamed', async () => {
+  const project = await db.content.create({ data: {
+    title: '日常生活 | 学 | 德智体美用', type: 'folder', scene: 'life', isProject: true,
+  } });
+  await bootstrapShare(db, { ...config, shareProjectSelectors: ['爱的城堡'] });
+  const user = await db.user.findUniqueOrThrow({ where: { username: 'user' } });
+  assert.deepEqual((await db.projectAccess.findMany({ where: { userId: user.id } })).map(row => row.projectId), [project.id]);
+});
+
+test('single-page share links require the share password and return only the bound target', async () => {
+  const root = await db.content.create({ data: { title: 'Share target root', type: 'folder' } });
+  const allowed = await db.content.create({ data: { title: 'Allowed share project', type: 'folder', isProject: true, parentId: root.id, topics: ['长期性', 'family', 'life'] } });
+  const hidden = await db.content.create({ data: { title: 'Hidden share project', type: 'folder', isProject: true, parentId: root.id, topics: ['阶段性', 'work', 'tools'] } });
+  const note = await db.content.create({ data: { title: 'Only this note', type: 'text', parentId: allowed.id, description: '# Shared note' } });
+  const hiddenNote = await db.content.create({ data: { title: 'Do not leak', type: 'text', parentId: hidden.id, description: 'secret' } });
+  const owner = await db.user.findUniqueOrThrow({ where: { username: 'visitor' } });
+  await db.projectAccess.create({ data: { userId: owner.id, projectId: allowed.id } });
+  await bootstrapShare(db, { ...config, shareUsername: 'user', sharePassword: '123456', shareHashed: false, shareProjectSelectors: [String(allowed.id)] });
+  const admin = await login();
+  const created = await admin.post('/api/share-links').send({ kind: 'content', contentId: note.id }).expect(201);
+  assert.match(created.body.url, /\/s\/[A-Za-z0-9_-]{16}$/);
+  assert.ok(created.body.url.length < 80);
+  const token = new URL(created.body.url).pathname.split('/').at(-1);
+  await request(app).post('/api/share-links/verify').send({ token, password: 'wrong-password' }).expect(401);
+  const verified = await request(app).post('/api/share-links/verify').send({ token, password: '123456' }).expect(200);
+  assert.equal(verified.body.kind, 'content');
+  assert.equal(verified.body.content.title, note.title);
+  assert.equal(verified.body.content.description, note.description);
+  assert.equal(JSON.stringify(verified.body).includes(hiddenNote.title), false);
+  await request(app).post('/api/share-links/verify').send({ token: token + 'x', password: '123456' }).expect(401);
+  await request(app).get(`/api/contents/${hiddenNote.id}`).expect(401);
+});
+
+test('single-page media cookie allows exact dependencies and never grants library identity', async () => {
+  const { a, docA, docB } = await projects();
+  await bootstrapShare(db, { ...config, shareProjectSelectors: [String(a.id)] });
+  const token = await createShortShareToken(db, config, { kind: 'content', contentId: docA.id });
+  const reader = request.agent(app);
+  await reader.get(`${mediaUrl}/a.mp4`).expect(401);
+  const verified = await reader.post('/api/share-links/verify').send({ token, password: '123456' }).expect(200);
+  assert.equal(verified.body.content.id, docA.id);
+  const cookies = verified.get('Set-Cookie') || [];
+  assert.ok(cookies.some((cookie: string) => cookie.startsWith('yaocang_page_share=') && /HttpOnly/.test(cookie)));
+  await reader.get(`${mediaUrl}/a.mp4`).set('Range', 'bytes=0-3').expect(206);
+  for (const file of ['index.m3u8', 'chunk.ts', 'key.bin', 'research.json', encodeURIComponent('资料.md'), 'shared.png'])
+    await reader.get(`${mediaUrl}/${file}`).expect(200);
+  await reader.get(`${mediaUrl}/b.mp4`).expect(401);
+  await reader.get('/api/contents').expect(401);
+  await reader.get(`/api/contents/${docB.id}`).expect(401);
+  await reader.get('/api/auth/me').expect(401);
+  await reader.post('/api/share-links').send({ kind: 'content', contentId: docB.id }).expect(401);
+  await reader.put(`/api/contents/${docA.id}`).send({ title: 'Denied', type: 'text' }).expect(401);
+  await db.user.update({ where: { username: 'user' }, data: { enabled: false } });
+  await reader.get(`${mediaUrl}/a.mp4`).expect(401);
+});
+
+test('project and folder shares expose only the chosen subtree and its media without a library session', async () => {
+  const { a, b, docA, docB } = await projects();
+  const folder = await db.content.create({ data: { title: 'Shared folder', type: 'folder', parentId: a.id } });
+  const note = await db.content.create({ data: { title: 'Folder note', type: 'text', parentId: folder.id, description: 'Scoped note' } });
+  await bootstrapShare(db, config);
+  const admin = await login();
+  for (const root of [a, folder]) {
+    const created = await admin.post('/api/share-links').send({ kind: 'project', contentId: root.id }).expect(201);
+    assert.match(created.body.url, /\/s\/[A-Za-z0-9_-]{16}$/);
+    const token = new URL(created.body.url).pathname.split('/').at(-1);
+    const reader = request.agent(app);
+    const result = await reader.post('/api/share-links/verify').send({ token, password: '123456' }).expect(200);
+    assert.equal(result.body.kind, 'project');
+    assert.equal(result.body.rootId, root.id);
+    assert.equal(result.body.items.length, 1);
+    assert.equal(result.body.items[0].parentId, null);
+    const serialized = JSON.stringify(result.body);
+    assert.ok(serialized.includes(note.title));
+    assert.ok(!serialized.includes(b.title + '"'));
+    assert.ok(!serialized.includes(docB.title));
+    await reader.get('/api/contents').expect(401);
+    await reader.get('/api/auth/me').expect(401);
+    await reader.put(`/api/contents/${note.id}`).send({ title: 'Blocked' }).expect(401);
+    await reader.get(`${mediaUrl}/b.mp4`).expect(401);
+    await reader.get(`${mediaUrl}/unowned.png`).expect(401);
+    await reader.get(`${mediaUrl}/a.mp4`).expect(root.id === a.id ? 200 : 401);
+    assert.equal(serialized.includes(docA.title), root.id === a.id);
+  }
+});
+
+test('project shares follow current content, reject inaccessible roots, and stop after the owner loses access', async () => {
+  const { a, b, docA } = await projects();
+  await bootstrapShare(db, config);
+  const visitor = await login('visitor', config.sitePassword);
+  await visitor.post('/api/share-links').send({ kind: 'project', contentId: b.id }).expect(404);
+  await visitor.post('/api/share-links').send({ kind: 'project', contentId: docA.id }).expect(400);
+  const created = await visitor.post('/api/share-links').send({ kind: 'project', contentId: a.id }).expect(201);
+  const token = new URL(created.body.url).pathname.split('/').at(-1);
+  await db.content.update({ where: { id: docA.id }, data: { title: 'Updated live document' } });
+  const reader = request.agent(app);
+  const result = await reader.post('/api/share-links/verify').send({ token, password: '123456' }).expect(200);
+  assert.ok(JSON.stringify(result.body).includes('Updated live document'));
+  const owner = await db.user.findUniqueOrThrow({ where: { username: 'visitor' } });
+  await db.projectAccess.deleteMany({ where: { userId: owner.id } });
+  await request(app).post('/api/share-links/verify').send({ token, password: '123456' }).expect(404);
+  await reader.get(`${mediaUrl}/a.mp4`).expect(404);
+});
+
+test('page snapshots preserve only supplied visible content, isolate resources, and never expose author metadata', async () => {
+  const { a, docA, docB } = await projects();
+  await bootstrapShare(db, config);
+  const admin = await login();
+  const page = { title: 'Current course page', nodes: [
+    { tag: 'h2', attrs: {}, children: ['Visible lesson'] },
+    { tag: 'p', attrs: {}, children: ['Only this view'] },
+    { tag: 'img', attrs: { src: `${mediaUrl}/shared.png`, alt: 'Course image' }, children: [] },
+  ] };
+  const created = await admin.post('/api/share-links').send({ kind: 'page', contentId: a.id, page }).expect(201);
+  const token = new URL(created.body.url).pathname.split('/').at(-1);
+  const reader = request.agent(app);
+  await reader.post('/api/share-links/verify').send({ token, password: 'bad-password' }).expect(401);
+  const result = await reader.post('/api/share-links/verify').send({ token, password: '123456' }).expect(200);
+  assert.equal(result.body.kind, 'page');
+  assert.deepEqual(result.body.page.nodes, page.nodes);
+  assert.ok(result.body.page.capturedAt);
+  assert.equal(result.body.page.media, undefined);
+  assert.equal(result.body.ownerId, undefined);
+  assert.ok(!JSON.stringify(result.body).includes(docA.title));
+  assert.ok(!JSON.stringify(result.body).includes(docB.title));
+  await reader.get(`${mediaUrl}/shared.png`).expect(200);
+  await reader.get(`${mediaUrl}/a.mp4`).expect(401);
+  await reader.get('/api/contents').expect(401);
+  await reader.get('/api/trip-plans?projectId=' + a.id).expect(401);
+  await db.user.update({ where: { username: 'admin' }, data: { enabled: false } });
+  await request(app).post('/api/share-links/verify').send({ token, password: '123456' }).expect(404);
+  await reader.get(`${mediaUrl}/shared.png`).expect(401);
+});
+
+test('page snapshots reject executable markup, foreign resources, oversized and deeply nested input', async () => {
+  const { a, b } = await projects();
+  const visitor = await login('visitor', config.sitePassword);
+  const send = (node: unknown, contentId = a.id) => visitor.post('/api/share-links').send({ kind: 'page', contentId, page: { title: 'Page', nodes: [node] } });
+  for (const node of [
+    { tag: 'script', attrs: {}, children: ['alert(1)'] },
+    { tag: 'a', attrs: { href: 'javascript:alert(1)' }, children: ['Unsafe'] },
+    { tag: 'img', attrs: { src: '//example.com/image.png' }, children: [] },
+    { tag: 'img', attrs: { src: `${mediaUrl}/shared.png`, onerror: 'alert(1)' }, children: [] },
+    { tag: 'div', attrs: { style: 'background-color:url(https://example.com)' }, children: [] },
+    { tag: 'div', attrs: {}, children: ['x'.repeat(100001)] },
+  ]) await send(node).expect(400);
+  await send({ tag: 'img', attrs: { src: `${mediaUrl}/b.mp4` }, children: [] }).expect(403);
+  await send('Cannot share inaccessible project', b.id).expect(404);
+  let nested: unknown = 'Too deep';
+  for (let index = 0; index < 100; index++) nested = { tag: 'div', attrs: {}, children: [nested] };
+  await send(nested).expect(400);
+  await visitor.post('/api/share-links').send({ kind: 'page', page: { title: 'Too large', nodes: Array(10).fill('x'.repeat(80000)) } }).expect(413);
+});
+
+test('trip sharing binds the owner and project and exposes one trip without its sibling records', async () => {
+  const { a, b } = await projects();
+  const owner = await db.user.findUniqueOrThrow({ where: { username: 'visitor' } });
+  const trip = await db.tripPlan.create({ data: { userId: owner.id, projectId: a.id, title: 'Shared trip', destination: 'Nanjing', startDate: '2026-11-13', endDate: '2026-11-14', itinerary: [], notes: 'One itinerary' } });
+  await db.tripPlan.create({ data: { userId: owner.id, projectId: a.id, title: 'Private sibling', destination: 'Private', startDate: '2026-11-13', endDate: '2026-11-14', itinerary: [] } });
+  await bootstrapShare(db, { ...config, shareProjectSelectors: [String(a.id)] });
+  const reader = await login('visitor', config.sitePassword);
+  const admin = await login();
+  await admin.post('/api/share-links').send({ kind: 'trip', projectId: a.id, tripId: trip.id }).expect(404);
+  await reader.post('/api/share-links').send({ kind: 'trip', projectId: b.id, tripId: trip.id }).expect(404);
+  const created = await reader.post('/api/share-links').send({ kind: 'trip', projectId: a.id, tripId: trip.id }).expect(201);
+  const token = new URL(created.body.url).pathname.split('/').at(-1);
+  const shared = await request(app).post('/api/share-links/verify').send({ token, password: '123456' }).expect(200);
+  assert.equal(shared.body.plan.id, trip.id);
+  assert.equal(shared.body.plan.notes, trip.notes);
+  assert.equal(shared.body.plan.userId, undefined);
+  assert.equal(JSON.stringify(shared.body).includes('Private sibling'), false);
+  const expired = jwt.sign({ share: true, kind: 'trip', projectId: a.id, tripId: trip.id }, config.secret,
+    { expiresIn: -1, issuer: 'yaocang-share', audience: 'yaocang-share-link' });
+  await request(app).post('/api/share-links/verify').send({ token: expired, password: '123456' }).expect(401);
+});
+
+test('share password failures are bounded per IP across different signed targets', async () => {
+  const { a, docA, docB } = await projects();
+  await bootstrapShare(db, { ...config, shareProjectSelectors: [String(a.id)] });
+  for (let index = 0; index < 5; index++) {
+    const token = createShareToken(config, { kind: 'content', contentId: index % 2 ? docA.id : docB.id });
+    await request(app).post('/api/share-links/verify').send({ token, password: 'wrong' }).expect(401);
+  }
+  const token = createShareToken(config, { kind: 'content', contentId: docA.id });
+  const result = await request(app).post('/api/share-links/verify').send({ token, password: '123456' }).expect(429);
+  assert.ok(Number(result.headers['retry-after']) > 0);
+});
+
+test('short shares survive app recreation, preserve expiry checks and accept legacy links', async () => {
+  const { a, docA } = await projects();
+  await bootstrapShare(db, { ...config, shareProjectSelectors: [String(a.id)] });
+  const target = { kind: 'content' as const, contentId: docA.id };
+  const legacy = createShareToken(config, target);
+  const code = await createShortShareToken(db, config, target);
+  assert.match(code, /^[A-Za-z0-9_-]{16}$/);
+  assert.notEqual(await createShortShareToken(db, config, target), code);
+  app = createApp(db, config);
+  for (const token of [code, legacy]) {
+    const verified = await request(app).post('/api/share-links/verify').send({ token, password: '123456' }).expect(200);
+    assert.equal(verified.body.content.id, docA.id);
+  }
+  const expired = jwt.sign({ share: true, ...target }, config.secret,
+    { expiresIn: -1, issuer: 'yaocang-share', audience: 'yaocang-share-link' });
+  await db.config.update({ where: { key: `share.link.${code}` }, data: { value: expired } });
+  await request(app).post('/api/share-links/verify').send({ token: code, password: '123456' }).expect(401);
+  await db.config.delete({ where: { key: `share.link.${code}` } });
+  await request(app).post('/api/share-links/verify').send({ token: code, password: '123456' }).expect(401);
+});
+
+test('six-digit share codes accept surrounding paste spaces and full-width IME digits', async () => {
+  const { a, docA } = await projects();
+  await bootstrapShare(db, { ...config, shareProjectSelectors: [String(a.id)] });
+  const token = createShareToken(config, { kind: 'content', contentId: docA.id });
+  for (const password of [' 123456\r\n', '１２３４５６', '\u3000１２３４５６\u3000'])
+    await request(app).post('/api/share-links/verify').send({ token, password }).expect(200);
+  for (const password of ['123 456', '123457', '密码：123456'])
+    await request(app).post('/api/share-links/verify').send({ token, password }).expect(401);
 });
 
 test('legacy JWTs, expired database sessions, role selection and password-only login are rejected', async () => {

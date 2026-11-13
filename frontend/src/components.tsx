@@ -34,6 +34,7 @@ import {
 import { scenes, type Content, type ContentType } from "./types";
 import { flatten } from "./types";
 import { professionalModuleTarget } from "./projectNavigation";
+import { visibleBaselineDescription } from "./learningBasicsModel";
 
 export function Brand() {
   return (
@@ -1104,7 +1105,9 @@ function CourseDocumentViewer({ description }: { description: string }) {
     </div>
   );
 }
-export function ContentBody({ content }: { content: Content }) {
+export function ContentBody({ content: sourceContent }: { content: Content }) {
+  const description = visibleBaselineDescription(sourceContent.description);
+  const content = description === sourceContent.description ? sourceContent : { ...sourceContent, description };
   const isCourseDocument =
     content.type === "text" &&
     content.title.startsWith("课程文档｜") &&

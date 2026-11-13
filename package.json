@@ -7,6 +7,7 @@
     "backend"
   ],
   "scripts": {
+    "lan": "node scripts/start-lan.mjs",
     "setup": "node scripts/setup.mjs && npm run db:generate && npm run db:migrate && npm run assets && npm run db:seed",
     "dev": "concurrently -k -n api,web,compare \"npm run dev -w backend\" \"npm run dev -w frontend\" \"npm run dev:compare\"",
     "dev:compare": "node scripts/compare.mjs dev",
@@ -15,6 +16,7 @@
     "lint:compare": "node scripts/compare.mjs lint",
     "typecheck:compare": "node scripts/compare.mjs typecheck",
     "db:seed:compare": "tsx backend/prisma/init-compare.ts",
+    "db:seed:investment": "tsx backend/prisma/init-investment.ts",
     "db:seed:health": "tsx backend/prisma/init-health.ts",
     "db:seed:english": "tsx backend/prisma/init-english.ts",
     "db:seed:ai-second": "tsx backend/prisma/init-ai-second.ts",
@@ -29,8 +31,10 @@
     "db:migrate": "npm run db:migrate -w backend",
     "db:seed": "npm run db:seed -w backend",
     "assets": "node scripts/assets.mjs",
+    "assets:english": "tsx scripts/build-english-audio.mts",
     "db:seed:literature": "tsx backend/prisma/init-literature.ts",
     "db:seed:castle": "tsx backend/prisma/init-castle.ts",
+    "db:seed:learning-basics": "tsx backend/prisma/init-learning-basics.ts",
     "db:seed:writers": "tsx backend/prisma/init-writers.ts",
     "db:seed:world": "tsx backend/prisma/init-world.ts",
     "db:seed:livelihood": "tsx backend/prisma/init-livelihood.ts",

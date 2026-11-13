@@ -10,14 +10,16 @@ import { Prisma, type PrismaClient, type Content } from "@prisma/client";
 import { z } from "zod";
 import { projectRoot, type AppConfig } from "./config.js";
 import { projectCycles, hasProjectCycle } from "./projectTags.js";
-import { authentication } from './auth.js';
+import { authentication, createShortShareToken, resolveShareToken, sharePasswordMatches, createShareGrant, readShareGrant, type ShareTarget } from './auth.js';
 import { fail, HttpError, wrap, idOf } from './http.js';
-import { readableContents, requireContent, validateProjectTree, canReadMedia, canonicalPath } from './permissions.js';
+import { readableContents, requireContent, validateProjectTree, canReadMedia, canReadContentMedia, canonicalPath } from './permissions.js';
 import { registerResearch } from './research.js';
 import { registerPrecisionBrief } from './precisionBrief.js';
 import { researchProjectMarker } from './researchSchema.js';
 import { registerCompare } from './compare.js';
+import { registerInvestment } from './investment.js';
 import { registerHealth } from './health.js';
+import { pageInputSchema, readPageSnapshot, rowsAllowMedia, savePageSnapshot, sharedRows } from './shareScope.js';
 
 export const sceneKeys = [
   "system",
@@ -192,6 +194,8 @@ export function createApp(db: PrismaClient, config: AppConfig) {
     }),
   );
   app.use('/api/research', express.json({ limit: '3mb' }));
+  app.use('/api/investment', express.json({ limit: '350kb' }));
+  app.use('/api/share-links', express.json({ limit: '800kb' }));
   app.use(express.json({ limit: "150kb" }), cookieParser());
   app.use(["/api", "/media"], (_req, res, next) => {
     res.set("Cache-Control", "no-store");
@@ -211,6 +215,60 @@ export function createApp(db: PrismaClient, config: AppConfig) {
     }
     next();
   });
+  const shareAttempts = new Map<string, { count: number; expires: number }>();
+  app.post('/api/share-links/verify', wrap(async (req, res) => {
+    const now = Date.now();
+    for (const [key, value] of shareAttempts) if (value.expires <= now) shareAttempts.delete(key);
+    const ip = req.ip || 'unknown';
+    const attempt = shareAttempts.get(ip) || { count: 0, expires: now + 900000 };
+    if (attempt.count >= 5) {
+      const retryAfter = Math.ceil((attempt.expires - now) / 1000);
+      res.set('Retry-After', String(retryAfter));
+      return res.status(429).json({ error: { code: 'LOCKED', message: '尝试次数过多，请稍后再试', retryAfter } });
+    }
+    if (shareAttempts.size >= 10000 && !shareAttempts.has(ip)) return fail(429, 'BUSY', '请稍后再试');
+    shareAttempts.set(ip, { ...attempt, count: attempt.count + 1 });
+    const input = z.object({ token: z.string().min(16).max(4096), password: z.string().min(1).max(256) }).strict().parse(req.body);
+    let target: ShareTarget;
+    let shareToken: string;
+    try { ({ target, token: shareToken } = await resolveShareToken(db, config, input.token)); } catch { return fail(401, 'INVALID_SHARE_LINK', '分享链接无效或已过期'); }
+    if (!await sharePasswordMatches(db, config, input.password)) return fail(401, 'INVALID_SHARE_PASSWORD', '分享密码不正确');
+    shareAttempts.delete(ip);
+    res.set('Cache-Control', 'private, no-store');
+    res.cookie('yaocang_page_share', await createShareGrant(db, config, shareToken), {
+      httpOnly: true, secure: config.production, sameSite: 'strict', path: '/', maxAge: 86400000,
+    });
+    if (target.kind === 'trip') {
+      const plan = await db.tripPlan.findFirst({ where: { id: target.tripId, projectId: target.projectId }, include: { project: { select: { id: true, title: true } } } });
+      if (!plan) return fail(404, 'SHARE_NOT_FOUND', '分享内容不存在');
+      return res.json({ kind: 'trip', project: plan.project, plan: {
+        id: plan.id, title: plan.title, destination: plan.destination, startDate: plan.startDate,
+        endDate: plan.endDate, status: plan.status, transport: plan.transport, companions: plan.companions,
+        budget: plan.budget, actualSpent: plan.actualSpent, itinerary: plan.itinerary, notes: plan.notes,
+        updatedAt: plan.updatedAt,
+      } });
+    }
+    if (target.kind === 'project') {
+      const rows = await sharedRows(db, target.contentId, target.ownerId);
+      return res.json({ kind: 'project', items: buildTree(rows), rootId: target.contentId });
+    }
+    if (target.kind === 'page') {
+      const owner = await db.user.findUnique({ where: { id: target.ownerId } });
+      if (!owner?.enabled || owner.mustChangePassword) return fail(404, 'SHARE_NOT_FOUND', '分享页面已撤回');
+      if (target.contentId) await requireContent(db, owner, target.contentId);
+      const page = await readPageSnapshot(db, target.pageId);
+      return res.json({ kind: 'page', page: { title: page.title, nodes: page.nodes, capturedAt: page.capturedAt } });
+    }
+    const content = await db.content.findUnique({ where: { id: target.contentId } });
+    if (!content || content.type === 'folder') return fail(404, 'SHARE_NOT_FOUND', '分享内容不存在');
+    res.json({ kind: 'content', content: {
+      id: content.id, title: content.title, type: content.type, isProject: content.isProject,
+      scene: content.scene, topics: content.topics, description: content.description,
+      coverUrl: content.coverUrl, fileUrl: content.fileUrl, hlsUrl: content.hlsUrl, pdfUrl: content.pdfUrl,
+      imagesJson: content.imagesJson, assetsJson: content.assetsJson, sortOrder: content.sortOrder,
+      createdAt: content.createdAt, updatedAt: content.updatedAt,
+    } });
+  }));
   auth.register(app);
   app.get("/api/health", (_req, res) => res.json({ status: "ok" }));
   app.use("/api", authorize, passwordReady, (_req, res, next) => {
@@ -218,7 +276,7 @@ export function createApp(db: PrismaClient, config: AppConfig) {
     next();
   });
   app.use("/api", (req, res, next) => {
-    if (res.locals.role === "share" && !["GET", "HEAD", "OPTIONS"].includes(req.method) && req.path !== "/log")
+    if (res.locals.role === "share" && !["GET", "HEAD", "OPTIONS"].includes(req.method) && !["/log", "/auth/logout"].includes(req.path))
       return next(new HttpError(403, "READ_ONLY_SHARE", "分享浏览账号仅可浏览资料"));
     next();
   });
@@ -226,7 +284,40 @@ export function createApp(db: PrismaClient, config: AppConfig) {
   registerResearch(app, db);
   registerPrecisionBrief(app, db);
   registerCompare(app, db, config);
+  registerInvestment(app, db, config);
   registerHealth(app, db);
+  app.post('/api/share-links', wrap(async (req, res) => {
+    const input = z.object({
+      kind: z.enum(['trip', 'content', 'project', 'page']), projectId: z.number().int().positive().optional(),
+      tripId: z.number().int().positive().optional(), contentId: z.number().int().positive().optional(),
+      page: pageInputSchema.optional(),
+    }).strict().superRefine((data, ctx) => {
+      if (data.kind === 'trip' && (!data.projectId || !data.tripId)) ctx.addIssue({ code: 'custom', message: '旅行分享需要 projectId 和 tripId' });
+      if (data.kind === 'content' && !data.contentId) ctx.addIssue({ code: 'custom', message: '资料分享需要 contentId' });
+      if (data.kind === 'project' && !data.contentId) ctx.addIssue({ code: 'custom', message: '项目分享需要 contentId' });
+      if (data.kind === 'page' && !data.page) ctx.addIssue({ code: 'custom', message: '页面分享需要页面内容' });
+    }).parse(req.body);
+    let target: ShareTarget;
+    if (input.kind === 'trip') {
+      const plan = await db.tripPlan.findFirst({ where: { id: input.tripId, projectId: input.projectId, userId: res.locals.user.id } });
+      if (!plan) return fail(404, 'NOT_FOUND', '行程不存在或无权分享');
+      await requireContent(db, res.locals.user, input.projectId!);
+      target = { kind: 'trip', projectId: input.projectId!, tripId: input.tripId! };
+    } else if (input.kind === 'project') {
+      const content = await requireContent(db, res.locals.user, input.contentId!);
+      if (content.type !== 'folder') return fail(400, 'INVALID_SHARE_TARGET', '项目或板块分享需要目录');
+      target = { kind: 'project', contentId: content.id, ownerId: res.locals.user.id };
+    } else if (input.kind === 'page') {
+      const pageId = await savePageSnapshot(db, res.locals.user, input.contentId, input.page!);
+      target = { kind: 'page', pageId, ownerId: res.locals.user.id, ...(input.contentId ? { contentId: input.contentId } : {}) };
+    } else {
+      const content = await requireContent(db, res.locals.user, input.contentId!);
+      if (content.type === 'folder') return fail(400, 'INVALID_SHARE_TARGET', '只能分享单份资料');
+      target = { kind: 'content', contentId: input.contentId! };
+    }
+    const code = await createShortShareToken(db, config, target);
+    res.status(201).json({ url: `${config.origin.replace(/\/$/, '')}/s/${code}`, expiresInDays: 30 });
+  }));
   app.get("/api/trip-plans", wrap(async (req, res) => {
     const projectId = idOf(req.query.projectId);
     const project = await requireContent(db, res.locals.user, projectId);
@@ -435,6 +526,29 @@ export function createApp(db: PrismaClient, config: AppConfig) {
       res.status(201).json({ ok: true });
     }),
   );
+  const mediaFiles = express.static(resolve(projectRoot, 'backend/media'), { dotfiles: 'deny', index: false, cacheControl: false });
+  app.use('/media', wrap(async (req, res, next) => {
+    if (!['GET', 'HEAD'].includes(req.method) || !req.cookies.yaocang_page_share) return next();
+    let target: ShareTarget;
+    try { target = await readShareGrant(db, config, req.cookies.yaocang_page_share); } catch { return next(); }
+    let allowed = false;
+    if (target.kind === 'content') {
+      const content = await db.content.findUnique({ where: { id: target.contentId } });
+      allowed = !!content && await canReadContentMedia(content, req.path);
+    } else if (target.kind === 'project') {
+      allowed = await rowsAllowMedia(await sharedRows(db, target.contentId, target.ownerId), req.path);
+    } else if (target.kind === 'page') {
+      const owner = await db.user.findUnique({ where: { id: target.ownerId } });
+      if (owner?.enabled && !owner.mustChangePassword) {
+        if (target.contentId) await requireContent(db, owner, target.contentId);
+        const page = await readPageSnapshot(db, target.pageId);
+        allowed = await canReadContentMedia({ assetsJson: page.media } as Content, req.path);
+      }
+    }
+    if (!allowed) return next();
+    res.set('Cache-Control', 'private, no-store');
+    mediaFiles(req, res, next);
+  }));
   app.use(
     "/media",
     authorize,

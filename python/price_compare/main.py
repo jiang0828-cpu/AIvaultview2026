@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import asyncio
 import json
 import secrets
+from contextlib import asynccontextmanager, suppress
 from datetime import date, datetime, timezone
 from typing import Any
 from decimal import Decimal
@@ -11,18 +13,36 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import select
 
 from .adapters import EbayAdapter
-from .config import Settings, settings
+from .config import ROOT, Settings, settings
 from .fixtures import demo_offers
 from .importers import parse_import
 from .matching import normalized_request
 from .models import Favorite, ImportRecord, Offer, Recommendation, SearchRun, make_session
 from .schemas import FavoriteRequest, FavoriteUpdate, ImportRequest, NormalizedOffer, SearchRequest, SearchResponse
 from .scoring import rank_offers
+from .investment import investment_router
+from .investment_data import InvestmentSync
 
 
 def create_app(config: Settings = settings) -> FastAPI:
     factory, _engine = make_session(config.database_url)
-    app = FastAPI(title="VaultFolio Price Compare", version="0.1.0")
+    investment_sync = InvestmentSync(factory, config, env_file=ROOT / ".env" if config is settings else None)
+
+    @asynccontextmanager
+    async def lifespan(_app: FastAPI):
+        task = asyncio.create_task(investment_sync.run()) if investment_sync.enabled or investment_sync.env_file is not None else None
+        try:
+            yield
+        finally:
+            if task:
+                task.cancel()
+                with suppress(asyncio.CancelledError):
+                    await task
+            await investment_sync.close()
+            _engine.dispose()
+
+    app = FastAPI(title="VaultFolio Price Compare", version="0.1.0", lifespan=lifespan)
+    app.state.investment_sync = investment_sync
 
     def scope(authorization: str | None = Header(default=None), x_user_id: int | None = Header(default=None), x_project_id: int | None = Header(default=None)) -> tuple[int, int]:
         if not config.internal_token or authorization != f"Bearer {config.internal_token}":
@@ -30,6 +50,8 @@ def create_app(config: Settings = settings) -> FastAPI:
         if not x_user_id or x_user_id <= 0 or not x_project_id or x_project_id <= 0:
             raise HTTPException(status_code=400, detail="缺少用户或项目范围")
         return x_user_id, x_project_id
+
+    app.include_router(investment_router(factory, scope, investment_sync))
 
     def to_json(offer: NormalizedOffer) -> dict[str, Any]:
         raw = offer.model_dump(mode="python", by_alias=True, exclude_none=False)

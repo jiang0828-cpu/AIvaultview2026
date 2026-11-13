@@ -3520,3 +3520,6 @@ td:first-child {
     scroll-behavior: auto !important;
   }
 }
+.page-share-control { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 8px; min-width: 0; max-width: 100%; margin: 8px 0; }
+.page-share-control small { font-size: 13px; color: #31736d; }
+.page-share-control input { width: 260px; max-width: 100%; min-width: 0; font-size: 13px; padding: 9px; border: 1px solid #b9ceca; border-radius: 6px; }

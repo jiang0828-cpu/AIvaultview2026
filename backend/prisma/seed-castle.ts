@@ -3,6 +3,8 @@ import { castleProject } from "./castle.js";
 import { growthCurriculumDocuments } from "./growth-curriculum.js";
 import { hasProjectCycle } from "../src/projectTags.js";
 import { ensureEnglishProject } from "./seed-english.js";
+import { legacyCastleProjectTitle } from "../src/castleProjectName.js";
+import { ensureLearningBasics } from "./learning-basics.js";
 
 export async function seedCastle(db: PrismaClient) {
   return db.$transaction(async (tx) => {
@@ -48,6 +50,9 @@ export async function seedCastle(db: PrismaClient) {
           type: "folder",
         },
       })) ??
+      (await tx.content.findFirst({
+        where: { title: legacyCastleProjectTitle, parentId: scene.id, type: "folder" },
+      })) ??
       (await tx.content.create({
         data: {
           title: castleProject.title,
@@ -60,12 +65,18 @@ export async function seedCastle(db: PrismaClient) {
           parentId: scene.id,
         },
       }));
+    if (project.title === legacyCastleProjectTitle)
+      project = await tx.content.update({ where: { id: project.id }, data: { title: castleProject.title } });
     if (!project.isProject) project = await tx.content.update({ where: { id: project.id }, data: { isProject: true } });
     if (!hasProjectCycle(project.topics)) project = await tx.content.update({
       where: { id: project.id },
       data: { topics: castleProject.topics },
     });
     for (const [sortOrder, section] of castleProject.sections.entries()) {
+      if (section.title === "基本信息") {
+        await ensureLearningBasics(tx, project.id);
+        continue;
+      }
       let folder = await tx.content.findFirst({
         where: { title: section.title, parentId: project.id, type: "folder" },
       });
@@ -109,34 +120,36 @@ export async function seedCastle(db: PrismaClient) {
           data: { sortOrder },
         });
       }
-      const document = await tx.content.findFirst({
-        where: {
-          title: section.documentTitle,
-          parentId: folder.id,
-          type: "text",
-        },
-      });
-      if (!document)
-        await tx.content.create({
-          data: {
+      if (section.documentTitle) {
+        const document = await tx.content.findFirst({
+          where: {
             title: section.documentTitle,
-            description: section.description,
-            topics: section.topics,
-            type: "text",
-            scene: "life",
-            sortOrder: 0,
             parentId: folder.id,
+            type: "text",
           },
         });
-      else if (
-        "legacyDescription" in section &&
-        section.legacyDescription &&
-        document.description === section.legacyDescription
-      ) {
-        await tx.content.update({
-          where: { id: document.id },
-          data: { description: section.description },
-        });
+        if (!document)
+          await tx.content.create({
+            data: {
+              title: section.documentTitle,
+              description: section.description,
+              topics: section.topics,
+              type: "text",
+              scene: "life",
+              sortOrder: 0,
+              parentId: folder.id,
+            },
+          });
+        else if (
+          "legacyDescription" in section &&
+          section.legacyDescription &&
+          document.description === section.legacyDescription
+        ) {
+          await tx.content.update({
+            where: { id: document.id },
+            data: { description: section.description },
+          });
+        }
       }
       for (const [extraOrder, extra] of (
         section.additionalSections || []

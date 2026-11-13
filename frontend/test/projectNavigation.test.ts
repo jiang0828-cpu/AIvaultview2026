@@ -2,6 +2,8 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   isProject,
+  isCastleProject,
+  castleProjectTitle,
   professionalModuleTarget,
   projectFolder,
   folderNavigationPath,
@@ -32,6 +34,8 @@ function node(id: number, overrides: Partial<Content> = {}): Content {
   };
 }
 test("recognizes explicit projects independently of their title or scene", () => {
+  assert.equal(isCastleProject(node(1, { title: castleProjectTitle })), true);
+  assert.equal(isCastleProject(node(1, { title: castleProjectTitle, scene: "work" })), false);
   assert.equal(isProject(node(1, { title: "爱的城堡", isProject: true })), true);
   assert.equal(isProject(node(2, { title: "爱的城堡", scene: "work" })), false);
   assert.equal(isProject(node(3)), false);
@@ -102,7 +106,7 @@ test("professional module target opens the first document inside a module folder
   assert.equal(professionalModuleTarget(undefined), null);
 });
 test("castle participates in project name search and life filtering", () => {
-  const castle = node(1, { title: "爱的城堡", isProject: true });
+  const castle = node(1, { title: castleProjectTitle, isProject: true });
   const projects = [
     castle,
     node(2, { title: "项目04｜AI", scene: "tools", isProject: true }),
@@ -110,14 +114,14 @@ test("castle participates in project name search and life filtering", () => {
   assert.deepEqual(
     filterProjects(
       projects,
-      readProjectFilters(new URLSearchParams("q=爱的城堡&scene=life")),
+      readProjectFilters(new URLSearchParams({ q: castleProjectTitle, scene: "life" })),
     ).map((item) => item.id),
     [1],
   );
   assert.deepEqual(
     filterProjects(
       projects,
-      readProjectFilters(new URLSearchParams("q=爱的城堡&scene=work")),
+      readProjectFilters(new URLSearchParams({ q: castleProjectTitle, scene: "work" })),
     ),
     [],
   );

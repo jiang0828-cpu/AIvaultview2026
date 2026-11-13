@@ -9,6 +9,7 @@ import { seedWriters } from "./seed-writers.js";
 import { seedCastle } from "./seed-castle.js";
 import { hasProjectCycle } from "../src/projectTags.js";
 import { seedCompare } from "./compare.js";
+import { seedInvestment } from "./investment.js";
 import { seedHealth } from "./health.js";
 const db = new PrismaClient();
 const scenes = [
@@ -250,6 +251,7 @@ try {
   await seedLivelihood(db);
   await seedResearch(db);
   await seedCompare(db);
+  await seedInvestment(db);
   await seedHealth(db);
   console.log("Six scene modules are ready.");
 } finally {

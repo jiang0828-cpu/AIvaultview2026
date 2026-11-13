@@ -68,6 +68,22 @@
 .english-document { margin-top: 28px; min-width: 0; overflow-wrap: anywhere; }
 .english-document table { display: block; max-width: 100%; overflow-x: auto; }
 .english-notice { padding: 12px; border-left: 3px solid #dcaa39; color: #704f17; background: #fff8e5; font-size: 14px; }
+.english-audio-toolbar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: -6px 0 24px; font-size: 14px; }
+.english-audio-toolbar > div { display: inline-flex; border: 1px solid #b9d4d0; border-radius: 6px; overflow: hidden; }
+.english-audio-toolbar button { min-height: 44px; padding: 8px 14px; border: 0; background: white; color: #225f59; }
+.english-audio-toolbar button[aria-pressed=true] { background: #22695e; color: white; }
+.english-audio-toolbar > span { display: inline-flex; align-items: center; gap: 5px; flex: 1; min-width: 140px; overflow-wrap: anywhere; }
+.english-audio-toolbar .english-stop { display: inline-flex; align-items: center; gap: 5px; background: none; }
+.english-practice { margin: 24px auto 0; padding: 22px 0 8px; border-top: 1px solid #cbded9; max-width: 740px; text-align: left; }
+.english-practice header { display: flex; justify-content: space-between; flex-wrap: wrap; align-items: center; gap: 10px; }
+.english-practice h3 { margin: 0; font-size: 20px; }
+.english-practice header > span { font-size: 14px; color: #447368; }
+.english-practice .english-practice-text { margin: 18px 0 4px; font-size: 26px; line-height: 1.5; font-weight: 700; overflow-wrap: anywhere; }
+.english-practice-translation { margin: 0 0 18px; color: #597a76; }
+.english-practice ol { list-style: none; padding: 0; margin: 16px 0; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 10px; }
+.english-practice ol li { display: block; padding: 0; border: 0; background: none; min-width: 0; }
+.english-practice ol button { width: 100%; min-height: 48px; padding: 10px 6px; font-size: 15px; }
+.english-practice-caption { font-size: 13px; line-height: 1.8; color: #597a76; margin: 12px 0; }
 .english-footer { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 34px; padding-top: 20px; border-top: 1px solid #d7e5e4; font-size: 13px; color: #617b79; }
 .english-footer > span, .english-footer button { display: flex; align-items: center; gap: 6px; }
 .english-footer button { border: 0; background: none; color: #6a7a79; padding: 10px 0; min-height: 44px; }
@@ -86,4 +102,9 @@
   .english-options button { font-size: 22px; padding: 12px 8px; }
   .english-dialogue li { gap: 8px; padding: 14px 6px; }
   .english-dialogue li strong { font-size: 20px; }
+}
+@media (max-width: 420px) {
+  .english-alphabet { grid-template-columns: repeat(5,minmax(0,1fr)); }
+  .english-practice ol { grid-template-columns: minmax(0,1fr); gap: 8px; }
+  .english-audio-toolbar > span { order: 3; flex-basis: 100%; }
 }

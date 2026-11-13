@@ -1,10 +1,11 @@
 import type { Prisma, PrismaClient } from "@prisma/client";
 import { englishProject, englishProjectMarker } from "./english.js";
+import { castleProjectTitles } from "../src/castleProjectName.js";
 
 export async function ensureEnglishProject(tx: Prisma.TransactionClient, generalId: number) {
   const parent = await tx.content.findUniqueOrThrow({ where: { id: generalId }, include: { parent: true } });
-  if (parent.type !== "folder" || parent.scene !== "life" || parent.title !== "通识" || parent.parent?.title !== "爱的城堡")
-    throw new Error("English learning must belong to 爱的城堡 / 通识.");
+  if (parent.type !== "folder" || parent.scene !== "life" || parent.title !== "通识" || !castleProjectTitles.includes(parent.parent?.title || ""))
+    throw new Error("English learning must belong to the daily learning project / 通识.");
   const existing = await tx.content.findFirst({ where: { parentId: generalId, type: "folder",
     OR: [{ description: { contains: englishProjectMarker } }, { title: englishProject.title }] } });
   const project = existing || await tx.content.create({ data: {
@@ -22,7 +23,7 @@ export async function ensureEnglishProject(tx: Prisma.TransactionClient, general
 
 export async function seedEnglish(db: PrismaClient) {
   return db.$transaction(async tx => {
-    const castle = await tx.content.findFirstOrThrow({ where: { title: "爱的城堡", scene: "life", type: "folder" } });
+    const castle = await tx.content.findFirstOrThrow({ where: { title: { in: castleProjectTitles }, scene: "life", type: "folder" } });
     const general = await tx.content.findFirstOrThrow({ where: { title: "通识", parentId: castle.id, type: "folder" } });
     return ensureEnglishProject(tx, general.id);
   });

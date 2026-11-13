@@ -12,7 +12,6 @@ import {
   MapPin,
   Pencil,
   Printer,
-  Share2,
   Shirt,
   Ticket,
   Utensils,
@@ -35,6 +34,7 @@ import {
   type TimelineEntry,
 } from "./tripGuideModel";
 import "./trip-guide.css";
+import { ShareLinkButton } from "./ShareLinkButton";
 
 const entryIcons = {
   drive: Car,
@@ -145,10 +145,14 @@ export function TripGuide({
   plan,
   onBack,
   onEdit,
+  projectId,
+  readOnly = false,
 }: {
   plan: Plan;
   onBack: () => void;
   onEdit: () => void;
+  projectId?: number;
+  readOnly?: boolean;
 }) {
   const sections = splitNoteSections(plan.notes);
   const budgetSection = sections.find((section) => /^预算/.test(section.title));
@@ -163,7 +167,6 @@ export function TripGuide({
         .map((line) => line.replace(/^\[ \]\s*/, "")),
     );
   const [checked, setChecked] = useState<number[]>([]);
-  const [shareStatus, setShareStatus] = useState<"idle" | "copied" | "shared" | "failed">("idle");
   const stops = routeStops(plan.destination);
   const winterLake = /洪泽|柳巷/.test(plan.destination) &&
     ["12", "01", "02"].includes(plan.startDate.slice(5, 7));
@@ -181,58 +184,17 @@ export function TripGuide({
   const archive = sections.filter((section) =>
     /核验来源|回程后/.test(section.title),
   );
-  const sharePage = async () => {
-    const url = window.location.href;
-    try {
-      if (typeof navigator.share === "function") {
-        await navigator.share({
-          title: plan.title,
-          text: "查看我的旅行手册",
-          url,
-        });
-        setShareStatus("shared");
-      } else if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(url);
-        setShareStatus("copied");
-      } else {
-        const input = document.createElement("textarea");
-        input.value = url;
-        input.setAttribute("readonly", "");
-        input.style.position = "fixed";
-        input.style.opacity = "0";
-        document.body.appendChild(input);
-        input.select();
-        const copied = document.execCommand("copy");
-        input.remove();
-        if (!copied) throw new Error("copy failed");
-        setShareStatus("copied");
-      }
-    } catch (error) {
-      if (error instanceof DOMException && error.name === "AbortError") return;
-      setShareStatus("failed");
-    }
-    window.setTimeout(() => setShareStatus("idle"), 2200);
-  };
   return (
     <article className={`trip-guide${jinan ? " guide-jinan" : winterLake ? " guide-winter-lake" : ""}`} aria-labelledby="trip-guide-title">
       <div className="guide-toolbar">
-        <button className="back-link" onClick={onBack}>
+        {!readOnly && <button className="back-link" onClick={onBack}>
           <ArrowLeft size={16} /> 我的安排
-        </button>
+        </button>}
         <div>
-          <button className="button" onClick={() => void sharePage()}>
-            <Share2 size={15} />
-            {shareStatus === "copied"
-              ? "已复制"
-              : shareStatus === "shared"
-                ? "已分享"
-                : shareStatus === "failed"
-                  ? "复制失败"
-                  : "分享"}
-          </button>
-          <button className="button" onClick={onEdit}>
+          {!readOnly && projectId && <ShareLinkButton target={{ kind: "trip", projectId, tripId: plan.id }} />}
+          {!readOnly && <button className="button" onClick={onEdit}>
             <Pencil size={15} /> 编辑
-          </button>
+          </button>}
           <button className="button" onClick={() => window.print()}>
             <Printer size={15} /> 打印
           </button>

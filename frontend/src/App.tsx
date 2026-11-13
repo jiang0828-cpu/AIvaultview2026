@@ -36,6 +36,7 @@ import {
   ArrowDownWideNarrow,
   ArrowUpNarrowWide,
   House,
+  UserRound,
   GraduationCap,
   FlaskConical,
   Dumbbell,
@@ -44,6 +45,8 @@ import {
   Tags,
 } from "lucide-react";
 import { api, ApiError } from "./api";
+import { LearningBasics, LearningReference } from "./LearningBasics";
+import { learningBasicsDocument, learningBasicsFolder } from "./learningBasicsModel";
 import { TripPlans, isTravelProject } from "./TripPlans";
 import { Accounts, PasswordChange } from "./Accounts";
 import type { SessionUser } from "./types";
@@ -68,12 +71,17 @@ import { isPrecisionBriefProject } from "./precisionBriefModel";
 import { MrnaResearchSpace, isMrnaProject } from "./MrnaResearchSpace";
 import { CompareSpace } from "./CompareSpace";
 import { isCompareProject } from "./compareModel";
+import { InvestmentSpace } from "./InvestmentSpace";
+import { isInvestmentProject } from "./investmentModel";
 import { HealthSpace } from "./HealthSpace";
 import { isHealthProject } from "./healthModel";
 import { EnglishSpace } from "./EnglishSpace";
 import { isEnglishProject } from "./englishModel";
+import { SharePage } from "./SharePage";
+import { ShareLinkButton } from "./ShareLinkButton";
 import {
   isCastleProject,
+  castleProjectTitle,
   isProject,
   projectFolder,
   folderNavigationPath,
@@ -100,6 +108,15 @@ import {
 } from "./types";
 
 export function App() {
+  const location = useLocation();
+  if (location.pathname.startsWith('/share/') || location.pathname.startsWith('/s/')) return <Routes>
+    <Route path="/s/:token" element={<SharePage key={location.pathname} />} />
+    <Route path="/share/:token" element={<SharePage key={location.pathname} />} />
+  </Routes>;
+  return <LibraryApp />;
+}
+
+function LibraryApp() {
   const [user, setUser] = useState<SessionUser | null>(null);
   const role = user?.role;
   const [checking, setChecking] = useState(true);
@@ -211,6 +228,7 @@ export function App() {
     );
   return (
     <Routes>
+      <Route path="/share/:token" element={<SharePage />} />
       <Route
         path="/login"
         element={
@@ -375,7 +393,7 @@ type ShellProps = {
 };
 
 const projectSummaries: Record<string, string> = {
-  爱的城堡: "从通识学习到专业成长，再到运动习惯，收藏每一次认真生活。",
+  [castleProjectTitle]: "以基本信息为共同依据，安排通识学习、专业成长与运动习惯。",
   "项目01｜中国高铁运行现状及盈亏分析":
     "围绕路线、车次、客流、成本和盈亏口径，建立一份可复核的中国高铁运行研究。",
   "项目02｜mRNA 肿瘤药物研究及开发进展":
@@ -759,7 +777,7 @@ function ProjectOverview({
   const children = current.children || [];
   const stats = projectStats(current);
   const castle = isCastleProject(project);
-  const sectionIcons = [GraduationCap, FlaskConical, Dumbbell];
+  const sectionIcons: Record<string, typeof GraduationCap> = { 基本信息: UserRound, 通识: GraduationCap, 专业: FlaskConical, 运动: Dumbbell };
   const topics = folder?.topics?.length
     ? folder.topics
     : project.topics?.length
@@ -905,7 +923,7 @@ function ProjectOverview({
         )}
         {children.map((content, index) => {
           const SectionIcon =
-            castle && !folder ? sectionIcons[index] || FolderOpen : null;
+            castle && !folder ? sectionIcons[content.title] || FolderOpen : null;
           return (
             <button
               className={`project-content-card ${index === 0 ? "featured" : ""}`}
@@ -1173,6 +1191,7 @@ function Shell({
       : null;
   const isNetwork = location.pathname === "/network";
   const isCompare = location.pathname === "/compare";
+  const isInvestment = location.pathname === "/invest";
   const isUsers = location.pathname === "/admin/users";
   const isAccount = location.pathname === "/account";
   const overview =
@@ -1182,6 +1201,7 @@ function Shell({
     !search &&
     !isNetwork &&
     !isCompare &&
+    !isInvestment &&
     !location.pathname.startsWith("/admin") &&
     !isAccount;
   const selectedId = Number(params.get("id")) || null;
@@ -1239,6 +1259,8 @@ function Shell({
         (content) => content.type !== "folder",
       )
     : [];
+  const learningProject = project && isCastleProject(project) ? project : activeProject && isCastleProject(activeProject) ? activeProject : null;
+  const learningTarget = folder || selected;
   const travelProject = isTravelProject(project)
     ? project
     : isTravelProject(activeProject)
@@ -1424,6 +1446,8 @@ function Shell({
                   ? "修改密码"
                   : isNetwork
                     ? "关系网"
+                    : isInvestment
+                      ? "投资理财"
                     : isCompare
                       ? "消费比价"
                       : isAdmin
@@ -1452,6 +1476,19 @@ function Shell({
           </div>
         </header>
         <main className="main-content">
+          {role !== 'share' && !isAdmin && !isUsers && !isAccount && !isInvestment && !(isInvestmentProject(project) && !folder) && !loading && !error && (
+            <div className="share-toolbar" aria-label="页面分享">
+              {(folder || project || activeProject)?.type === 'folder' && <ShareLinkButton
+                key={`project-${(folder || project || activeProject)!.id}`}
+                label={folder ? '分享此板块' : '分享项目'}
+                target={{ kind: 'project', contentId: (folder || project || activeProject)!.id }} />}
+              <ShareLinkButton key={`page-${location.pathname}-${params.toString()}`} target={
+                selected ? { kind: 'content', contentId: selected.id }
+                  : plansView && Number(params.get('trip')) ? { kind: 'trip', projectId: travelProject!.id, tripId: Number(params.get('trip')) }
+                    : { kind: 'page', contentId: (folder || project)?.id, title: folder?.title || project?.title || (isNetwork ? '项目关系网' : '空间概览') }
+              } label="分享当前页面" />
+            </div>
+          )}
           <ErrorMessage message={error} />
           {error && (
             <button className="button" onClick={reload}>
@@ -1507,6 +1544,7 @@ function Shell({
           {!isAdmin &&
             !isNetwork &&
             !isCompare &&
+            !isInvestment &&
             project &&
             (Boolean(folder) ||
               isHealthProject(project) ||
@@ -1516,7 +1554,7 @@ function Shell({
               isLivelihoodProject(project) ||
               isResearchProject(project) ||
               isPrecisionBriefProject(project) ||
-              isCompareProject(project)) && (
+              isCompareProject(project) || isInvestmentProject(project)) && (
               <div className="project-cycle-toolbar">
                 <ProjectCycleTag
                   project={project}
@@ -1526,6 +1564,9 @@ function Shell({
                 <TopicPills topics={project.topics?.slice(1) || []} />
               </div>
             )}
+          {!isAdmin && !isUsers && !isAccount && !isNetwork && !loading && !error && learningProject && learningTarget &&
+            learningTarget.id !== learningBasicsFolder(learningProject)?.id && learningTarget.id !== learningBasicsDocument(learningProject)?.id &&
+            <LearningReference key={`${learningProject.id}-${learningTarget.id}`} project={learningProject} target={learningTarget} onOpen={openProject} />}
           {isUsers ? (
             role === "admin" ? (
               <Accounts currentUser={user} />
@@ -1556,6 +1597,12 @@ function Shell({
               <h2>暂无获授权的项目</h2>
               <p>请联系管理员为你的账号分配项目。</p>
             </section>
+          ) : isInvestment ? (
+            project && isInvestmentProject(project) ? (
+              <InvestmentSpace key={`${user.id}-${project.id}`} project={project} onOpenDocument={choose} />
+            ) : (
+              <section className="empty-state"><LockKeyhole size={28} /><h2>投资项目不存在或暂未授权</h2><Link to="/home" className="button">返回空间概览</Link></section>
+            )
           ) : isCompare ? (
             project && isCompareProject(project) ? (
               <CompareSpace
@@ -1586,6 +1633,8 @@ function Shell({
               key={`${user.id}-${travelProject.id}`}
               projectId={travelProject.id}
             />
+          ) : project && isCastleProject(project) && folder && folder.id === learningBasicsFolder(project)?.id ? (
+            <LearningBasics key={`${project.id}-${learningBasicsDocument(project)?.updatedAt}`} project={project} role={role} onBack={() => openProject(project)} onOpen={openProject} onSaved={reload} />
           ) : project && isCastleProject(project) && folder && isEnglishProject(folder) && parentFolder?.title === "通识" ? (
             <EnglishSpace
               key={`${user.id}-${folder.id}`}
@@ -1594,6 +1643,8 @@ function Shell({
               onBack={() => openProject(parentFolder)}
               onCastle={() => openProject(project)}
             />
+          ) : project && !folder && isInvestmentProject(project) ? (
+            <InvestmentSpace key={`${user.id}-${project.id}`} project={project} onOpenDocument={choose} />
           ) : project && !folder && isHealthProject(project) ? (
             <HealthSpace
               key={`${user.id}-${project.id}`}
